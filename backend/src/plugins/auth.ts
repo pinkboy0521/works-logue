@@ -36,13 +36,8 @@ export const authPlugin: FastifyPluginAsync<AuthPluginOptions> = async (
     });
   }
 
-  // JWT検証フック
-  app.addHook("preHandler", async (request: FastifyRequest, reply) => {
-    // ヘルスチェックはスキップ
-    if (request.url === "/health") {
-      return;
-    }
-
+  // 認証デコレーター（他のルートで使用可能）
+  app.decorate("authenticate", async (request: FastifyRequest, reply: any) => {
     const authorization = request.headers.authorization;
 
     if (!authorization || !authorization.startsWith("Bearer ")) {
@@ -75,7 +70,7 @@ export const authPlugin: FastifyPluginAsync<AuthPluginOptions> = async (
       });
 
       // リクエストにユーザー情報を追加
-      request.auth = decoded;
+      (request as any).user = decoded;
     } catch (error) {
       app.log.error("JWT verification failed: %s", error);
       throw app.httpErrors.unauthorized("Invalid token");

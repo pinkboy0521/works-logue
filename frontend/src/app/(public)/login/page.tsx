@@ -10,5 +10,9 @@ export default async function LoginPage() {
   }
 
   // ここは「自動遷移」でもOK
-  redirect("/auth/login?returnTo=/dashboard");
+  redirect(
+    "/auth/login" +
+      "?audience=https://api.works-logue.local" +
+      "&returnTo=/dashboard"
+  );
 }
