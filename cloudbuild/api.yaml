@@ -24,10 +24,10 @@ steps:
       - --region=asia-northeast1
       - --platform=managed
       - --service-account=works-logue-api-sa@$PROJECT_ID.iam.gserviceaccount.com
-      - --add-cloudsql-instances=works-logue-dev:asia-northeast1:works-logue-db-dev
+      - --add-cloudsql-instances=works-logue:asia-northeast1:works-logue-db-dev
       - --set-env-vars=NODE_ENV=production
       - --set-secrets=DB_USER=DB_USER:latest,DB_PASSWORD=DB_PASSWORD:latest,DB_NAME=DB_NAME:latest,AUTH0_ISSUER=AUTH0_ISSUER:latest,AUTH0_AUDIENCE=AUTH0_AUDIENCE:latest
-      - --set-env-vars=CLOUD_SQL_CONNECTION_NAME=works-logue-dev:asia-northeast1:works-logue-db-dev
+      - --set-env-vars=CLOUD_SQL_CONNECTION_NAME=works-logue:asia-northeast1:works-logue-db-dev
 
 options:
   logging: CLOUD_LOGGING_ONLY
