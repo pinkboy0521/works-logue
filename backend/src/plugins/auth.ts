@@ -1,5 +1,6 @@
 // backend/src/plugins/auth.ts
 import { FastifyPluginAsync, FastifyRequest } from "fastify";
+import fp from "fastify-plugin";
 import jwt, { Algorithm } from "jsonwebtoken";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -13,7 +14,7 @@ interface AuthPluginOptions {
   algorithms?: Algorithm[];
 }
 
-export const authPlugin: FastifyPluginAsync<AuthPluginOptions> = async (
+const authPluginImplementation: FastifyPluginAsync<AuthPluginOptions> = async (
   app,
   options
 ) => {
@@ -73,8 +74,14 @@ export const authPlugin: FastifyPluginAsync<AuthPluginOptions> = async (
       // リクエストにユーザー情報を追加
       (request as any).user = decoded;
     } catch (error) {
-      app.log.error("JWT verification failed: %s", error);
+      app.log.error({ error }, "JWT verification failed");
       throw app.httpErrors.unauthorized("Invalid token");
     }
   });
 };
+
+// fastify-plugin でラップして親スコープで利用可能にする
+export const authPlugin = fp(authPluginImplementation, {
+  name: "auth-plugin",
+  fastify: "4.x",
+});

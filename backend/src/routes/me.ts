@@ -21,23 +21,19 @@ export default async function meRoute(app: FastifyInstance) {
         const authRequest = request as AuthenticatedRequest;
         const authUser = authRequest.user;
 
-        console.log("🔍 JWT ユーザー情報:", {
-          sub: authUser.sub,
-          email: authUser.email,
-          name: authUser.name,
-        });
+        // ユーザー情報が存在するかチェック
+        if (!authUser || !authUser.sub) {
+          return reply.status(401).send({
+            error: "Unauthorized",
+            message: "認証ユーザー情報が見つかりません",
+          });
+        }
 
         // ユーザーを自動作成（初回ログイン時）または既存取得
         const user = await findOrCreateUser({
           external_subject: authUser.sub,
           email: authUser.email || `user-${authUser.sub}@auth0.com`,
           name: authUser.name || "Unknown User",
-        });
-
-        console.log("✅ 確定したユーザー:", {
-          id: user.id,
-          external_subject: user.external_subject,
-          email: user.email,
         });
 
         // APIレスポンス（必ずusers.idを使用）
@@ -49,7 +45,7 @@ export default async function meRoute(app: FastifyInstance) {
 
         return reply.send(response);
       } catch (error) {
-        console.error("❌ /me エラー:", error);
+        app.log.error({ error }, "Failed to get user information");
         return reply.status(500).send({
           error: "Internal Server Error",
           message: "ユーザー情報の取得に失敗しました",

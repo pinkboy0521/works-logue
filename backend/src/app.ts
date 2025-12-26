@@ -8,13 +8,13 @@ import { healthRoute } from "./routes/health.js";
 import meRoute from "./routes/me.js";
 import { protectedRoute } from "./routes/protected.js";
 
-export function buildApp() {
+export async function buildApp() {
   const app = Fastify({
     logger: true,
   });
 
   // HTTPエラーハンドリングプラグインを登録
-  app.register(import("@fastify/sensible"));
+  await app.register(import("@fastify/sensible"));
 
   // PostgreSQL 接続確認
   app.ready(async () => {
@@ -26,8 +26,8 @@ export function buildApp() {
   const auth0Audience = process.env.AUTH0_AUDIENCE;
 
   if (auth0Domain && auth0Audience) {
-    // 認証プラグインを先に登録
-    app.register(authPlugin, {
+    // 認証プラグインを登録
+    await app.register(authPlugin, {
       domain: auth0Domain,
       issuer: process.env.AUTH0_ISSUER!,
       audience: auth0Audience,
@@ -37,10 +37,10 @@ export function buildApp() {
   }
 
   // ルートを登録（認証プラグインの後）
-  app.register(healthRoute);
-  app.register(protectedRoute);
-  app.register(meRoute); // /me エンドポイント追加
-  app.register(debugRoute); // デバッグエンドポイント（一時的）
+  await app.register(healthRoute);
+  await app.register(protectedRoute);
+  await app.register(meRoute); // /me エンドポイント追加
+  await app.register(debugRoute); // デバッグエンドポイント（一時的）
 
   return app;
 }

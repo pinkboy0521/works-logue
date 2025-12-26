@@ -4,5 +4,8 @@
     "frontend",
     "backend",
     "shared"
-  ]
+  ],
+  "dependencies": {
+    "fastify-plugin": "^5.1.0"
+  }
 }
