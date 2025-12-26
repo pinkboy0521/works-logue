@@ -1,15 +1,26 @@
 import "dotenv/config";
 import { Pool } from "pg";
 
+const isCloudRun = !!process.env.K_SERVICE;
+
 // PostgreSQL 接続プール
 export const pool = new Pool({
-  host: process.env.DB_HOST || "localhost",
-  port: Number(process.env.DB_PORT) || 5432,
-  database: process.env.DB_NAME || "works_logue",
-  user: process.env.DB_USER || "works_logue_app",
-  password: process.env.DB_PASSWORD || "",
-  // Cloud SQL Auth Proxy使用時の設定
-  ssl: false, // プロキシ経由なのでSSL無効
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+
+  ...(isCloudRun
+    ? {
+        // Cloud Run / Cloud SQL
+        host: `/cloudsql/${process.env.CLOUD_SQL_CONNECTION_NAME}`,
+      }
+    : {
+        // ローカル開発
+        host: process.env.DB_HOST || "127.0.0.1",
+        port: Number(process.env.DB_PORT) || 5432,
+      }),
+
+  ssl: false,
   connectionTimeoutMillis: 10000,
   max: 10,
   idleTimeoutMillis: 30000,
