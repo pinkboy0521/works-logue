@@ -1,0 +1,8 @@
+// backend/src/routes/health.ts
+import { FastifyPluginAsync } from "fastify";
+
+export const healthRoute: FastifyPluginAsync = async (app) => {
+  app.get("/health", async () => {
+    return { status: "ok" };
+  });
+};
