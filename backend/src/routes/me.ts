@@ -1,4 +1,4 @@
-import type { FastifyInstance, FastifyRequest } from "fastify";
+import { type FastifyInstance, type FastifyRequest } from "fastify";
 import { findOrCreateUser } from "../domain/user-service.js";
 import type { UserResponse } from "../domain/user.js";
 import type { AuthUser } from "../types/auth.js";
@@ -8,14 +8,12 @@ interface AuthenticatedRequest extends FastifyRequest {
   user: AuthUser;
 }
 
-export default async function meRoute(fastify: FastifyInstance) {
+export default async function meRoute(app: FastifyInstance) {
   // /me エンドポイント - JWT認証済みユーザー情報取得
-  fastify.get<{}, UserResponse>(
+  app.get<{}, UserResponse>(
     "/me",
     {
-      preHandler: async function (request, reply) {
-        await fastify.authenticate(request, reply);
-      },
+      preHandler: app.authenticate,
     },
     async (request, reply) => {
       try {
@@ -61,7 +59,7 @@ export default async function meRoute(fastify: FastifyInstance) {
   );
 
   // テスト用エンドポイント（認証なし）- Step9動作確認用
-  fastify.get("/me/test", async (request, reply) => {
+  app.get("/me/test", async (request, reply) => {
     try {
       console.log("🧪 テスト用エンドポイント /me/test が呼ばれました");
 
