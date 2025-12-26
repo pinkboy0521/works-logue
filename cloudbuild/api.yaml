@@ -1,0 +1,29 @@
+steps:
+  # 1. build
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      - build
+      - -t
+      - asia-northeast1-docker.pkg.dev/$PROJECT_ID/works-logue/api:$COMMIT_SHA
+      - ./backend
+
+  # 2. push
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      - push
+      - asia-northeast1-docker.pkg.dev/$PROJECT_ID/works-logue/api:$COMMIT_SHA
+
+  # 3. deploy
+  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    entrypoint: gcloud
+    args:
+      - run
+      - deploy
+      - works-logue-api-dev
+      - --image=asia-northeast1-docker.pkg.dev/$PROJECT_ID/works-logue/api:$COMMIT_SHA
+      - --region=asia-northeast1
+      - --platform=managed
+      - --service-account=works-logue-api-sa@$PROJECT_ID.iam.gserviceaccount.com
+      - --add-cloudsql-instances=$PROJECT_ID:asia-northeast1:works-logue-db-dev
+      - --set-env-vars=NODE_ENV=production
+      - --set-secrets=DB_USER=DB_USER:latest,DB_PASSWORD=DB_PASSWORD:latest,DB_NAME=DB_NAME:latest,AUTH0_ISSUER=AUTH0_ISSUER:latest,AUTH0_AUDIENCE=AUTH0_AUDIENCE:latest

@@ -29,6 +29,7 @@ export function buildApp() {
     // 認証プラグインを先に登録
     app.register(authPlugin, {
       domain: auth0Domain,
+      issuer: process.env.AUTH0_ISSUER!,
       audience: auth0Audience,
     });
   } else {

@@ -8,6 +8,7 @@ import { AuthUser } from "../types/auth.js";
 
 interface AuthPluginOptions {
   domain: string;
+  issuer: string;
   audience: string;
   algorithms?: Algorithm[];
 }
@@ -16,7 +17,7 @@ export const authPlugin: FastifyPluginAsync<AuthPluginOptions> = async (
   app,
   options
 ) => {
-  const { domain, audience, algorithms = ["RS256"] } = options;
+  const { domain, issuer, audience, algorithms = ["RS256"] } = options;
 
   // JWKS クライアント設定
   const client = jwksClient({
@@ -56,7 +57,7 @@ export const authPlugin: FastifyPluginAsync<AuthPluginOptions> = async (
           getKey,
           {
             audience,
-            issuer: `https://${domain}/`,
+            issuer,
             algorithms,
           },
           (err: any, decoded: any) => {
