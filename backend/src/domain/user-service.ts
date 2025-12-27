@@ -9,15 +9,32 @@ export async function findUserByExternalSubject(
   externalSubject: string
 ): Promise<User | null> {
   try {
+    console.log(
+      "🔍 Debug - Searching user with external_subject:",
+      externalSubject
+    );
     const result = await pool.query(
       "SELECT * FROM users WHERE external_subject = $1",
       [externalSubject]
+    );
+    console.log(
+      "✅ Debug - User search query completed, rows:",
+      result.rows.length
     );
 
     return result.rows[0] || null;
   } catch (error) {
     console.error("❌ ユーザー検索エラー:", error);
-    throw new Error("ユーザー検索に失敗しました");
+    console.error("❌ エラー詳細:", {
+      message: error instanceof Error ? error.message : "Unknown error",
+      code: (error as any)?.code,
+      detail: (error as any)?.detail,
+    });
+    throw new Error(
+      `ユーザー検索に失敗しました: ${
+        error instanceof Error ? error.message : "Unknown error"
+      }`
+    );
   }
 }
 

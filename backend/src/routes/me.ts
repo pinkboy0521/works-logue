@@ -21,13 +21,18 @@ export default async function meRoute(app: FastifyInstance) {
         const authRequest = request as AuthenticatedRequest;
         const authUser = authRequest.user;
 
+        console.log("🔍 Debug - Auth User:", JSON.stringify(authUser, null, 2));
+
         // ユーザー情報が存在するかチェック
         if (!authUser || !authUser.sub) {
+          console.log("❌ Debug - No auth user or sub");
           return reply.status(401).send({
             error: "Unauthorized",
             message: "認証ユーザー情報が見つかりません",
           });
         }
+
+        console.log("📝 Debug - Creating/finding user with sub:", authUser.sub);
 
         // ユーザーを自動作成（初回ログイン時）または既存取得
         const user = await findOrCreateUser({
@@ -45,10 +50,24 @@ export default async function meRoute(app: FastifyInstance) {
 
         return reply.send(response);
       } catch (error) {
-        app.log.error({ error }, "Failed to get user information");
+        app.log.error(
+          {
+            error: error,
+            message: error instanceof Error ? error.message : "Unknown error",
+            stack: error instanceof Error ? error.stack : undefined,
+          },
+          "Failed to get user information"
+        );
+
         return reply.status(500).send({
           error: "Internal Server Error",
           message: "ユーザー情報の取得に失敗しました",
+          details:
+            process.env.NODE_ENV === "development"
+              ? error instanceof Error
+                ? error.message
+                : String(error)
+              : undefined,
         });
       }
     }

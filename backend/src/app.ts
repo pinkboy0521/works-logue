@@ -3,6 +3,7 @@ import "dotenv/config"; // 環境変数を読み込み
 import Fastify from "fastify";
 import { testConnection } from "./lib/db.js";
 import { authPlugin } from "./plugins/auth.js";
+import articlesRoute from "./routes/articles.js";
 import debugRoute from "./routes/debug.js";
 import { healthRoute } from "./routes/health.js";
 import meRoute from "./routes/me.js";
@@ -40,6 +41,7 @@ export async function buildApp() {
   await app.register(healthRoute);
   await app.register(protectedRoute);
   await app.register(meRoute); // /me エンドポイント追加
+  await app.register(articlesRoute); // 記事API追加
   await app.register(debugRoute); // デバッグエンドポイント（一時的）
 
   return app;
