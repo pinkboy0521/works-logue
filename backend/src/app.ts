@@ -12,35 +12,6 @@ export async function buildApp() {
     logger: true,
   });
 
-  // 環境ベースのCORS設定
-  app.addHook("onRequest", async (request, reply) => {
-    const origin = request.headers.origin;
-    const isDev = process.env.NODE_ENV === "development";
-    const allowLocalhost = process.env.ALLOW_LOCALHOST === "true";
-
-    // Originがない場合（curl/health check等）はCORS処理をスキップ
-    if (!origin) return;
-
-    const allowedOrigins = [
-      isDev || allowLocalhost ? "http://localhost:3000" : null,
-      process.env.FRONTEND_ORIGIN,
-    ].filter(Boolean);
-
-    if (!allowedOrigins.includes(origin)) {
-      return reply.code(403).send({ error: "CORS: Origin not allowed" });
-    }
-
-    reply.header("Access-Control-Allow-Origin", origin);
-    reply.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
-    reply.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-    reply.header("Access-Control-Allow-Credentials", "true");
-
-    // プリフライトリクエストに対応（明示的にreturn）
-    if (request.method === "OPTIONS") {
-      return reply.code(204).send();
-    }
-  });
-
   // HTTPエラーハンドリングプラグインを登録
   await app.register(import("@fastify/sensible"));
 
