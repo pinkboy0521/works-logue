@@ -235,9 +235,9 @@ export default async function articlesRoute(app: FastifyInstance) {
     }
   );
 
-  // GET /articles - 自分の記事一覧取得
+  // GET /articles/mine - 自分の記事一覧取得
   app.get<{}>(
-    "/articles",
+    "/articles/mine",
     {
       preHandler: app.authenticate,
     },

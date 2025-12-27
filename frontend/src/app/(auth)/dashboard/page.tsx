@@ -3,10 +3,10 @@
 import { useApiClient } from "@/shared/lib/api/hooks";
 import { useUser } from "@auth0/nextjs-auth0/client";
 import {
-  Api as ApiIcon,
+  Add as AddIcon,
+  Article as ArticleIcon,
   Logout as LogoutIcon,
   Person as PersonIcon,
-  PlayArrow as PlayIcon,
 } from "@mui/icons-material";
 import {
   Alert,
@@ -15,43 +15,107 @@ import {
   Box,
   Button,
   Card,
-  CardActions,
   CardContent,
+  Chip,
   CircularProgress,
   Container,
-  Paper,
   Stack,
   Toolbar,
   Typography,
 } from "@mui/material";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+
+// 記事の型定義
+interface Article {
+  id: string;
+  title: string;
+  content: string;
+  status: "draft" | "published";
+  author_id: string;
+  published_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
 
 export default function Dashboard() {
   const { user, error, isLoading } = useUser();
   const { fetchWithAuth } = useApiClient();
-  const [apiResult, setApiResult] = useState<{
-    success: boolean;
-    data?: unknown;
-    error?: string;
-  } | null>(null);
-  const [apiLoading, setApiLoading] = useState(false);
+  const router = useRouter();
 
-  const testApiCall = async () => {
-    setApiLoading(true);
-    setApiResult(null);
+  const [articles, setArticles] = useState<Article[]>([]);
+  const [articlesLoading, setArticlesLoading] = useState(true);
+  const [articlesError, setArticlesError] = useState<string | null>(null);
+  const [createLoading, setCreateLoading] = useState(false);
 
+  // 記事一覧を取得
+  const fetchArticles = async () => {
     try {
-      const response = await fetchWithAuth("/me");
+      setArticlesLoading(true);
+      setArticlesError(null);
+
+      const response = await fetchWithAuth("/articles");
+      if (!response.ok) {
+        throw new Error(`API Error: ${response.status}`);
+      }
+
       const data = await response.json();
-      setApiResult({ success: true, data });
+      setArticles(data);
     } catch (error) {
-      setApiResult({
-        success: false,
-        error: error instanceof Error ? error.message : "Unknown error",
-      });
+      setArticlesError(
+        error instanceof Error ? error.message : "記事一覧の取得に失敗しました"
+      );
     } finally {
-      setApiLoading(false);
+      setArticlesLoading(false);
     }
+  };
+
+  // 新規記事作成
+  const createNewArticle = async () => {
+    try {
+      setCreateLoading(true);
+
+      const response = await fetchWithAuth("/articles", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title: "新しい記事",
+          content: "",
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`API Error: ${response.status}`);
+      }
+
+      const article = await response.json();
+
+      // 新規作成された記事のエディタに遷移
+      router.push(`/editor?id=${article.id}`);
+    } catch (error) {
+      console.error("記事作成エラー:", error);
+      alert("記事の作成に失敗しました");
+    } finally {
+      setCreateLoading(false);
+    }
+  };
+
+  // 記事一覧を初回ロード時に取得
+  useEffect(() => {
+    if (user) {
+      fetchArticles();
+    }
+  }, [user]);
+
+  // 日付フォーマット関数
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString("ja-JP", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
   };
 
   if (isLoading) {
@@ -120,89 +184,139 @@ export default function Dashboard() {
 
       <Container maxWidth="lg" sx={{ py: 4 }}>
         <Stack spacing={3}>
-          <Card elevation={2}>
-            <CardContent>
-              <Stack direction="row" spacing={2} alignItems="center" mb={2}>
-                <PersonIcon color="primary" />
-                <Typography variant="h6" component="h2">
-                  ユーザー情報
-                </Typography>
-              </Stack>
-              <Typography variant="body2" color="text.secondary" mb={2}>
-                ログインが成功しました。以下はAuth0から取得したユーザー情報です。
-              </Typography>
-              <Paper
-                sx={{
-                  backgroundColor: "grey.100",
-                  p: 2,
-                  borderRadius: 1,
-                  fontFamily: "monospace",
-                  fontSize: "0.75rem",
-                  overflow: "auto",
-                  maxHeight: 300,
-                }}
-              >
-                <pre>{JSON.stringify(user, null, 2)}</pre>
-              </Paper>
-            </CardContent>
-          </Card>
+          {/* ヘッダー */}
+          <Stack
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
+          >
+            <Typography variant="h4" component="h1">
+              自分の記事
+            </Typography>
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={createNewArticle}
+              disabled={createLoading}
+              size="large"
+            >
+              {createLoading ? "作成中..." : "新規作成"}
+            </Button>
+          </Stack>
 
-          <Card elevation={2}>
-            <CardContent>
-              <Stack direction="row" spacing={2} alignItems="center" mb={2}>
-                <ApiIcon color="primary" />
-                <Typography variant="h6" component="h2">
-                  API テスト
+          {/* 記事一覧 */}
+          {articlesLoading ? (
+            <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
+              <CircularProgress />
+            </Box>
+          ) : articlesError ? (
+            <Alert severity="error">
+              記事一覧の取得に失敗しました: {articlesError}
+            </Alert>
+          ) : articles.length === 0 ? (
+            <Card elevation={1}>
+              <CardContent sx={{ textAlign: "center", py: 6 }}>
+                <ArticleIcon sx={{ fontSize: 64, color: "grey.400", mb: 2 }} />
+                <Typography variant="h6" color="text.secondary" gutterBottom>
+                  記事がまだありません
                 </Typography>
-              </Stack>
-              <Typography variant="body2" color="text.secondary" mb={2}>
-                認証付きでAPIエンドポイント /me を呼び出します。
-              </Typography>
-            </CardContent>
-            <CardActions>
-              <Button
-                variant="contained"
-                onClick={testApiCall}
-                disabled={apiLoading}
-                startIcon={
-                  apiLoading ? <CircularProgress size={16} /> : <PlayIcon />
-                }
-              >
-                {apiLoading ? "APIテスト中..." : "APIテスト実行"}
-              </Button>
-            </CardActions>
-
-            {apiResult && (
-              <CardContent sx={{ pt: 0 }}>
-                <Alert
-                  severity={apiResult.success ? "success" : "error"}
-                  icon={false}
-                  sx={{ mb: 2 }}
+                <Typography variant="body2" color="text.secondary" mb={3}>
+                  新規作成ボタンから最初の記事を書いてみましょう
+                </Typography>
+                <Button
+                  variant="outlined"
+                  startIcon={<AddIcon />}
+                  onClick={createNewArticle}
+                  disabled={createLoading}
                 >
-                  <Stack direction="row" spacing={1} alignItems="center">
-                    <Typography variant="subtitle2">
-                      {apiResult.success
-                        ? "✅ APIテスト成功"
-                        : "❌ APIテスト失敗"}
-                    </Typography>
-                  </Stack>
-                </Alert>
-                <Paper
-                  sx={{
-                    backgroundColor: "grey.100",
-                    p: 2,
-                    borderRadius: 1,
-                    fontFamily: "monospace",
-                    fontSize: "0.75rem",
-                    overflow: "auto",
-                    maxHeight: 200,
-                  }}
-                >
-                  <pre>{JSON.stringify(apiResult, null, 2)}</pre>
-                </Paper>
+                  最初の記事を作成
+                </Button>
               </CardContent>
-            )}
-          </Card>
+            </Card>
+          ) : (
+            <Stack spacing={2}>
+              {articles.map((article) => (
+                <Card
+                  key={article.id}
+                  elevation={1}
+                  sx={{
+                    cursor: "pointer",
+                    transition: "elevation 0.2s",
+                    "&:hover": {
+                      elevation: 3,
+                    },
+                  }}
+                  onClick={() => router.push(`/editor?id=${article.id}`)}
+                >
+                  <CardContent>
+                    <Stack spacing={2}>
+                      <Stack
+                        direction="row"
+                        justifyContent="space-between"
+                        alignItems="start"
+                      >
+                        <Typography
+                          variant="h6"
+                          component="h2"
+                          sx={{
+                            fontWeight: 600,
+                            lineHeight: 1.3,
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            display: "-webkit-box",
+                            WebkitLineClamp: 2,
+                            WebkitBoxOrient: "vertical",
+                          }}
+                        >
+                          {article.title}
+                        </Typography>
+                        <Chip
+                          label={
+                            article.status === "published"
+                              ? "公開済み"
+                              : "下書き"
+                          }
+                          color={
+                            article.status === "published"
+                              ? "success"
+                              : "default"
+                          }
+                          size="small"
+                          sx={{ ml: 2, flexShrink: 0 }}
+                        />
+                      </Stack>
+
+                      <Typography variant="body2" color="text.secondary">
+                        更新日: {formatDate(article.updated_at)}
+                        {article.published_at && (
+                          <>
+                            {" | "}
+                            公開日: {formatDate(article.published_at)}
+                          </>
+                        )}
+                      </Typography>
+
+                      {article.content && (
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          sx={{
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            display: "-webkit-box",
+                            WebkitLineClamp: 2,
+                            WebkitBoxOrient: "vertical",
+                          }}
+                        >
+                          {article.content.replace(/[#*`\n]/g, " ").trim()}
+                        </Typography>
+                      )}
+                    </Stack>
+                  </CardContent>
+                </Card>
+              ))}
+            </Stack>
+          )}
         </Stack>
       </Container>
     </Box>
