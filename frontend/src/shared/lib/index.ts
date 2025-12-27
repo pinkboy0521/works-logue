@@ -1,1 +1,2 @@
-export * from "./auth";
+// APIクライアント関連のエクスポート
+export * from "./api";

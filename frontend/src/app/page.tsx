@@ -29,26 +29,37 @@
 //   );
 // }
 
+"use client";
+
+import { useUser } from "@auth0/nextjs-auth0/client";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+
 export default function Home() {
+  const { user, isLoading } = useUser();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!isLoading) {
+      if (user) {
+        router.push("/dashboard");
+      } else {
+        router.push("/auth/login");
+      }
+    }
+  }, [user, isLoading, router]);
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="text-lg">Loading...</div>
+      </div>
+    );
+  }
+
   return (
-    <div>
-      <h1>Works Logue</h1>
-      <p>
-        私たち人間は、何千年も前から働き続け、知恵や失敗から学びながら、一歩ずつ前へ進んできました。
-        目立たない工夫、小さな成功、人知れぬ挫折――それらすべてが、いま働く私たちにとっての貴重な財産です。
-        しかし、現代の仕事の知恵はどうでしょうか？
-        企業の公式メディアは「きれいごと」ばかりを語り、SNSには「誇張された成功」が溢れています。本当に私たちが知りたい「現場のリアルな突破口」は、誰かの脳内か、居酒屋の愚痴の中に消えてしまっています。
-        Works Logueは、その「消えていく知恵」を救い出す場所です。
-        「この悩み、自分だけじゃないんだ」という共感から、
-        「そうか、こうすれば良かったんだ」という解決へ。
-        あなたの経験は、もはやあなただけのものではありません。
-        誰かの失敗が、別の誰かの地雷を避け、誰かの工夫が、別の誰かの定時退社を実現する。
-        「読む、知る、試す、そして世界をアップデートする。」
-        あなたの知恵が、日本のビジネスを動かす力になる。 Works Logueへようこそ。
-      </p>
-      <a href="/login" className="button login">
-        Log In
-      </a>
+    <div className="flex justify-center items-center min-h-screen">
+      <div className="text-lg">Redirecting...</div>
     </div>
   );
 }
