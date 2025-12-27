@@ -37,7 +37,8 @@ export function useApiClient() {
 
       if (response.status === 401) {
         // ログインページにリダイレクト
-        window.location.href = "/auth/login?audience=https://api.works-logue.dev";
+        window.location.href =
+          "/auth/login?audience=https://api.works-logue.dev";
         throw new Error("Unauthorized - redirecting to login");
       }
 

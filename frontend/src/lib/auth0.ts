@@ -7,11 +7,11 @@ export const auth0 = new Auth0Client({
     absoluteDuration: 60 * 60 * 24 * 7, // 7 days in seconds
     inactivityDuration: 60 * 60 * 24 * 3, // 3 days in seconds
   },
-  
+
   // Auth0でAPI用アクセストークンを取得するための設定
   authorizationParams: {
     audience: process.env.AUTH0_AUDIENCE,
-    scope: 'openid profile email'
+    scope: "openid profile email",
   },
 
   async onCallback(error, context, session) {
@@ -20,14 +20,14 @@ export const auth0 = new Auth0Client({
       return NextResponse.redirect(
         new URL(
           `/error?error=${error?.message || "unknown error"}`,
-          process.env.APP_BASE_URL,
-        ),
+          process.env.APP_BASE_URL
+        )
       );
     }
 
     // complete the redirect to the provided returnTo URL
     return NextResponse.redirect(
-      new URL(context.returnTo || "/dashboard", process.env.APP_BASE_URL),
+      new URL(context.returnTo || "/dashboard", process.env.APP_BASE_URL)
     );
   },
 });
