@@ -4,27 +4,29 @@ import { Pool } from "pg";
 const isCloudRun = !!process.env.K_SERVICE;
 
 // PostgreSQL 接続プール
-export const pool = new Pool({
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-
-  ...(isCloudRun
+export const pool = new Pool(
+  process.env.DATABASE_URL
     ? {
-        // Cloud Run / Cloud SQL
-        host: `/cloudsql/${process.env.CLOUD_SQL_CONNECTION_NAME}`,
+        // Cloud Run / DATABASE_URL を使用
+        connectionString: process.env.DATABASE_URL,
+        ssl: false,
+        connectionTimeoutMillis: 10000,
+        max: 10,
+        idleTimeoutMillis: 30000,
       }
     : {
         // ローカル開発
+        user: process.env.DB_USER,
+        password: process.env.DB_PASSWORD,
+        database: process.env.DB_NAME,
         host: process.env.DB_HOST || "127.0.0.1",
         port: Number(process.env.DB_PORT) || 5432,
-      }),
-
-  ssl: false,
-  connectionTimeoutMillis: 10000,
-  max: 10,
-  idleTimeoutMillis: 30000,
-});
+        ssl: false,
+        connectionTimeoutMillis: 10000,
+        max: 10,
+        idleTimeoutMillis: 30000,
+      }
+);
 
 // 接続確認用関数
 export async function testConnection(): Promise<boolean> {

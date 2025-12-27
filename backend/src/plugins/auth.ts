@@ -42,15 +42,33 @@ const authPluginImplementation: FastifyPluginAsync<AuthPluginOptions> = async (
   app.decorate("authenticate", async (request: FastifyRequest, reply: any) => {
     const authorization = request.headers.authorization;
 
+    console.log("🔐 JWT認証開始");
+    console.log(
+      "📍 Authorization header:",
+      authorization ? "Present" : "Missing"
+    );
+
     if (!authorization || !authorization.startsWith("Bearer ")) {
+      console.log("❌ Authorization header missing or invalid");
       throw app.httpErrors.unauthorized(
         "Missing or invalid authorization header"
       );
     }
 
     const token = authorization.slice(7); // "Bearer " を除去
+    console.log(
+      "🎫 Token received (first 20 chars):",
+      token.substring(0, 20) + "..."
+    );
 
     try {
+      console.log("🔧 JWT設定:", {
+        domain,
+        issuer,
+        audience,
+        algorithms,
+      });
+
       // JWT検証
       const decoded = await new Promise<AuthUser>((resolve, reject) => {
         jwt.verify(
@@ -60,11 +78,24 @@ const authPluginImplementation: FastifyPluginAsync<AuthPluginOptions> = async (
             audience,
             issuer,
             algorithms,
+            clockTolerance: 60, // 60秒の時刻ずれ許容
           },
           (err: any, decoded: any) => {
             if (err) {
+              console.error("❌ JWT verify error:", {
+                message: err.message,
+                name: err.name,
+                stack: err.stack,
+              });
               reject(err);
             } else {
+              console.log("✅ JWT verification successful");
+              console.log("👤 Decoded user info:", {
+                sub: decoded.sub,
+                email: decoded.email,
+                aud: decoded.aud,
+                iss: decoded.iss,
+              });
               resolve(decoded as AuthUser);
             }
           }
@@ -74,6 +105,7 @@ const authPluginImplementation: FastifyPluginAsync<AuthPluginOptions> = async (
       // リクエストにユーザー情報を追加
       (request as any).user = decoded;
     } catch (error) {
+      console.error("❌ JWT verification failed:", error);
       app.log.error({ error }, "JWT verification failed");
       throw app.httpErrors.unauthorized("Invalid token");
     }

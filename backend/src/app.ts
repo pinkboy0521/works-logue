@@ -4,10 +4,8 @@ import Fastify from "fastify";
 import { testConnection } from "./lib/db.js";
 import { authPlugin } from "./plugins/auth.js";
 import articlesRoute from "./routes/articles.js";
-import debugRoute from "./routes/debug.js";
 import { healthRoute } from "./routes/health.js";
 import meRoute from "./routes/me.js";
-import { protectedRoute } from "./routes/protected.js";
 
 export async function buildApp() {
   const app = Fastify({
@@ -23,14 +21,15 @@ export async function buildApp() {
   });
 
   // Auth0設定からプラグインを登録
-  const auth0Domain = process.env.AUTH0_DOMAIN;
-  const auth0Audience = process.env.AUTH0_AUDIENCE;
+  const auth0Domain = process.env.AUTH0_DOMAIN?.trim();
+  const auth0Audience = process.env.AUTH0_AUDIENCE?.trim();
+  const auth0Issuer = process.env.AUTH0_ISSUER?.trim();
 
-  if (auth0Domain && auth0Audience) {
+  if (auth0Domain && auth0Audience && auth0Issuer) {
     // 認証プラグインを登録
     await app.register(authPlugin, {
       domain: auth0Domain,
-      issuer: process.env.AUTH0_ISSUER!,
+      issuer: auth0Issuer,
       audience: auth0Audience,
     });
   } else {
@@ -39,10 +38,8 @@ export async function buildApp() {
 
   // ルートを登録（認証プラグインの後）
   await app.register(healthRoute);
-  await app.register(protectedRoute);
   await app.register(meRoute); // /me エンドポイント追加
   await app.register(articlesRoute); // 記事API追加
-  await app.register(debugRoute); // デバッグエンドポイント（一時的）
 
   return app;
 }
