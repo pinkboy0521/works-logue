@@ -1,6 +1,17 @@
 "use client";
 
 import { useUser } from "@auth0/nextjs-auth0/client";
+import { Login as LoginIcon } from "@mui/icons-material";
+import {
+  Alert,
+  Box,
+  Button,
+  CircularProgress,
+  Container,
+  Paper,
+  Stack,
+  Typography,
+} from "@mui/material";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
@@ -14,39 +25,77 @@ export default function LoginPage() {
     }
   }, [user, router]);
 
-  if (isLoading)
+  if (isLoading) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        Loading...
-      </div>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "100vh",
+        }}
+      >
+        <CircularProgress />
+      </Box>
     );
-  if (error)
+  }
+
+  if (error) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        Error: {error.message}
-      </div>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "100vh",
+        }}
+      >
+        <Alert severity="error">Error: {error.message}</Alert>
+      </Box>
     );
+  }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="max-w-md w-full space-y-8">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Works Logue
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            技術ブログプラットフォーム
-          </p>
-        </div>
-        <div>
-          <a
-            href="/auth/login"
-            className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-          >
-            ログイン
-          </a>
-        </div>
-      </div>
-    </div>
+    <Box
+      sx={{
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: "grey.50",
+      }}
+    >
+      <Container maxWidth="sm">
+        <Paper elevation={3} sx={{ padding: 4 }}>
+          <Stack spacing={3} alignItems="center">
+            <Typography
+              variant="h3"
+              component="h1"
+              textAlign="center"
+              fontWeight="bold"
+            >
+              Works Logue
+            </Typography>
+            <Typography
+              variant="body1"
+              textAlign="center"
+              color="text.secondary"
+            >
+              技術ブログプラットフォーム
+            </Typography>
+            <Button
+              href="/auth/login"
+              variant="contained"
+              size="large"
+              fullWidth
+              startIcon={<LoginIcon />}
+              sx={{ py: 1.5 }}
+            >
+              ログイン
+            </Button>
+          </Stack>
+        </Paper>
+      </Container>
+    </Box>
   );
 }
