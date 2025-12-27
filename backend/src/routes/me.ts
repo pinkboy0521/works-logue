@@ -25,14 +25,14 @@ export default async function meRoute(app: FastifyInstance) {
         console.log("📧 Debug - Available email fields:", {
           email: authUser.email,
           emailVerified: authUser.email_verified,
-          customEmail: authUser['https://api.works-logue.dev/email']
+          customEmail: authUser["https://api.works-logue.dev/email"],
         });
         console.log("👤 Debug - Available name fields:", {
           name: authUser.name,
           givenName: authUser.given_name,
           familyName: authUser.family_name,
           nickname: authUser.nickname,
-          customName: authUser['https://api.works-logue.dev/name']
+          customName: authUser["https://api.works-logue.dev/name"],
         });
 
         // ユーザー情報が存在するかチェック
@@ -48,11 +48,12 @@ export default async function meRoute(app: FastifyInstance) {
 
         // ユーザー情報を取得（Auth0のクレームから）
         const email = authUser.email || `user-${authUser.sub}@auth0.com`;
-        const name = authUser.name || 
-                    (authUser.given_name && authUser.family_name 
-                      ? `${authUser.family_name} ${authUser.given_name}`
-                      : authUser.nickname || "Unknown User");
-        
+        const name =
+          authUser.name ||
+          (authUser.given_name && authUser.family_name
+            ? `${authUser.family_name} ${authUser.given_name}`
+            : authUser.nickname || "Unknown User");
+
         console.log("📝 Debug - Extracted user info:", { email, name });
 
         // ユーザーを自動作成（初回ログイン時）または既存取得
