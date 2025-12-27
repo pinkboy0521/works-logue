@@ -14,7 +14,8 @@ export default function Home() {
       if (user) {
         router.push("/dashboard");
       } else {
-        router.push("/auth/login");
+        window.location.href =
+          "/auth/login?audience=https://api.works-logue.dev";
       }
     }
   }, [user, isLoading, router]);

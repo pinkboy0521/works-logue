@@ -1,4 +1,7 @@
-import { Auth0Client } from "@auth0/nextjs-auth0/server";
+// v4では環境変数を自動的に読み取るため、設定は不要
+// 必要に応じてカスタム設定を追加
 
-// v4では環境変数を自動的に読み取る
-export const auth0 = new Auth0Client();
+export const AUTH0_CONFIG = {
+  audience: process.env.AUTH0_AUDIENCE,
+  scope: "openid profile email",
+};

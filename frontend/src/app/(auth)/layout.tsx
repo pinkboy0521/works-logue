@@ -15,7 +15,8 @@ export default function AuthLayout({
 
   useEffect(() => {
     if (!isLoading && !user && !error) {
-      router.push("/auth/login");
+      window.location.href =
+        "/api/auth/login?audience=https://api.works-logue.dev";
     }
   }, [user, isLoading, error, router]);
 

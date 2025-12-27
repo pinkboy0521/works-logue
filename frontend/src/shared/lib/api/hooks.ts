@@ -17,8 +17,8 @@ export function useApiClient() {
     }
 
     try {
-      // Auth0 v4では /auth/access-token エンドポイントでトークンを取得
-      const tokenResponse = await fetch("/auth/access-token");
+      // v4正式版では /api/auth/access-token エンドポイントでトークンを取得
+      const tokenResponse = await fetch("/api/auth/access-token");
 
       if (!tokenResponse.ok) {
         throw new Error("Failed to get access token");
@@ -37,7 +37,7 @@ export function useApiClient() {
 
       if (response.status === 401) {
         // ログインページにリダイレクト
-        window.location.href = "/auth/login";
+        window.location.href = "/auth/login?audience=https://api.works-logue.dev";
         throw new Error("Unauthorized - redirecting to login");
       }
 

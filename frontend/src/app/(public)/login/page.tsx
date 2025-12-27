@@ -84,7 +84,7 @@ export default function LoginPage() {
               技術ブログプラットフォーム
             </Typography>
             <Button
-              href="/auth/login"
+              href="/auth/login?audience=https://api.works-logue.dev"
               variant="contained"
               size="large"
               fullWidth
