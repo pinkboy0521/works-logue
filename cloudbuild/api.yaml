@@ -25,7 +25,7 @@ steps:
       - --platform=managed
       - --service-account=works-logue-api-sa@$PROJECT_ID.iam.gserviceaccount.com
       - --add-cloudsql-instances=works-logue:asia-northeast1:works-logue-db-dev
-      - --set-env-vars=NODE_ENV=production
+      - --set-env-vars=NODE_ENV=production,ALLOW_LOCALHOST=true
       - --set-secrets=AUTH0_DOMAIN=AUTH0_DOMAIN:latest,AUTH0_ISSUER=AUTH0_ISSUER:latest,AUTH0_AUDIENCE=AUTH0_AUDIENCE:latest,DATABASE_URL=DATABASE_URL:latest
 
 options:
