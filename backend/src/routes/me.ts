@@ -46,15 +46,52 @@ export default async function meRoute(app: FastifyInstance) {
 
         console.log("📝 Debug - Creating/finding user with sub:", authUser.sub);
 
-        // ユーザー情報を取得（Auth0のクレームから）
-        const email = authUser.email || `user-${authUser.sub}@auth0.com`;
-        const name =
-          authUser.name ||
-          (authUser.given_name && authUser.family_name
-            ? `${authUser.family_name} ${authUser.given_name}`
-            : authUser.nickname || "Unknown User");
+        // Access Tokenからユーザー情報を取得
+        let email = authUser.email;
+        let name = authUser.name;
 
-        console.log("📝 Debug - Extracted user info:", { email, name });
+        // Access TokenにメールアドレスやNameがない場合、UserInfo APIから取得
+        if (!email || !name) {
+          console.log(
+            "🔄 Access Tokenにユーザー情報が不足、UserInfo APIから取得中..."
+          );
+
+          try {
+            const userInfoResponse = await fetch(
+              `https://works-logue-dev.jp.auth0.com/userinfo`,
+              {
+                method: "GET",
+                headers: {
+                  Authorization: request.headers.authorization as string,
+                  "Content-Type": "application/json",
+                },
+              }
+            );
+
+            if (userInfoResponse.ok) {
+              const userInfo = await userInfoResponse.json();
+              console.log("✅ UserInfo API response:", userInfo);
+
+              email = email || userInfo.email;
+              name =
+                name ||
+                userInfo.name ||
+                (userInfo.given_name && userInfo.family_name
+                  ? `${userInfo.family_name} ${userInfo.given_name}`
+                  : userInfo.nickname);
+            } else {
+              console.log("❌ UserInfo API failed:", userInfoResponse.status);
+            }
+          } catch (error) {
+            console.error("❌ UserInfo API error:", error);
+          }
+        }
+
+        // フォールバック値を設定
+        email = email || `user-${authUser.sub}@auth0.com`;
+        name = name || "Unknown User";
+
+        console.log("📝 Debug - Final user info:", { email, name });
 
         // ユーザーを自動作成（初回ログイン時）または既存取得
         const user = await findOrCreateUser({
