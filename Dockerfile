@@ -29,6 +29,8 @@ COPY . .
 # Disable telemetry during the build for faster builds
 ENV NEXT_TELEMETRY_DISABLED=1
 
+RUN npx prisma generate
+
 RUN \
   if [ -f yarn.lock ]; then yarn run build; \
   elif [ -f package-lock.json ]; then npm run build; \
