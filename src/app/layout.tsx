@@ -22,10 +22,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ja" className={notoSansJP.variable}>
-      <body>
-        <header className="bg-purple-200 p-4">Works Logue</header>
-        {children}
-      </body>
+      <body>{children}</body>
     </html>
   );
 }
