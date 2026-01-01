@@ -76,6 +76,9 @@
   /* font weight semantics */
   --weight-normal: var(--font-weight-normal);
   --weight-bold: var(--font-weight-bold);
+  /* shadow semantics */
+  --shadow-sm: 0 2px 6px 1 rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 2px 6px 1 rgba(0, 0, 0, 0.2);
 }
 
 :root {
