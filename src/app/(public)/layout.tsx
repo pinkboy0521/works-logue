@@ -1,4 +1,4 @@
-import { PrivateHeader } from "@/shared";
+import { Header } from "@/shared";
 
 export default function PrivateLayout({
   children,
@@ -7,7 +7,7 @@ export default function PrivateLayout({
 }>) {
   return (
     <>
-      <PrivateHeader />
+      <Header />
       {children}
     </>
   );

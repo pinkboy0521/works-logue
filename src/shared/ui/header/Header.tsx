@@ -8,7 +8,7 @@ import {
 import Link from "next/link";
 import Setting from "./Setting";
 
-export async function PrivateHeader() {
+export async function Header() {
   const session = await auth();
   if (!session?.user?.id) throw new Error("不正なリクエストです");
 
