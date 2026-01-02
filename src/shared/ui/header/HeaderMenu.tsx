@@ -2,6 +2,7 @@ import {
   Avatar,
   AvatarFallback,
   AvatarImage,
+  Button,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -9,9 +10,10 @@ import {
   logoutAction,
 } from "@/shared";
 import { Session } from "next-auth";
+import Link from "next/link";
 
-export default function Setting({ session }: { session: Session }) {
-  return (
+export function HeaderMenu({ session }: { session: Session | null }) {
+  return session?.user ? (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Avatar className="cursor-pointer w-12 h-12">
@@ -30,5 +32,14 @@ export default function Setting({ session }: { session: Session }) {
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
+  ) : (
+    <div className="flex items-center gap-s">
+      <Button variant="ghost" asChild>
+        <Link href="/login">ログイン</Link>
+      </Button>
+      <Button asChild>
+        <Link href="/login">新規登録</Link>
+      </Button>
+    </div>
   );
 }

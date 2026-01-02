@@ -32,7 +32,11 @@ export function LoginForm() {
             <Label htmlFor="password">パスワード</Label>
             <Input id="password" type="password" name="password" required />
           </div>
-          <Button type="submit" className="w-full" disabled={isPending}>
+          <Button
+            type="submit"
+            className="w-full cursor-pointer"
+            disabled={isPending}
+          >
             ログイン
           </Button>
           <div className="flex items-end space-x-m">

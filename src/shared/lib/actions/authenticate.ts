@@ -14,7 +14,7 @@ export async function authenticate(
       redirect: false, // 自動リダイレクトを無効か
     });
     // 認証成功後に手動でリダイレクト
-    redirect("/dashboard");
+    redirect("/");
   } catch (error) {
     if (error instanceof AuthError) {
       switch (error.type) {
