@@ -1,5 +1,7 @@
 import {
-  Button,
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -12,16 +14,20 @@ export default function Setting({ session }: { session: Session }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost">{session.user?.name}</Button>
+        <Avatar className="cursor-pointer w-12 h-12">
+          <AvatarImage src={session.user?.image || ""} />
+          <AvatarFallback>
+            {session.user?.name?.slice(0, 1) || ""}
+          </AvatarFallback>
+        </Avatar>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-48" align="end">
-        <form action={logoutAction}>
-          <DropdownMenuItem asChild>
-            <button type="submit" className="w-full text-left cursor-pointer">
-              ログアウト
-            </button>
-          </DropdownMenuItem>
-        </form>
+        <DropdownMenuItem
+          onClick={logoutAction}
+          className="w-full cursor-pointer"
+        >
+          ログアウト
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
