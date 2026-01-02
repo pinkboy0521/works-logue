@@ -26,7 +26,7 @@ async function getAccount(email: string) {
 
 export const { auth, signIn, signOut, handlers } = NextAuth({
   ...authConfig,
-
+  trustHost: true,
   /**
    * ===== 認証手段の定義 =====
    * 今回は credentials（メール + パスワード）のみ
@@ -52,26 +52,21 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
             password: z.string().min(8),
           })
           .safeParse(credentials);
-
         if (!parsed.success) {
           // フォーム入力が不正
           return null;
         }
-
         const { email, password } = parsed.data;
-
         /**
          * 2. credentials 用の Account を取得
          * - email をキーに Account を探す
          * - 同時に紐づく User も取得
          */
         const account = await getAccount(email);
-
         if (!account?.access_token) {
           // Account が存在しない、または password hash が無い
           return null;
         }
-
         /**
          * 3. パスワード照合
          * - フォームの平文 password と
@@ -82,7 +77,6 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
           // パスワード不一致
           return null;
         }
-
         /**
          * 4. 認証成功
          * - 「この人です」という情報を返す
@@ -97,7 +91,6 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
     }),
     // Google などの OAuth Provider はここに追加可能
   ],
-
   /**
    * ===== セッション制御 =====
    * authorize → jwt → session の流れをつなぐ
@@ -114,7 +107,6 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
       }
       return token;
     },
-
     /**
      * session:
      * - jwt に保存した userId を
