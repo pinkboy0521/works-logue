@@ -16,21 +16,9 @@ async function main() {
   await prisma.topic.deleteMany();
 
   // =====================
-  // Topic（最小構成）
+  // Topic（9つ・固定）
   // =====================
-  await prisma.topic.create({
-    data: {
-      id: "topic_workslogue",
-      name: "Works Logue",
-      description:
-        "現場で得られた知恵・判断・試行錯誤を、再利用可能な形で記録するための共通ログ。",
-    },
-  });
-
-  // =====================
-  // Tag（9つ・固定）
-  // =====================
-  await prisma.tag.createMany({
+  await prisma.topic.createMany({
     data: [
       {
         id: "tag_pattern",
@@ -77,6 +65,119 @@ async function main() {
         id: "tag_worry",
         name: "仕事の悩み・迷い",
         description: "解決策不要。現場で直面している「知恵の需要」の種。",
+      },
+    ],
+  });
+
+  // =====================
+  // Tag
+  // =====================
+  await prisma.tag.createMany({
+    data: [
+      // =====================
+      // 業界
+      // =====================
+      {
+        id: "industry_b2b",
+        name: "BtoB",
+        description: "法人向けに商品・サービスを提供するビジネス領域。",
+      },
+      {
+        id: "industry_web_it",
+        name: "Web・IT",
+        description: "WebサービスやITプロダクトを中心とした業界。",
+      },
+      {
+        id: "industry_saas",
+        name: "SaaS",
+        description: "SaaS型のプロダクト・事業を展開している組織。",
+      },
+      {
+        id: "industry_general",
+        name: "一般企業",
+        description: "特定のIT業界に限らない、一般的な事業会社。",
+      },
+
+      // =====================
+      // 組織規模
+      // =====================
+      {
+        id: "org_small",
+        name: "小規模組織",
+        description: "少人数で意思決定や実行が行われる組織。",
+      },
+      {
+        id: "org_sme",
+        name: "中小企業",
+        description: "数十〜数百名規模で運営される企業・組織。",
+      },
+      {
+        id: "org_mid",
+        name: "中堅企業",
+        description: "一定の組織階層と業務分業が進んだ企業。",
+      },
+      {
+        id: "org_large",
+        name: "大企業",
+        description: "大規模な組織構造と複数の意思決定レイヤーを持つ企業。",
+      },
+
+      // =====================
+      // 立場・ロール
+      // =====================
+      {
+        id: "role_bizdev",
+        name: "事業開発",
+        description: "新規事業や既存事業の成長を担う立場。",
+      },
+      {
+        id: "role_sales",
+        name: "営業",
+        description: "顧客との折衝や提案、受注を担う立場。",
+      },
+      {
+        id: "role_marketing",
+        name: "マーケティング",
+        description: "市場分析や施策設計を通じて成果創出を担う立場。",
+      },
+      {
+        id: "role_hr",
+        name: "人事",
+        description: "採用・育成・制度設計など人に関わる領域を担う立場。",
+      },
+      {
+        id: "role_orgdev",
+        name: "組織企画",
+        description: "組織構造や業務プロセスの設計・改善を担う立場。",
+      },
+      {
+        id: "role_manager",
+        name: "マネージャー",
+        description: "意思決定やチームマネジメントを担う管理職。",
+      },
+      {
+        id: "role_project",
+        name: "プロジェクト推進",
+        description: "部門横断で物事を前に進める実行責任を持つ立場。",
+      },
+
+      // =====================
+      // 事業フェーズ
+      // =====================
+      {
+        id: "phase_launch",
+        name: "立ち上げ期",
+        description: "事業や取り組みを立ち上げ、試行錯誤している段階。",
+      },
+      {
+        id: "phase_growth",
+        name: "成長期",
+        description: "成果を拡大し、再現性やスケールを目指す段階。",
+      },
+      {
+        id: "phase_stable",
+        name: "安定期",
+        description: "事業や業務が定着し、改善や最適化に注力する段階。",
       },
     ],
   });
@@ -144,7 +245,7 @@ async function main() {
       id: "art_1",
       title: "要件が曖昧な相談を受けたとき、最初に必ずやっている整理",
       userId: "u_sales",
-      topicId: "topic_workslogue",
+      topicId: "tag_pattern",
       topImageUrl: "https://picsum.photos/id/10/400/300",
       content: `# 要件が曖昧な相談を受けたとき、最初に必ずやっている整理  
 
@@ -217,7 +318,13 @@ async function main() {
 
 同じような相談を受ける機会があれば、ぜひ一度、この整理を試してみてください。
 `,
-      tags: { create: [{ tagId: "tag_pattern" }] },
+      tags: {
+        create: [
+          { tagId: "industry_b2b" },
+          { tagId: "role_sales" },
+          { tagId: "org_sme" },
+        ],
+      },
       status: ArticleStatus.PUBLISHED,
       publishedAt: new Date("2024-12-01T10:00:00Z"),
       viewCount: 145,
@@ -229,7 +336,7 @@ async function main() {
       id: "art_2",
       title: "マーケ施策を動かす前に、必ず言語化しているゴールの置き方",
       userId: "u_marketing",
-      topicId: "topic_workslogue",
+      topicId: "tag_pattern",
       topImageUrl: "https://picsum.photos/id/11/400/300",
       content: `# マーケ施策を動かす前に、必ず言語化しているゴールの置き方  
 ## はじめに  
@@ -299,7 +406,13 @@ async function main() {
 「何が分かれば前進なのか」  
 を一度立ち止まって言葉にしてみることをおすすめします。
 `,
-      tags: { create: [{ tagId: "tag_pattern" }] },
+      tags: {
+        create: [
+          { tagId: "industry_saas" },
+          { tagId: "role_marketing" },
+          { tagId: "phase_growth" },
+        ],
+      },
       status: ArticleStatus.PUBLISHED,
       publishedAt: new Date("2024-12-02T10:00:00Z"),
       viewCount: 178,
@@ -311,7 +424,7 @@ async function main() {
       id: "art_3",
       title: "引き継ぎ資料で、手順よりも優先して書いていること",
       userId: "u_hr",
-      topicId: "topic_workslogue",
+      topicId: "tag_pattern",
       topImageUrl: "https://picsum.photos/id/12/400/300",
       content: `# 引き継ぎ資料で、手順よりも優先して書いていること
 
@@ -373,7 +486,13 @@ async function main() {
 判断の背景が共有されていれば、業務は人が変わっても安定して回り続けます。  
 引き継ぎの質を高めたいときこそ、この視点を取り入れてみてください。
 `,
-      tags: { create: [{ tagId: "tag_pattern" }] },
+      tags: {
+        create: [
+          { tagId: "industry_general" },
+          { tagId: "role_hr" },
+          { tagId: "phase_stable" },
+        ],
+      },
       status: ArticleStatus.PUBLISHED,
       publishedAt: new Date("2024-12-03T10:00:00Z"),
       viewCount: 267,
@@ -387,7 +506,7 @@ async function main() {
       id: "art_4",
       title: "早く決めたつもりが、後から一番時間を使った判断",
       userId: "u_sales",
-      topicId: "topic_workslogue",
+      topicId: "tag_failure",
       topImageUrl: "https://picsum.photos/id/13/400/300",
       content: `# 早く決めたつもりが、後から一番時間を使った判断
 
@@ -445,7 +564,13 @@ async function main() {
 「なぜそう決めたのか」を説明できる状態で判断する。  
 この意識を持つことが、結果的に仕事のスピードと質を高めてくれると感じています。
 `,
-      tags: { create: [{ tagId: "tag_failure" }] },
+      tags: {
+        create: [
+          { tagId: "industry_b2b" },
+          { tagId: "role_sales" },
+          { tagId: "role_manager" },
+        ],
+      },
       status: ArticleStatus.PUBLISHED,
       publishedAt: new Date("2024-12-04T09:30:00Z"),
       viewCount: 156,
@@ -459,7 +584,7 @@ async function main() {
       id: "art_5",
       title: "今すぐ決めない、という選択も意思決定の一つ",
       userId: "u_marketing",
-      topicId: "topic_workslogue",
+      topicId: "tag_belief",
       topImageUrl: "https://picsum.photos/id/14/400/300",
       content: `# 今すぐ決めない、という選択も意思決定の一つ
 
@@ -509,7 +634,13 @@ async function main() {
 「本当に今、決めるべきか」  
 を問い直す余裕を持ちたいと考えています。
 `,
-      tags: { create: [{ tagId: "tag_belief" }] },
+      tags: {
+        create: [
+          { tagId: "industry_saas" },
+          { tagId: "role_marketing" },
+          { tagId: "role_manager" },
+        ],
+      },
       status: ArticleStatus.PUBLISHED,
       publishedAt: new Date("2024-12-05T14:20:00Z"),
       viewCount: 203,
@@ -521,7 +652,7 @@ async function main() {
       id: "art_6",
       title: "説明できない判断は、後で必ず苦しくなる",
       userId: "u_hr",
-      topicId: "topic_workslogue",
+      topicId: "tag_belief",
       topImageUrl: "https://picsum.photos/id/15/400/300",
       content: `# 説明できない判断は、後で必ず苦しくなる
 
@@ -572,7 +703,13 @@ async function main() {
 少なくとも文章で説明できるかどうか。  
 この小さなチェックを習慣にするだけで、判断の質と後工程の負担は大きく変わると感じています。
 `,
-      tags: { create: [{ tagId: "tag_belief" }] },
+      tags: {
+        create: [
+          { tagId: "industry_general" },
+          { tagId: "role_hr" },
+          { tagId: "role_orgdev" },
+        ],
+      },
       status: ArticleStatus.PUBLISHED,
       publishedAt: new Date("2024-12-06T16:45:00Z"),
       viewCount: 89,
@@ -586,7 +723,7 @@ async function main() {
       id: "art_7",
       title: "Notionを議事録で終わらせないためにやっていること",
       userId: "u_sales",
-      topicId: "topic_workslogue",
+      topicId: "tag_tool",
       topImageUrl: "https://picsum.photos/id/16/400/300",
       content: `# Notionを議事録で終わらせないためにやっていること
 
@@ -649,13 +786,25 @@ Notionを活用する目的は、情報をたくさん残すことではあり�
 「これは判断の履歴として残せているか」  
 という視点で見直してみてください。
 `,
-      tags: { create: [{ tagId: "tag_tool" }] },
+      tags: {
+        create: [
+          { tagId: "industry_b2b" },
+          { tagId: "role_sales" },
+          { tagId: "role_project" },
+        ],
+      },
+      status: ArticleStatus.PUBLISHED,
+      publishedAt: new Date("2024-12-07T11:30:00Z"),
+      viewCount: 198,
+      likeCount: 25,
+      createdAt: new Date("2024-12-07T11:00:00Z"),
+      updatedAt: new Date("2024-12-07T11:20:00Z"),
     },
     {
       id: "art_8",
       title: "生成AIを壁打ち相手として使うときの距離感",
       userId: "u_marketing",
-      topicId: "topic_workslogue",
+      topicId: "tag_tool",
       topImageUrl: "https://picsum.photos/id/17/400/300",
       content: `# 生成AIを壁打ち相手として使うときの距離感
 
@@ -715,7 +864,19 @@ AIに頼りすぎると、使うこと自体に不安や違和感が生まれま
 判断と責任は必ず自分が持つ。  
 この姿勢を忘れなければ、生成AIは実務において非常に心強いパートナーになると感じています。
 `,
-      tags: { create: [{ tagId: "tag_tool" }] },
+      tags: {
+        create: [
+          { tagId: "industry_web_it" },
+          { tagId: "role_marketing" },
+          { tagId: "phase_growth" },
+        ],
+      },
+      status: ArticleStatus.PUBLISHED,
+      publishedAt: new Date("2024-12-08T15:10:00Z"),
+      viewCount: 234,
+      likeCount: 19,
+      createdAt: new Date("2024-12-08T14:45:00Z"),
+      updatedAt: new Date("2024-12-08T15:00:00Z"),
     },
 
     // --- 現場の不条理（1） ---
@@ -723,7 +884,7 @@ AIに頼りすぎると、使うこと自体に不安や違和感が生まれま
       id: "art_9",
       title: "忙しいのに、なぜか前に進んでいない感覚",
       userId: "u_hr",
-      topicId: "topic_workslogue",
+      topicId: "tag_buglog",
       topImageUrl: "https://picsum.photos/id/18/400/300",
       content: `# 忙しいのに、なぜか前に進んでいない感覚
 
@@ -786,7 +947,13 @@ AIに頼りすぎると、使うこと自体に不安や違和感が生まれま
 今はまだ整理の途中ですが、  
 この違和感を言語化し続けること自体が、次の一歩につながると考えています。
 `,
-      tags: { create: [{ tagId: "tag_buglog" }] },
+      tags: {
+        create: [
+          { tagId: "industry_general" },
+          { tagId: "role_hr" },
+          { tagId: "role_orgdev" },
+        ],
+      },
       status: ArticleStatus.PUBLISHED,
       publishedAt: new Date("2024-12-09T10:00:00Z"),
       viewCount: 67,
