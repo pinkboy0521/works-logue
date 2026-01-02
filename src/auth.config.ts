@@ -12,7 +12,7 @@ export const authConfig = {
         nextUrl.pathname.startsWith("/manage");
       if (isonDashboard) {
         if (isLoggedin) return true;
-        return false;
+        return Response.redirect(new URL("/login", nextUrl));
       } else if (isLoggedin && nextUrl.pathname === "/login") {
         return Response.redirect(new URL("/dashboard", nextUrl));
       }
