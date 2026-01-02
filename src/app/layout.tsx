@@ -4,7 +4,7 @@ import "./globals.css";
 
 import { Noto_Sans_JP } from "next/font/google";
 import Script from "next/script";
-import { themeInitScript } from "@/shared";
+import { themeScript } from "@/shared";
 
 export const metadata: Metadata = {
   title: "Works Logue",
@@ -23,12 +23,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ja" className={notoSansJP.variable}>
+    <html lang="ja" className={notoSansJP.variable} suppressHydrationWarning>
       <head>
         <Script
-          id="theme-init"
+          id="theme-script"
           strategy="beforeInteractive"
-          dangerouslySetInnerHTML={{ __html: themeInitScript }}
+          dangerouslySetInnerHTML={{ __html: themeScript }}
         />
       </head>
       <body>{children}</body>
