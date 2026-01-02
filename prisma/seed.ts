@@ -1,5 +1,5 @@
 // seed.ts
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, ArticleStatus } from "@prisma/client";
 import * as bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
@@ -218,6 +218,12 @@ async function main() {
 同じような相談を受ける機会があれば、ぜひ一度、この整理を試してみてください。
 `,
       tags: { create: [{ tagId: "tag_pattern" }] },
+      status: ArticleStatus.PUBLISHED,
+      publishedAt: new Date("2024-12-01T10:00:00Z"),
+      viewCount: 145,
+      likeCount: 23,
+      createdAt: new Date("2024-12-01T09:30:00Z"),
+      updatedAt: new Date("2024-12-01T09:50:00Z"),
     },
     {
       id: "art_2",
@@ -294,6 +300,12 @@ async function main() {
 を一度立ち止まって言葉にしてみることをおすすめします。
 `,
       tags: { create: [{ tagId: "tag_pattern" }] },
+      status: ArticleStatus.PUBLISHED,
+      publishedAt: new Date("2024-12-02T10:00:00Z"),
+      viewCount: 178,
+      likeCount: 15,
+      createdAt: new Date("2024-12-02T09:15:00Z"),
+      updatedAt: new Date("2024-12-02T09:45:00Z"),
     },
     {
       id: "art_3",
@@ -362,6 +374,12 @@ async function main() {
 引き継ぎの質を高めたいときこそ、この視点を取り入れてみてください。
 `,
       tags: { create: [{ tagId: "tag_pattern" }] },
+      status: ArticleStatus.PUBLISHED,
+      publishedAt: new Date("2024-12-03T10:00:00Z"),
+      viewCount: 267,
+      likeCount: 31,
+      createdAt: new Date("2024-12-03T09:00:00Z"),
+      updatedAt: new Date("2024-12-03T09:40:00Z"),
     },
 
     // --- しくじりの教訓（1） ---
@@ -428,6 +446,12 @@ async function main() {
 この意識を持つことが、結果的に仕事のスピードと質を高めてくれると感じています。
 `,
       tags: { create: [{ tagId: "tag_failure" }] },
+      status: ArticleStatus.PUBLISHED,
+      publishedAt: new Date("2024-12-04T09:30:00Z"),
+      viewCount: 156,
+      likeCount: 12,
+      createdAt: new Date("2024-12-04T09:00:00Z"),
+      updatedAt: new Date("2024-12-04T09:15:00Z"),
     },
 
     // --- 仕事の信念（2） ---
@@ -486,6 +510,12 @@ async function main() {
 を問い直す余裕を持ちたいと考えています。
 `,
       tags: { create: [{ tagId: "tag_belief" }] },
+      status: ArticleStatus.PUBLISHED,
+      publishedAt: new Date("2024-12-05T14:20:00Z"),
+      viewCount: 203,
+      likeCount: 18,
+      createdAt: new Date("2024-12-05T13:45:00Z"),
+      updatedAt: new Date("2024-12-05T14:10:00Z"),
     },
     {
       id: "art_6",
@@ -543,6 +573,12 @@ async function main() {
 この小さなチェックを習慣にするだけで、判断の質と後工程の負担は大きく変わると感じています。
 `,
       tags: { create: [{ tagId: "tag_belief" }] },
+      status: ArticleStatus.PUBLISHED,
+      publishedAt: new Date("2024-12-06T16:45:00Z"),
+      viewCount: 89,
+      likeCount: 7,
+      createdAt: new Date("2024-12-06T16:00:00Z"),
+      updatedAt: new Date("2024-12-06T16:30:00Z"),
     },
 
     // --- 道具の活用術（2） ---
@@ -751,6 +787,12 @@ AIに頼りすぎると、使うこと自体に不安や違和感が生まれま
 この違和感を言語化し続けること自体が、次の一歩につながると考えています。
 `,
       tags: { create: [{ tagId: "tag_buglog" }] },
+      status: ArticleStatus.PUBLISHED,
+      publishedAt: new Date("2024-12-09T10:00:00Z"),
+      viewCount: 67,
+      likeCount: 4,
+      createdAt: new Date("2024-12-09T09:20:00Z"),
+      updatedAt: new Date("2024-12-09T09:45:00Z"),
     },
   ];
 
