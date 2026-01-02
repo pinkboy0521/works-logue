@@ -3,6 +3,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 import { Noto_Sans_JP } from "next/font/google";
+import Script from "next/script";
+import { themeInitScript } from "@/shared";
 
 export const metadata: Metadata = {
   title: "Works Logue",
@@ -22,6 +24,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ja" className={notoSansJP.variable}>
+      <head>
+        <Script
+          id="theme-init"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{ __html: themeInitScript }}
+        />
+      </head>
       <body>{children}</body>
     </html>
   );
