@@ -151,3 +151,15 @@ export async function getTagById(id: string) {
     },
   });
 }
+
+/**
+ * すべてのトピックを取得（選択用）
+ */
+export async function getAllTopics() {
+  const topics = await prisma.topic.findMany({
+    orderBy: {
+      name: "asc",
+    },
+  });
+  return topics;
+}

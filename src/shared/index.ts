@@ -1,6 +1,10 @@
 // ライブラリとユーティリティ
 export { prisma, themeScript, cn, useTheme } from "./lib";
 
+// 外部ライブラリ
+export { formatDistanceToNow } from "date-fns";
+export { ja } from "date-fns/locale";
+
 // UIコンポーネント（shadcn/ui）
 export {
   Alert,

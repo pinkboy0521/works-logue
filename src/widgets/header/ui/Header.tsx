@@ -4,9 +4,11 @@ import {
   NavigationMenuItem,
   NavigationMenuList,
   ShrimpIcon,
+  Button,
 } from "@/shared";
 import Link from "next/link";
 import { HeaderMenu } from "./HeaderMenu";
+import { createNewArticleAction } from "@/features";
 
 export async function Header() {
   const session = await auth();
@@ -24,7 +26,20 @@ export async function Header() {
             </NavigationMenuItem>
           </NavigationMenuList>
         </NavigationMenu>
-        <HeaderMenu session={session} />
+        <div className="flex items-center gap-4">
+          <HeaderMenu session={session} />
+          {session && (
+            <form action={createNewArticleAction}>
+              <Button
+                type="submit"
+                variant="default"
+                className="cursor-pointer"
+              >
+                投稿する
+              </Button>
+            </form>
+          )}
+        </div>
       </div>
     </header>
   );

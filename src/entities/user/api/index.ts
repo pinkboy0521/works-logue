@@ -1,5 +1,9 @@
 import { prisma } from "@/shared";
-import { UserWithArticles, UserWithStats, UserPublicInfo } from "@/entities/user/model";
+import {
+  UserWithArticles,
+  UserWithStats,
+  UserPublicInfo,
+} from "@/entities/user/model";
 
 /**
  * IDでユーザーを取得
@@ -21,16 +25,18 @@ export async function getUserById(id: string): Promise<UserPublicInfo | null> {
 /**
  * ユーザー詳細情報を記事と一緒に取得
  */
-export async function getUserWithArticles(id: string): Promise<UserWithArticles | null> {
+export async function getUserWithArticles(
+  id: string
+): Promise<UserWithArticles | null> {
   const user = await prisma.user.findUnique({
     where: { id },
     include: {
       articles: {
         where: {
-          status: 'PUBLISHED', // 公開済みの記事のみ
+          status: "PUBLISHED", // 公開済みの記事のみ
         },
         orderBy: {
-          publishedAt: 'desc',
+          publishedAt: "desc",
         },
         include: {
           topic: true,
@@ -57,7 +63,7 @@ export async function getUserStats(id: string): Promise<UserWithStats | null> {
   const stats = await prisma.article.aggregate({
     where: {
       userId: id,
-      status: 'PUBLISHED',
+      status: "PUBLISHED",
     },
     _count: {
       id: true,
@@ -86,13 +92,15 @@ export async function getUserStats(id: string): Promise<UserWithStats | null> {
 /**
  * 人気のユーザー一覧を取得（記事のいいね数順）
  */
-export async function getPopularUsers(limit: number = 10): Promise<UserWithStats[]> {
+export async function getPopularUsers(
+  limit: number = 10
+): Promise<UserWithStats[]> {
   const users = await prisma.user.findMany({
     take: limit,
     include: {
       articles: {
         where: {
-          status: 'PUBLISHED',
+          status: "PUBLISHED",
         },
       },
     },
@@ -113,13 +121,15 @@ export async function getPopularUsers(limit: number = 10): Promise<UserWithStats
 /**
  * 最近活動したユーザー一覧を取得
  */
-export async function getActiveUsers(limit: number = 10): Promise<UserPublicInfo[]> {
+export async function getActiveUsers(
+  limit: number = 10
+): Promise<UserPublicInfo[]> {
   const users = await prisma.user.findMany({
     take: limit,
     where: {
       articles: {
         some: {
-          status: 'PUBLISHED',
+          status: "PUBLISHED",
           publishedAt: {
             gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), // 過去30日
           },
@@ -133,9 +143,35 @@ export async function getActiveUsers(limit: number = 10): Promise<UserPublicInfo
       createdAt: true,
     },
     orderBy: {
-      updatedAt: 'desc',
+      updatedAt: "desc",
     },
   });
 
   return users;
+}
+
+/**
+ * ダッシュボード用：ユーザーの全記事を取得（下書き含む）
+ */
+export async function getUserWithAllArticles(id: string) {
+  const user = await prisma.user.findUnique({
+    where: { id },
+    include: {
+      articles: {
+        orderBy: {
+          updatedAt: "desc",
+        },
+        include: {
+          topic: true,
+          tags: {
+            include: {
+              tag: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  return user;
 }

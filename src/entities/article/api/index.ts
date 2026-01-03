@@ -1,7 +1,12 @@
 "use server";
 
 import { prisma } from "@/shared";
-import { ArticleWithDetails, RelatedArticle } from "@/entities";
+import {
+  ArticleWithDetails,
+  RelatedArticle,
+  DraftArticle,
+  PublishedArticleListItem,
+} from "@/entities";
 
 /**
  * 記事の閲覧数を増加
@@ -27,32 +32,34 @@ export async function incrementArticleViews(id: string): Promise<void> {
  */
 export async function getRelatedArticles(
   articleId: string,
-  topicId: string,
+  topicId: string | null,
   limit: number = 3
 ): Promise<RelatedArticle[]> {
   try {
+    // topicIdがnullの場合は関連記事なし
+    if (!topicId) {
+      return [];
+    }
+
     const relatedArticles = await prisma.article.findMany({
       where: {
-        AND: [
-          { id: { not: articleId } },
-          { status: "PUBLISHED" },
+        id: { not: articleId },
+        status: "PUBLISHED",
+        topicId: { not: null }, // topicIdが存在する記事のみ
+        OR: [
+          { topicId },
           {
-            OR: [
-              { topicId },
-              {
-                tags: {
-                  some: {
-                    tag: {
-                      articles: {
-                        some: {
-                          articleId,
-                        },
-                      },
+            tags: {
+              some: {
+                tag: {
+                  articles: {
+                    some: {
+                      articleId,
                     },
                   },
                 },
               },
-            ],
+            },
           },
         ],
       },
@@ -79,7 +86,7 @@ export async function getRelatedArticles(
       take: limit,
     });
 
-    return relatedArticles;
+    return relatedArticles as RelatedArticle[];
   } catch (error) {
     console.error("Error fetching related articles:", error);
     return [];
@@ -91,6 +98,7 @@ export async function getPublishedArticles() {
     const articles = await prisma.article.findMany({
       where: {
         status: "PUBLISHED",
+        topicId: { not: null }, // topicIdが存在する記事のみ
       },
       include: {
         user: {
@@ -123,7 +131,7 @@ export async function getPublishedArticles() {
       take: 20, // 最新20件を取得
     });
 
-    return articles;
+    return articles as PublishedArticleListItem[]; // topicIdフィルター済みなので型安全
   } catch (error) {
     console.error("Error fetching articles:", error);
     throw new Error("記事の取得に失敗しました");
@@ -135,6 +143,7 @@ export async function getLatestArticles(limit: number = 3) {
     const articles = await prisma.article.findMany({
       where: {
         status: "PUBLISHED",
+        topicId: { not: null }, // topicIdが存在する記事のみ
       },
       include: {
         user: {
@@ -167,7 +176,7 @@ export async function getLatestArticles(limit: number = 3) {
       take: limit,
     });
 
-    return articles;
+    return articles as PublishedArticleListItem[]; // topicIdフィルター済みなので型安全
   } catch (error) {
     console.error("Error fetching latest articles:", error);
     throw new Error("最新記事の取得に失敗しました");
@@ -179,6 +188,7 @@ export async function getPopularArticles(limit: number = 3) {
     const articles = await prisma.article.findMany({
       where: {
         status: "PUBLISHED",
+        topicId: { not: null }, // topicIdが存在する記事のみ
       },
       include: {
         user: {
@@ -211,7 +221,7 @@ export async function getPopularArticles(limit: number = 3) {
       take: limit,
     });
 
-    return articles;
+    return articles as PublishedArticleListItem[]; // topicIdフィルター済みなので型安全
   } catch (error) {
     console.error("Error fetching popular articles:", error);
     throw new Error("人気記事の取得に失敗しました");
@@ -259,5 +269,196 @@ export async function getArticleById(
   } catch (error) {
     console.error("Error fetching article:", error);
     throw new Error("記事の取得に失敗しました");
+  }
+}
+
+/**
+ * 編集用：記事を取得（下書き・非公開含む）- ユーザー認証付き
+ */
+export async function getArticleForEdit(
+  id: string,
+  userId: string
+): Promise<DraftArticle | null> {
+  try {
+    const article = await prisma.article.findUnique({
+      where: {
+        id,
+        userId, // 自分の記事のみ編集可能
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            image: true,
+          },
+        },
+        topic: {
+          select: {
+            id: true,
+            name: true,
+            description: true,
+          },
+        },
+        tags: {
+          include: {
+            tag: {
+              select: {
+                id: true,
+                name: true,
+                description: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    return article;
+  } catch (error) {
+    console.error("Error fetching article for edit:", error);
+    throw new Error("編集用記事の取得に失敗しました");
+  }
+}
+
+/**
+ * 記事を更新
+ */
+export async function updateArticle(
+  id: string,
+  userId: string,
+  data: {
+    title?: string;
+    content?: string;
+    topImageUrl?: string;
+    topicId?: string;
+    status?: "DRAFT" | "PUBLISHED" | "PRIVATE";
+    tagIds?: string[];
+  }
+) {
+  try {
+    // 記事の所有者確認
+    const existingArticle = await prisma.article.findUnique({
+      where: { id, userId },
+    });
+
+    if (!existingArticle) {
+      throw new Error("記事が見つからないか、編集権限がありません");
+    }
+
+    // タグの関連データを準備
+    const tagConnections = data.tagIds
+      ? {
+          deleteMany: {},
+          create: data.tagIds.map((tagId) => ({
+            tag: { connect: { id: tagId } },
+          })),
+        }
+      : undefined;
+
+    const updatedArticle = await prisma.article.update({
+      where: { id },
+      data: {
+        ...data,
+        ...(data.status === "PUBLISHED" && !existingArticle.publishedAt
+          ? { publishedAt: new Date() }
+          : {}),
+        updatedAt: new Date(),
+        ...(tagConnections ? { tags: tagConnections } : {}),
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            image: true,
+          },
+        },
+        topic: {
+          select: {
+            id: true,
+            name: true,
+            description: true,
+          },
+        },
+        tags: {
+          include: {
+            tag: {
+              select: {
+                id: true,
+                name: true,
+                description: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    return updatedArticle;
+  } catch (error) {
+    console.error("Error updating article:", error);
+    throw new Error("記事の更新に失敗しました");
+  }
+}
+
+/**
+ * 新しい記事を作成（下書き状態）
+ */
+export async function createDraftArticle(userId: string) {
+  try {
+    const article = await prisma.article.create({
+      data: {
+        userId,
+        title: "",
+        content: "",
+        status: "DRAFT",
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            image: true,
+          },
+        },
+        topic: true,
+        tags: {
+          include: {
+            tag: true,
+          },
+        },
+      },
+    });
+
+    return article;
+  } catch (error) {
+    console.error("Error creating draft article:", error);
+    throw new Error("下書き記事の作成に失敗しました");
+  }
+}
+
+/**
+ * 記事を削除
+ */
+export async function deleteArticle(id: string, userId: string) {
+  try {
+    // 記事の所有者確認
+    const existingArticle = await prisma.article.findUnique({
+      where: { id, userId },
+    });
+
+    if (!existingArticle) {
+      throw new Error("記事が見つからないか、削除権限がありません");
+    }
+
+    await prisma.article.delete({
+      where: { id },
+    });
+
+    return { success: true };
+  } catch (error) {
+    console.error("Error deleting article:", error);
+    throw new Error("記事の削除に失敗しました");
   }
 }

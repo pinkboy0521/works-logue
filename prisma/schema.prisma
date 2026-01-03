@@ -52,8 +52,8 @@ model Article {
   viewCount    Int           @default(0)
   likeCount    Int           @default(0)
 
-  topicId      String
-  topic        Topic         @relation(fields: [topicId], references: [id])
+  topicId      String?
+  topic        Topic?        @relation(fields: [topicId], references: [id])
 
   tags         ArticleTag[]
 

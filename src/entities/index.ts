@@ -1,6 +1,10 @@
 // Article エンティティ
 export {
   getArticleById,
+  getArticleForEdit,
+  updateArticle,
+  createDraftArticle,
+  deleteArticle,
   getLatestArticles,
   getPopularArticles,
   getPublishedArticles,
@@ -12,12 +16,16 @@ export {
   type ArticleListItem,
   type ArticleMeta,
   type RelatedArticle,
+  type DraftArticle,
+  type PublishedArticle,
+  type PublishedArticleListItem,
 } from "./article";
 
 // User エンティティ
 export {
   getUserById,
   getUserWithArticles,
+  getUserWithAllArticles,
   getUserStats,
   getPopularUsers,
   getActiveUsers,
@@ -30,6 +38,7 @@ export {
 
 // Topic エンティティ
 export {
+  getAllTopics,
   getTopicsWithCount,
   getPopularTopics,
   getTagsWithCount,

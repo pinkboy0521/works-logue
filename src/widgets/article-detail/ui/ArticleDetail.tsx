@@ -37,11 +37,13 @@ export function ArticleDetail({
       {/* ヘッダー情報 */}
       <header className="space-y-6">
         {/* トピック */}
-        <div className="flex items-center gap-2">
-          <span className="px-3 py-1 text-sm font-medium bg-primary/10 text-primary rounded-full">
-            {article.topic.name}
-          </span>
-        </div>
+        {article.topic && (
+          <div className="flex items-center gap-2">
+            <span className="px-3 py-1 text-sm font-medium bg-primary/10 text-primary rounded-full">
+              {article.topic.name}
+            </span>
+          </div>
+        )}
 
         {/* タイトル */}
         <h1 className="text-3xl md:text-4xl font-bold text-foreground leading-tight">
@@ -76,11 +78,11 @@ export function ArticleDetail({
           {/* 統計情報 */}
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-1">
-              <span className="text-gray-400">👀</span>
+              <span className="text-muted-foreground">👀</span>
               <span>{article.viewCount.toLocaleString()}</span>
             </div>
             <div className="flex items-center gap-1">
-              <span className="text-gray-400">❤️</span>
+              <span className="text-muted-foreground">❤️</span>
               <span>{article.likeCount.toLocaleString()}</span>
             </div>
           </div>
@@ -122,7 +124,7 @@ export function ArticleDetail({
       <Card>
         <CardContent className="p-6 md:p-8">
           {article.content ? (
-            <div className="prose prose-lg max-w-none prose-gray">
+            <div className="prose prose-lg max-w-none prose-gray dark:prose-invert">
               <ReactMarkdown
                 rehypePlugins={[rehypeHighlight, rehypeRaw]}
                 components={{
@@ -176,7 +178,7 @@ export function ArticleDetail({
                     );
                   },
                   pre: ({ children }) => (
-                    <pre className="mb-4 p-4 bg-muted rounded-lg overflow-x-auto">
+                    <pre className="mb-4 p-4 bg-muted text-muted-foreground rounded-lg overflow-x-auto">
                       {children}
                     </pre>
                   ),

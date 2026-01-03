@@ -44,7 +44,7 @@ export function ArticleList({ articles }: ArticleListProps) {
   if (articles.length === 0) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-500">記事が見つかりません</p>
+        <p className="text-muted-foreground">記事が見つかりません</p>
       </div>
     );
   }
@@ -139,8 +139,10 @@ function ArticleCard({ article }: { article: ArticleWithRelations }) {
               {formatDate(article.publishedAt)}
             </span>
             <div className="flex items-center gap-2">
-              <span>👁 {article.viewCount}</span>
-              <span>❤️ {article.likeCount}</span>
+              <span className="text-muted-foreground">👁</span>
+              <span>{article.viewCount}</span>
+              <span className="text-muted-foreground">❤️</span>
+              <span>{article.likeCount}</span>
             </div>
           </div>
         </CardFooter>

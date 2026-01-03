@@ -28,6 +28,11 @@ export function HeaderMenu({ session }: { session: Session | null }) {
             </Avatar>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-48" align="end">
+            <DropdownMenuItem asChild>
+              <Link href="/dashboard" className="w-full cursor-pointer">
+                記事の管理
+              </Link>
+            </DropdownMenuItem>
             <DropdownMenuItem
               onClick={logoutAction}
               className="w-full cursor-pointer"
@@ -38,10 +43,10 @@ export function HeaderMenu({ session }: { session: Session | null }) {
         </DropdownMenu>
       ) : (
         <>
-          <Button variant="ghost" asChild>
+          <Button variant="ghost" asChild className="cursor-pointer">
             <Link href="/login">ログイン</Link>
           </Button>
-          <Button asChild>
+          <Button asChild className="cursor-pointer">
             <Link href="/login">新規登録</Link>
           </Button>
         </>
