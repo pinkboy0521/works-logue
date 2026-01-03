@@ -7,6 +7,17 @@
 - エラーメッセージや例外が発生した場合は、日本語で説明してください
 - コードを生成する際は、必ず既存のコードスタイルに合わせてください
 - 新しいライブラリを導入する前には、必ず確認してください
+- **`npm run dev` 等の開発サーバー起動コマンドは実行しないでください**
+
+## 禁止コマンド
+
+以下のコマンドは実行しないでください：
+
+- `npm run dev` - 開発サーバー起動
+- `npm start` - サーバー起動
+- `yarn dev` / `pnpm dev` - 同等の開発コマンド
+
+理由：ターミナルリソースの節約と、不要な長時間実行プロセスの回避のため
 
 ## コミュニケーション
 
@@ -70,26 +81,115 @@
 
 # ディレクトリ構成
 
-## 主要ディレクトリ
+## 主要ディレクトリ（FSD 準拠）
 
-- **`src/app/`**: Next.js App Router のページとレイアウト
-  - **`(auth)/`**: 認証関連のページグループ
-  - **`(public)/`**: パブリックページグループ
-  - **`api/`**: Next.js API Routes
-- **`src/shared/`**: 共有コンポーネントとユーティリティ
+**重要**: FSD の`app`レイヤーと Next.js の`src/app/`フォルダーは異なる概念です。
+
+### FSD レイヤー構造
+
+- **`src/app/`**: FSD の App レイヤー - アプリケーション起動に関する全て
+  - **`providers/`**: グローバルプロバイダー（認証、テーマ、ストアなど）
+  - **`layout/`**: アプリケーション全体のレイアウトコンポーネント
+  - **`styles/`**: グローバルスタイル
+- **`src/pages/`**: FSD の Pages レイヤー - ページ全体のコンポーネント
+  - **`home-page/`**: ホームページコンポーネント
+  - **`login-page/`**: ログインページコンポーネント
+  - **`article-detail-page/`**: 記事詳細ページコンポーネント
+- **`src/widgets/`**: FSD の Widgets レイヤー - 大きな自己完結型 UI ブロック
+  - **`header/`**: ヘッダーウィジェット
+  - **`article-list/`**: 記事リストウィジェット
+  - **`article-detail/`**: 記事詳細ウィジェット
+- **`src/features/`**: FSD の Features レイヤー - 再利用可能な機能
+  - **`auth/`**: 認証機能（ログイン、ログアウト）
+  - **`article-editor/`**: 記事編集機能
+- **`src/entities/`**: FSD の Entities レイヤー - ビジネスエンティティ
+  - **`article/`**: 記事エンティティ（API、型定義）
+  - **`user/`**: ユーザーエンティティ
+- **`src/shared/`**: FSD の Shared レイヤー - 再利用可能なコード
+  - **`ui/`**: UI キット（shadcn/ui 含む）
   - **`lib/`**: ライブラリとユーティリティ関数
-  - **`ui/`**: UI コンポーネント（shadcn/ui 含む）
-- **`src/views/`**: ページレベルのビューコンポーネント
-- **`prisma/`**: Prisma スキーマとマイグレーション
-- **`public/`**: 静的ファイル
+  - **`config/`**: 環境変数、グローバル設定
+
+### Next.js App Router 構造
+
+このプロジェクトは Next.js App Router を使用しているため、以下の構造で FSD と統合します：
+
+```
+ルート
+├── app/               # Next.js App Router（ファイルベースルーティング）
+│   ├── (auth)/
+│   ├── (public)/
+│   └── layout.tsx
+├── pages/             # 空のNext.js Pages Router（互換性のため）
+└── src/
+    ├── app/           # FSDのAppレイヤー（アプリケーション起動）
+    ├── pages/         # FSDのPagesレイヤー
+    ├── widgets/       # FSDのWidgetsレイヤー
+    ├── features/      # FSDのFeaturesレイヤー
+    ├── entities/      # FSDのEntitiesレイヤー
+    └── shared/        # FSDのSharedレイヤー
+```
+
+**重要な分離**:
+
+- `app/` （ルートレベル） = Next.js App Router（ファイルベースルーティング）
+- `pages/` （ルートレベル） = 空の Next.js Pages Router（互換性維持）
+- `src/app/` = FSD の App レイヤー（アプリケーション起動）
+- `src/pages/` = FSD の Pages レイヤー（ページコンポーネント）
+
+この構造により、Next.js のルーティングと FSD のコンポーネントが名前衝突することなく共存できます。
+
+### App Router + Pages Router 互換性
+
+App Router は Pages Router と互換性があるため、将来的に Pages Router が必要になった場合でも、ルートレベルの`pages/`フォルダーを使用できます。現在は空のフォルダーとして維持されています。
 
 ## ファイル配置ルール
 
-- 新しいページは `src/app/` 内の適切なルートグループに配置してください
-- 共通コンポーネントは `src/shared/ui/` に配置してください
-- ビジネスロジックは `src/shared/lib/actions/` に配置してください
-- 型定義は適切なファイルの近くに配置するか、`src/shared/types/` に配置してください
-- shadcn/ui コンポーネントは `src/shared/ui/shadcn/` に配置してください
+### Next.js x FSD の統合パターン（App Router）
+
+```typescript
+// app/layout.tsx (Next.js App Routerのルートレイアウト)
+import { AppLayout } from "@/app";
+
+export default function RootLayout({ children }) {
+  return (
+    <html>
+      <body>
+        <AppLayout>{children}</AppLayout>
+      </body>
+    </html>
+  );
+}
+```
+
+```typescript
+// app/page.tsx (Next.js App Routerのページ)
+import { HomePage } from "@/pages/home-page";
+
+export default function Page() {
+  return <HomePage />;
+}
+```
+
+```typescript
+// src/app/index.tsx (FSDのAppレイヤー)
+export function AppLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <AppProviders>
+      <BaseLayout>{children}</BaseLayout>
+    </AppProviders>
+  );
+}
+```
+
+### 配置ルール（App Router）
+
+- **Next.js ルーティング**: ルートレベルの`app/`フォルダーで管理
+- **FSD Pages レイヤー**: `src/pages/`にページコンポーネントを作成
+- **Next.js ページ**: `app/`から FSD の`src/pages/`をインポート
+- **グローバル設定**: FSD の`src/app/`レイヤーに配置
+- **ビジネスロジック**: 適切な FSD レイヤー（entities/features）に配置
+- **共通コンポーネント**: `src/shared/ui/`に配置
 
 # アーキテクチャ・設計指針
 
@@ -134,9 +234,38 @@
    - `home/`, `profile/`, `article-detail/` など
 
 6. **App** (`src/app/`) - アプリケーション起動に関するすべて
-   - `routes/` - ルーター設定
-   - `store/` - グローバルストア
+   - `providers/` - グローバルプロバイダー（認証、テーマ、ストアなど）
+   - `layout/` - アプリケーション全体のレイアウトコンポーネント
    - `styles/` - グローバルスタイル
+   - `config/` - アプリケーション設定
+
+### FSD App レイヤーと Next.js App Router の統合
+
+Next.js App Router を使用する場合、FSD の App レイヤーと Next.js の`app/`フォルダーは以下のように明確に分離されます：
+
+- **Next.js の`app/`（ルートレベル）**: ファイルベースルーティング
+- **FSD の`src/app/`**: アプリケーション全体を包むプロバイダーとレイアウト
+- **空の`pages/`（ルートレベル）**: Pages Router との互換性保持
+
+統合パターン：
+
+1. FSD の`src/app/`レイヤーにアプリケーション起動ロジックを配置
+2. Next.js の`app/layout.tsx`から FSD の App コンポーネントをインポート
+3. 各ページコンポーネントは FSD の`src/pages/`レイヤーで定義し、Next.js のルートファイルからインポート
+
+```typescript
+// app/layout.tsx (Next.js App Router)
+import { AppLayout } from "@/app/layout";
+export default function RootLayout({ children }) {
+  return <AppLayout>{children}</AppLayout>;
+}
+
+// app/(public)/page.tsx (Next.js App Router)
+import { HomePage } from "@/pages";
+export default function Page() {
+  return <HomePage />;
+}
+```
 
 ### セグメント構造（各スライス内の技術的分割）
 
@@ -148,11 +277,83 @@
 
 ### インポートルール
 
+#### 基本原則
+
 - **レイヤー間**: 上位レイヤーから下位レイヤーのみインポート可能
 - **スライス間**: 同一レイヤー内のスライス間のインポートは禁止
 - **公開 API**: 各スライスは公開 API（index.ts）を通じてのみアクセス
 - **相対インポート**: 同一スライス内では相対インポートを使用
 - **絶対インポート**: 異なるスライス間では絶対インポートを使用
+
+#### 公開 API 経由のインポート方式
+
+このプロジェクトでは、FSD の公開 API 原則に従い、以下のインポートパターンを**必ず**使用してください：
+
+**✅ 推奨パターン（公開 API 経由）**:
+
+```typescript
+// レイヤー全体への短縮アクセス
+import { HomePage } from "@/pages";
+import { Header, ArticleList } from "@/widgets";
+import { LoginForm, authenticate } from "@/features";
+import { getArticleById, type ArticleWithDetails } from "@/entities";
+import { prisma, cn, Button } from "@/shared";
+```
+
+**❌ 禁止パターン（内部構造への直接アクセス）**:
+
+```typescript
+// 内部構造への直接アクセスは禁止
+import { HomePage } from "@/pages/home-page/ui/HomePage";
+import { Header } from "@/widgets/header/ui/Header";
+import { authenticate } from "@/features/auth/api/authenticate";
+import { prisma } from "@/shared/lib/prisma";
+```
+
+#### TSConfig 設定
+
+パスエイリアスは最小限に抑制し、公開 API を促進：
+
+```jsonc
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"] // 唯一のエイリアス
+    }
+  }
+}
+```
+
+#### レイヤー別の公開 API 例
+
+**Shared 層** (`src/shared/index.ts`):
+
+```typescript
+// 明示的なエクスポートで何が利用可能かを明確化
+export { prisma } from "./lib/prisma";
+export { cn } from "./lib/shadcn";
+export { Button, Card, Input } from "./ui/shadcn";
+```
+
+**Entities 層** (`src/entities/index.ts`):
+
+```typescript
+// 型と関数を明示的にエクスポート
+export {
+  getArticleById,
+  type ArticleWithDetails,
+  type ArticleMeta,
+} from "./article";
+export { getUserById, type UserPublicInfo } from "./user";
+```
+
+**インポートの利点**:
+
+- **カプセル化**: 内部構造への不適切なアクセスを防止
+- **保守性**: 内部リファクタリングが他のレイヤーに影響しない
+- **可読性**: 何が公開されているかが一目で分かる
+- **変更安全性**: 公開 API の契約に基づいた安全な変更
 
 ### FSD 原則
 
@@ -252,6 +453,31 @@
 - ワイルドカード（\*）による一括エクスポートは避けて明示的にエクスポートしてください
 - エンティティ間の関係は@x 表記を使用して明示してください
 - ビジネス用語以外のスライス名（utils、helpers、components 等）は使用しないでください
+
+#### 公開 API 違反の禁止パターン
+
+**❌ 内部構造への直接アクセス（禁止）**:
+
+```typescript
+// レイヤー内部への直接アクセス
+import { Header } from "@/widgets/header/ui/Header";
+import { authenticate } from "@/features/auth/api/authenticate";
+import { prisma } from "@/shared/lib/prisma";
+
+// 長い内部パス
+import { cn } from "@/shared/lib/shadcn/utils";
+import { HomePage } from "@/pages/home-page/ui/HomePage";
+```
+
+**✅ 正しい公開 API 経由のアクセス**:
+
+```typescript
+// 短縮形・公開API経由
+import { Header } from "@/widgets";
+import { authenticate } from "@/features";
+import { prisma, cn } from "@/shared";
+import { HomePage } from "@/pages";
+```
 
 ## コード品質
 

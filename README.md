@@ -83,10 +83,6 @@ npx prisma generate
 npx prisma migrate deploy
 ```
 
-### データベース認証情報
-
-- **データベースパスワード**: `rUYtt+FhZh8jzCSvy3dpqLkhHrfLFqg5CRU1mtzZdQc=`
-
 ## さらに学ぶ
 
 Next.js についてさらに学ぶには、以下のリソースをご覧ください:

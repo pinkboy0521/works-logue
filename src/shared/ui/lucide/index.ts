@@ -1,3 +1,3 @@
-export * from "../lucide/lucide-shrimp";
-export * from "../lucide/lucide-moon";
-export * from "../lucide/lucide-sun";
+export * from "./lucide-shrimp";
+export * from "./lucide-moon";
+export * from "./lucide-sun";
