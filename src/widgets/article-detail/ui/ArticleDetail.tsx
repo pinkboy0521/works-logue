@@ -9,6 +9,7 @@ import {
   AvatarImage,
   Card,
   CardContent,
+  Badge,
 } from "@/shared";
 import { ArticleWithDetails, ArticleMeta, RelatedArticle } from "@/entities";
 import Image from "next/image";
@@ -92,12 +93,9 @@ export function ArticleDetail({
         {article.tags.length > 0 && (
           <div className="flex flex-wrap gap-2">
             {article.tags.map((articleTag) => (
-              <span
-                key={articleTag.tag.id}
-                className="px-2 py-1 text-xs font-medium bg-muted text-muted-foreground rounded"
-              >
+              <Badge key={articleTag.tag.id} variant="secondary">
                 {articleTag.tag.name}
-              </span>
+              </Badge>
             ))}
           </div>
         )}

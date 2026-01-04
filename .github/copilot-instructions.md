@@ -36,6 +36,8 @@
 - **Backend**: Next.js API Routes、NextAuth.js v5
 - **Database**: PostgreSQL、Prisma ORM
 - **Styling**: Tailwind CSS、shadcn/ui、Radix UI
+- **UI Strategy**: shadcn/ui を第一選択とする統一 UI 戦略
+- **テーマ**: ダークモード・ライトモード完全対応
 - **認証**: NextAuth.js、bcryptjs
 - **バリデーション**: Zod
 - **フォーム管理**: React Hook Form
@@ -44,7 +46,8 @@
 
 - モダンな Next.js App Router を使用したフルスタック構成
 - Prisma による型安全なデータベース操作
-- shadcn/ui による統一された UI コンポーネント
+- **shadcn/ui による統一された UI コンポーネント設計**
+- **完全なダークモード・ライトモード対応システム**
 - NextAuth.js によるセキュアな認証システム
 - TypeScript による型安全性の確保
 
@@ -73,6 +76,8 @@
 
 - プロジェクトで使用されていないライブラリは import しないでください
 - 既存のバージョンに合わせてライブラリを使用してください
+- **UI コンポーネントは shadcn/ui を第一選択として使用してください**
+- **新規 UI 要素追加時は、必ず shadcn/ui での実装可能性を検討してください**
 - 新しい依存関係を追加する際は、互換性を確認してください
 - データベーススキーマの変更は Prisma マイグレーションファイルで管理してください
 - Prisma のベストプラクティスに従ってください
@@ -171,16 +176,13 @@ export default function Page() {
 }
 ```
 
-```typescript
-// src/app/index.tsx (FSDのAppレイヤー)
-export function AppLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <AppProviders>
       <BaseLayout>{children}</BaseLayout>
     </AppProviders>
-  );
+
+);
 }
-```
+
+````
 
 ### 配置ルール（App Router）
 
@@ -265,7 +267,7 @@ import { HomePage } from "@/pages";
 export default function Page() {
   return <HomePage />;
 }
-```
+````
 
 ### セグメント構造（各スライス内の技術的分割）
 
@@ -366,6 +368,7 @@ export { getUserById, type UserPublicInfo } from "./user";
 
 - 単一責任の原則を守ってください
 - コンポーネントの再利用性を高めてください
+- **shadcn/ui コンポーネントを中心とした一貫性のある UI 設計を心がけてください**
 - Server Component と Client Component を適切に使い分けてください
 - 型安全性を重視し、TypeScript の恩恵を最大限活用してください
 - Prisma スキーマを中心としたデータ駆動設計を採用してください
@@ -375,9 +378,206 @@ export { getUserById, type UserPublicInfo } from "./user";
 
 - FSD のレイヤー・スライス・セグメント構造に従って配置してください
 - UI コンポーネントとビジネスロジックを分離してください
+- **shadcn/ui コンポーネントを積極的に活用し、統一された UI ライブラリとして使用してください**
 - Server Actions と API ルートを適切に使い分けてください
 - 認証状態の管理は NextAuth.js のセッションを活用してください
 - 各スライスには適切な公開 API（index.ts）を作成してください
+
+# shadcn/ui 設計・使用方針
+
+## 基本方針
+
+このプロジェクトでは shadcn/ui を**UI コンポーネントライブラリの中核**として使用します。すべての新規 UI 開発において、以下の優先順位で検討してください：
+
+1. **第一選択**: shadcn/ui の既存コンポーネント
+2. **第二選択**: shadcn/ui コンポーネントのカスタマイズ（variants 使用）
+3. **最終手段**: 完全自作（shadcn/ui で対応不可能な場合のみ）
+
+## コンポーネント使用ガイドライン
+
+### 必須使用コンポーネント
+
+以下の UI 要素は**必ず** shadcn/ui コンポーネントを使用してください：
+
+- **フォーム系**: Button, Form, FormField, Input, Label, Textarea
+- **カード系**: Card, CardContent, CardHeader, CardFooter, CardTitle
+- **ナビゲーション系**: NavigationMenu, DropdownMenu
+- **表示系**: Avatar, Badge, Skeleton, Alert
+- **レイアウト系**: Dialog, Sheet（将来導入予定）
+
+### variants API の積極活用
+
+shadcn/ui コンポーネントのカスタマイズには variants API を使用し、以下のような一貫した設計を実現してください：
+
+```typescript
+// ✅ 推奨: variants を活用した統一デザイン
+<Button variant="default">保存</Button>
+<Button variant="destructive">削除</Button>
+<Button variant="ghost">キャンセル</Button>
+
+<Badge variant="default">公開</Badge>
+<Badge variant="secondary">下書き</Badge>
+<Badge variant="destructive">削除予定</Badge>
+```
+
+### 禁止パターン
+
+```typescript
+// ❌ 禁止: 自作の類似コンポーネント
+const CustomButton = () => <div className="bg-blue-500 px-4 py-2">...</div>
+
+// ❌ 禁止: shadcn/ui の直接上書き
+<Button className="!bg-red-500 !text-white">危険な上書き</Button>
+
+// ❌ 禁止: 不適切な HTML 要素の使用
+<span className="inline-block bg-primary text-white px-2 py-1 rounded">
+  Badge の代わり
+</span>
+```
+
+## コンポーネント設定
+
+### 現在の設定（components.json）
+
+```json
+{
+  "style": "new-york",
+  "rsc": true,
+  "tsx": true,
+  "tailwind": {
+    "baseColor": "neutral",
+    "cssVariables": true
+  },
+  "iconLibrary": "lucide"
+}
+```
+
+### 公開 API 経由のアクセス
+
+shadcn/ui コンポーネントは必ず `@/shared` 経由でアクセスしてください：
+
+```typescript
+// ✅ 正しい
+import { Button, Card, Input, Badge } from "@/shared";
+
+// ❌ 禁止
+import { Button } from "@/shared/ui/shadcn/button";
+```
+
+## 今後の拡張予定
+
+以下のコンポーネントの導入を予定しています：
+
+- **Dialog**: 記事削除確認、設定ダイアログ
+- **Toast**: 通知システム
+- **Popover**: ヘルプテキスト、補足情報
+- **Tabs**: 記事管理画面のタブ切り替え
+- **Select**: フォーム選択肢（現在の select 要素を置換）
+
+## デザインシステムの一貫性
+
+- **色彩体系**: shadcn/ui のデザイントークンに従ったカラーパレット
+- **タイポグラフィ**: 統一されたフォントサイズとライン高
+- **スペーシング**: 一貫したマージン・パディング体系
+- **ボーダー**: 統一された角丸とボーダー幅
+- **アニメーション**: 統一されたトランジション効果
+
+この統一された設計システムにより、保守性とユーザビリティの向上を図ります。
+
+# ダークモード・テーマ対応
+
+## 実装概要
+
+このプロジェクトでは完全なダークモード対応が実装されており、ユーザーは自由にテーマを切り替えることができます。
+
+## テーマシステムの構成要素
+
+### 1. テーマ管理（`src/shared/lib/theme.ts`）
+
+```typescript
+export type Theme = "light" | "dark";
+export function useTheme() {
+  // システム設定の自動検出
+  // localStorage での永続化
+  // SSR対応のハイドレーション処理
+}
+```
+
+### 2. テーマ切り替え UI（`src/widgets/header/ui/ThemeToggle.tsx`）
+
+```typescript
+// ヘッダーに配置されたテーマ切り替えボタン
+<Button onClick={toggleTheme}>
+  {theme === "dark" ? <MoonIcon /> : <SunIcon />}
+</Button>
+```
+
+### 3. CSS 変数によるテーマ定義（`src/app/styles/globals.css`）
+
+```css
+/* ライトテーマ（デフォルト） */
+:root {
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.142 0.005 285.823);
+  /* ... 全色定義 */
+}
+
+/* ダークテーマ */
+.dark {
+  --background: oklch(0.141 0.005 285.823);
+  --foreground: oklch(0.985 0 0);
+  /* ... 全色定義 */
+}
+```
+
+### 4. 初期化スクリプト（`src/shared/lib/theme-script.ts`）
+
+```typescript
+// SSR時のフラッシュ防止
+// システム設定の自動検出
+// localStorage からの復元
+export const themeScript = `(function() {
+  // テーマ初期化処理
+})();`;
+```
+
+## 開発ガイドライン
+
+### ✅ 推奨事項
+
+- **CSS 変数の使用**: Tailwind CSS の semantic color tokens を活用
+- **自動検出**: `prefers-color-scheme` でシステム設定を尊重
+- **永続化**: `localStorage` でユーザー選択を保存
+- **SSR 対応**: ハイドレーションエラーを防ぐ適切な実装
+
+### 🎨 カラーシステム
+
+```typescript
+// ✅ 推奨: semantic color tokens
+<div className="bg-background text-foreground">
+<Button className="bg-primary text-primary-foreground">
+<Card className="bg-card text-card-foreground">
+
+// ❌ 禁止: ハードコードされた色
+<div className="bg-white text-black dark:bg-black dark:text-white">
+```
+
+### 📱 レスポンシブ対応
+
+テーマシステムは全デバイスで一貫して動作します：
+
+- デスクトップ: ヘッダーの切り替えボタン
+- モバイル: 同一 UI、タッチ最適化
+- システム連動: OS 設定の自動検出
+
+## 注意事項
+
+- **ハイドレーション**: クライアント側での適切なマウント処理必須
+- **アクセシビリティ**: テーマ切り替えボタンに適切な aria-label 設定済み
+- **パフォーマンス**: CSS 変数による効率的なテーマ切り替え
+- **一貫性**: shadcn/ui コンポーネントは自動的にテーマ対応
+
+このテーマシステムにより、現代的な Web アプリケーションの基準を満たしたユーザーエクスペリエンスを提供しています。
 
 # テスト方針
 
@@ -440,9 +640,12 @@ export { getUserById, type UserPublicInfo } from "./user";
 
 ### shadcn/ui
 
-- コンポーネントのカスタマイズ時は、variants API を使用してください
+- **コンポーネントのカスタマイズ時は、variants API を使用してください**
+- **自作 UI コンポーネントより shadcn/ui の既存コンポーネントを優先してください**
+- **新規 UI 作成前に shadcn/ui での実装可能性を必ず確認してください**
 - CSS クラスの直接上書きは避け、Tailwind のユーティリティを使用してください
 - shadcn/ui コンポーネントを不適切に改変しないでください
+- shadcn/ui の設計システムに従い、一貫性のあるデザインを保ってください
 
 ### FSD 関連
 

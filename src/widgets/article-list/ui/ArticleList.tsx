@@ -4,6 +4,7 @@ import {
   Avatar,
   AvatarFallback,
   AvatarImage,
+  Badge,
   Card,
   CardContent,
   CardFooter,
@@ -95,9 +96,9 @@ function ArticleCard({ article }: { article: ArticleWithRelations }) {
 
         <CardContent className="flex-1">
           <div className="mb-s">
-            <span className="inline-block bg-primary/10 text-primary text-xs px-2 py-1 rounded-full">
+            <Badge variant="secondary" className="text-primary bg-primary/10">
               {article.topic.name}
-            </span>
+            </Badge>
           </div>
 
           <CardTitle className="mb-2 line-clamp-1">{article.title}</CardTitle>
@@ -109,12 +110,9 @@ function ArticleCard({ article }: { article: ArticleWithRelations }) {
           {article.tags.length > 0 && (
             <div className="flex flex-wrap gap-1 mb-2">
               {article.tags.map(({ tag }) => (
-                <span
-                  key={tag.id}
-                  className="inline-block bg-muted text-muted-foreground text-xs px-2 py-1 rounded"
-                >
+                <Badge key={tag.id} variant="secondary" className="text-xs">
                   {tag.name}
-                </span>
+                </Badge>
               ))}
             </div>
           )}

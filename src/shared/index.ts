@@ -39,6 +39,8 @@ export {
   NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
+  Skeleton,
+  Badge,
 } from "./ui/shadcn";
 
 // アイコン
