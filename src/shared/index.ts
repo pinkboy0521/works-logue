@@ -1,6 +1,9 @@
 // ライブラリとユーティリティ
 export { prisma, themeScript, cn, useTheme } from "./lib";
 
+// APIクライアント
+export { apiRequest, authenticatedRequest } from "./api";
+
 // 外部ライブラリ
 export { formatDistanceToNow } from "date-fns";
 export { ja } from "date-fns/locale";
