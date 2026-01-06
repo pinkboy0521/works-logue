@@ -1,11 +1,5 @@
 import sgMail from "@sendgrid/mail";
 
-if (!process.env.SENDGRID_API_KEY) {
-  throw new Error("SENDGRID_API_KEY is not defined");
-}
-
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-
 export interface EmailOptions {
   to: string;
   subject: string;
@@ -19,11 +13,17 @@ export async function sendEmail({
   html,
   text,
 }: EmailOptions): Promise<void> {
-  const from = process.env.EMAIL_FROM;
+  if (!process.env.SENDGRID_API_KEY) {
+    throw new Error("SENDGRID_API_KEY is not defined");
+  }
 
-  if (!from) {
+  if (!process.env.EMAIL_FROM) {
     throw new Error("EMAIL_FROM is not defined");
   }
+
+  sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+  
+  const from = process.env.EMAIL_FROM;
 
   const msg = {
     to,
