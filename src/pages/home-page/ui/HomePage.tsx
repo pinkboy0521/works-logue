@@ -1,11 +1,22 @@
 import { ArticleList } from "@/widgets";
 import { getLatestArticles, getPopularArticles } from "@/entities";
+import type { PublishedArticleListItem } from "@/entities";
 
 export async function HomePage() {
-  const [latestArticles, popularArticles] = await Promise.all([
-    getLatestArticles(3),
-    getPopularArticles(6),
-  ]);
+  let latestArticles: PublishedArticleListItem[] = [];
+  let popularArticles: PublishedArticleListItem[] = [];
+
+  try {
+    [latestArticles, popularArticles] = await Promise.all([
+      getLatestArticles(3),
+      getPopularArticles(6),
+    ]);
+  } catch (error) {
+    console.error("Failed to fetch articles:", error);
+    // データベース接続エラーの場合、空の配列でフォールバック
+    latestArticles = [];
+    popularArticles = [];
+  }
 
   return (
     <div className="container mx-auto px-xxxl py-l">

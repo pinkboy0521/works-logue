@@ -30,7 +30,7 @@ type LoginForm = z.infer<typeof loginSchema>;
 export function LoginForm() {
   const [errorMessage, formAction, isPending] = useActionState(
     authenticate,
-    undefined
+    undefined,
   );
   const [isSubmitting, startTransition] = useTransition();
 

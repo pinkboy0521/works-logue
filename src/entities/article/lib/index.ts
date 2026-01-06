@@ -53,7 +53,7 @@ export function canPublishArticle(article: Partial<Article>): boolean {
  */
 export function generateArticleSummary(
   content: string,
-  maxLength = 150
+  maxLength = 150,
 ): string {
   if (content.length <= maxLength) return content;
   return content.slice(0, maxLength).trim() + "...";

@@ -84,7 +84,7 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
          */
         return {
           id: account.user.id,
-          name: account.user.name,
+          name: account.user.displayName,
           email: account.user.email,
         };
       },
@@ -112,9 +112,21 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
      * - jwt に保存した userId を
      *   session.user.id として公開する
      * - アプリ内の認可判定はこれを使う
+     * - emailVerified 状態も取得して含める
      */
     async session({ session, token }) {
       session.user.id = token.userId as string;
+
+      // ユーザーのemailVerified状態をDBから取得
+      if (token.userId) {
+        const user = await prisma.user.findUnique({
+          where: { id: token.userId as string },
+          select: { emailVerified: true },
+        });
+        // PrismaスキーマのBooleanをNextAuth期待のDate | null に変換
+        session.user.emailVerified = user?.emailVerified ? new Date() : null;
+      }
+
       return session;
     },
   },

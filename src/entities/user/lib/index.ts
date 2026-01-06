@@ -9,9 +9,9 @@ import { type User } from "../model";
  * ユーザー名の表示用フォーマット
  */
 export function formatUserDisplayName(
-  user: Pick<User, "name" | "email">
+  user: Pick<User, "displayName" | "email">,
 ): string {
-  return user.name || user.email || "Unknown User";
+  return user.displayName || user.email || "Unknown User";
 }
 
 /**
@@ -32,7 +32,7 @@ export function generateUserInitials(name?: string | null): string {
  * ユーザーが有効かチェック
  */
 export function isValidUser(user: Partial<User>): boolean {
-  return !!(user.email && user.name);
+  return !!(user.email && user.displayName);
 }
 
 /**

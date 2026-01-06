@@ -1,0 +1,193 @@
+import { prisma } from "@/shared/lib/prisma";
+import type {
+  ProfileSetupData,
+  UserWithProfile,
+} from "@/entities/user/model/types";
+
+// Prismaエラー型定義
+type PrismaError = {
+  code: string;
+  meta?: {
+    target?: string[];
+  };
+};
+
+function isPrismaError(error: unknown): error is PrismaError {
+  return (
+    error !== null &&
+    typeof error === "object" &&
+    "code" in error &&
+    typeof (error as Record<string, unknown>).code === "string"
+  );
+}
+
+/**
+ * プロフィール情報を更新（トランザクション）
+ */
+export async function updateUserProfile(
+  userId: string,
+  data: ProfileSetupData,
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    await prisma.$transaction(async (tx) => {
+      // 既存のプロフィール画像があれば削除
+      if (data.imageUrl) {
+        const existingUser = await tx.user.findUnique({
+          where: { id: userId },
+          select: { image: true },
+        });
+
+        if (existingUser?.image && existingUser.image !== data.imageUrl) {
+          // 古い画像のpublic_idを抽出してログに記録（後でAPI Route経由で削除）
+          try {
+            const urlParts = existingUser.image.split("/");
+            const publicIdWithExtension = urlParts.slice(-3).join("/");
+            const publicId = publicIdWithExtension.split(".")[0];
+            console.log("Old profile image to be cleaned up:", publicId);
+          } catch (deleteError) {
+            console.warn(
+              "Failed to extract old profile image ID:",
+              deleteError,
+            );
+          }
+        }
+      }
+
+      // ユーザー情報を更新
+      const updatedUser = await tx.user.update({
+        where: { id: userId },
+        data: {
+          displayName: data.displayName,
+          userId: data.userId,
+          bio: data.bio || null,
+          website: data.website || null,
+          location: data.location || null,
+          statusMessage: data.statusMessage || null,
+          image: data.imageUrl || null,
+        },
+      });
+
+      // 既存のスキル・職業関連を削除
+      await tx.userSkill.deleteMany({
+        where: { userId },
+      });
+      await tx.userOccupation.deleteMany({
+        where: { userId },
+      });
+
+      // 新しいスキルを追加
+      if (data.skillIds.length > 0) {
+        await tx.userSkill.createMany({
+          data: data.skillIds.map((skillId) => ({
+            userId,
+            skillId,
+          })),
+        });
+      }
+
+      // 新しい職業を追加
+      if (data.occupationIds.length > 0) {
+        await tx.userOccupation.createMany({
+          data: data.occupationIds.map((occupationId) => ({
+            userId,
+            occupationId,
+          })),
+        });
+      }
+
+      return updatedUser;
+    });
+
+    return { success: true };
+  } catch (error: unknown) {
+    console.error("Profile update error:", error);
+
+    // Prismaエラーチェック
+    if (isPrismaError(error) && error.code === "P2002") {
+      const target = error.meta?.target;
+      if (target?.includes("userId")) {
+        return {
+          success: false,
+          error: "このユーザーIDは既に使用されています",
+        };
+      }
+      if (target?.includes("email")) {
+        return {
+          success: false,
+          error: "このメールアドレスは既に使用されています",
+        };
+      }
+    }
+
+    return {
+      success: false,
+      error: "プロフィール更新中にエラーが発生しました",
+    };
+  }
+}
+
+/**
+ * ユーザープロフィール詳細を取得
+ */
+export async function getUserProfile(
+  userId: string,
+): Promise<UserWithProfile | null> {
+  return await prisma.user.findUnique({
+    where: { id: userId },
+    include: {
+      userSkills: {
+        include: {
+          skill: true,
+        },
+        orderBy: {
+          skill: {
+            name: "asc",
+          },
+        },
+      },
+      userOccupations: {
+        include: {
+          occupation: true,
+        },
+        orderBy: {
+          occupation: {
+            name: "asc",
+          },
+        },
+      },
+    },
+  });
+}
+
+/**
+ * プロフィール完了度チェック
+ */
+export async function checkProfileCompletion(userId: string): Promise<{
+  isCompleted: boolean;
+  missingFields: string[];
+  user?: Pick<UserWithProfile, "displayName" | "userId" | "emailVerified">;
+}> {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      displayName: true,
+      userId: true,
+      emailVerified: true,
+    },
+  });
+
+  if (!user) {
+    return { isCompleted: false, missingFields: ["user"] };
+  }
+
+  const missingFields: string[] = [];
+
+  if (!user.displayName) missingFields.push("displayName");
+  if (!user.userId) missingFields.push("userId");
+
+  return {
+    isCompleted: missingFields.length === 0,
+    missingFields,
+    user,
+  };
+}

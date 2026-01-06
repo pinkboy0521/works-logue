@@ -3,6 +3,7 @@
 このコマンドを実行すると、現在のプロジェクトを分析してGitHub Copilot用の指示書(.github/copilot-instructions.md)を自動生成します。
 
 ## 実行方法
+
 `/argen` と入力して実行してください。
 
 ---
@@ -16,8 +17,9 @@
 まず、現在のプロジェクトのルートディレクトリとサブディレクトリをスキャンし、以下の情報を収集してください：
 
 ### 検出するファイルとパターン
+
 - `package.json` - Node.js/JavaScript/TypeScriptプロジェクト
-- `requirements.txt`, `Pipfile`, `pyproject.toml` - Pythonプロジェクト  
+- `requirements.txt`, `Pipfile`, `pyproject.toml` - Pythonプロジェクト
 - `Cargo.toml` - Rustプロジェクト
 - `go.mod` - Goプロジェクト
 - `pom.xml`, `build.gradle` - Javaプロジェクト
@@ -27,6 +29,7 @@
 - `pubspec.yaml` - Flutter/Dartプロジェクト
 
 ### データベース関連ファイルの検出
+
 - `schema.sql`, `*.sql` - SQLスキーマファイル
 - `schema.hcl`, `atlas.hcl` - Atlasスキーマファイル
 - `migrations/` - データベースマイグレーションディレクトリ
@@ -41,6 +44,7 @@
 - `liquibase/` - Liquibase変更セット
 
 ### ディレクトリ構成の分析
+
 - `src/`, `lib/`, `app/` - メインソースコード
 - `components/`, `views/`, `pages/` - UI関連
 - `controllers/`, `models/`, `services/` - アーキテクチャ層
@@ -63,6 +67,7 @@
 検出したファイルから以下の情報を抽出：
 
 ### 言語の検出
+
 - JavaScript/TypeScript (.js, .ts, .jsx, .tsx)
 - Python (.py)
 - Java (.java)
@@ -76,6 +81,7 @@
 - Dart (.dart) - Flutter
 
 ### フレームワークとライブラリ
+
 - **JavaScript/TypeScript**: React, Vue, Angular, Next.js, Nuxt.js, Express, Fastify, Koa, Svelte, Astro
 - **Python**: Django, Flask, FastAPI, SQLAlchemy, Pandas, NumPy
 - **Java**: Spring, Spring Boot, Jakarta EE
@@ -87,6 +93,7 @@
 - **Flutter/Dart**: Flutter, Material Design, Cupertino (iOS-style), Provider, Riverpod, Bloc, GetX, Dio
 
 ### データベースとORM
+
 - **JavaScript/TypeScript**: Prisma, Drizzle ORM, Sequelize, TypeORM, Mongoose, Knex.js
 - **Python**: SQLAlchemy, Django ORM, Peewee, Tortoise ORM
 - **Java**: Hibernate, JPA, MyBatis, Spring Data JPA
@@ -98,6 +105,7 @@
 - **データベース管理ツール**: Atlas, Flyway, Liquibase, Alembic
 
 ### テストフレームワーク
+
 - **JavaScript/TypeScript**: Jest, Vitest, Mocha, Jasmine, Cypress, Playwright, Testing Library
 - **Python**: pytest, unittest, nose, Selenium
 - **Java**: JUnit, TestNG, Mockito
@@ -111,6 +119,7 @@
 ディレクトリ構成からアーキテクチャパターンを特定：
 
 ### 検出するパターン
+
 - **Component-Based**: `components/` ディレクトリの存在
 - **MVC/MVP**: `models/`, `views/`, `controllers/` の構成
 - **Clean Architecture**: `domain/`, `usecases/`, `interfaces/`, `infrastructure/`
@@ -131,6 +140,7 @@
 以下の7つのセクションを含む `.github/copilot-instructions.md` を生成してください：
 
 ### 1. 前提条件
+
 ```
 # 前提条件
 
@@ -147,6 +157,7 @@
 ```
 
 ### 2. アプリの概要
+
 ```
 # アプリの概要
 
@@ -163,6 +174,7 @@
 ```
 
 ### 3. 技術スタック（エコシステム）
+
 ```
 # 技術スタック（エコシステム）
 
@@ -184,6 +196,7 @@
 ```
 
 ### 4. ディレクトリ構成
+
 ```
 # ディレクトリ構成
 
@@ -197,6 +210,7 @@
 ```
 
 ### 5. アーキテクチャ・設計指針
+
 ```
 # アーキテクチャ・設計指針
 
@@ -215,6 +229,7 @@
 ```
 
 ### 6. テスト方針
+
 ```
 # テスト方針
 
@@ -233,6 +248,7 @@
 ```
 
 ### 7. アンチパターン
+
 ```
 # アンチパターン
 
@@ -254,28 +270,33 @@
 ## 言語特有のアンチパターン例
 
 ### JavaScript/TypeScript
+
 - default exportは避けてnamed exportを使用してください
 - any型は原則使用しないでください
 - varは使用せず、letまたはconstを使用してください
 - ==ではなく===を使用してください
 
 ### Python
+
 - グローバル変数の使用は避けてください
-- * importは避けて明示的なimportを使用してください
+- - importは避けて明示的なimportを使用してください
 - リスト内包表記を優先してください
 - withステートメントでファイルを扱ってください
 
 ### Java
+
 - 生の型を使用せず、ジェネリクスを使用してください
 - マジックナンバーは定数にしてください
 - try-with-resourcesを使用してください
 
 ### C#
+
 - varを適切に使用してください
 - null条件演算子を活用してください
 - usingステートメントでリソースを管理してください
 
 ### Dart/Flutter
+
 - BuildContextを不適切に保存しないでください
 - setState()を過度に使用せず、状態管理ライブラリを活用してください
 - グローバルなBuildContextへの参照を避けてください
@@ -286,6 +307,7 @@
 - FutureBuilderを過度に使用せず、状態管理ソリューションを検討してください
 
 ### データベース/ORM共通
+
 - N+1クエリ問題を避けてください（eager loadingやjoinを適切に使用）
 - 生のSQL文字列の結合は避けて、パラメータ化クエリを使用してください
 - データベーストランザクションを適切に使用してください
@@ -293,16 +315,19 @@
 - マイグレーションファイルは常に可逆的（rollback可能）にしてください
 
 ### Prisma (TypeScript/JavaScript)
+
 - select句を指定して必要なフィールドのみ取得してください
 - includeとselectを適切に使い分けてください
 - トランザクションはprisma.$transactionを使用してください
 
 ### SQLAlchemy (Python)
+
 - lazy loadingを理解して適切にrelationshipを設定してください
 - session.commit()とsession.rollback()を適切に使用してください
 - クエリ結果のキャッシュを考慮してください
 
 ### Entity Framework (C#)
+
 - Include()によるeager loadingを適切に使用してください
 - ChangeTrackerのパフォーマンスを考慮してください
 - AsNoTracking()を読み取り専用クエリで使用してください

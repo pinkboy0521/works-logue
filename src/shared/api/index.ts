@@ -9,7 +9,7 @@
  */
 export async function apiRequest<T>(
   url: string,
-  options?: RequestInit
+  options?: RequestInit,
 ): Promise<T> {
   try {
     const response = await fetch(url, {
@@ -37,7 +37,7 @@ export async function apiRequest<T>(
  */
 export async function authenticatedRequest<T>(
   url: string,
-  options?: RequestInit
+  options?: RequestInit,
 ): Promise<T> {
   // NextAuth.jsのセッションを考慮した実装
   return apiRequest<T>(url, options);

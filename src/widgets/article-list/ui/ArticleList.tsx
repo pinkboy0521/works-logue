@@ -22,7 +22,7 @@ type ArticleWithRelations = {
   likeCount: number;
   user: {
     id: string;
-    name: string | null;
+    displayName: string | null;
     image: string | null;
   };
   topic: {
@@ -123,13 +123,15 @@ function ArticleCard({ article }: { article: ArticleWithRelations }) {
             <Avatar className="h-6 w-6 shrink-0">
               <AvatarImage
                 src={article.user.image || ""}
-                alt={article.user.name || ""}
+                alt={article.user.displayName || ""}
               />
               <AvatarFallback>
-                {article.user.name?.charAt(0) || "U"}
+                {article.user.displayName?.charAt(0) || "U"}
               </AvatarFallback>
             </Avatar>
-            <span className="truncate">{article.user.name || "Anonymous"}</span>
+            <span className="truncate">
+              {article.user.displayName || "Anonymous"}
+            </span>
           </div>
 
           <div className="flex flex-col items-end gap-1 shrink-0">

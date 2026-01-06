@@ -63,7 +63,7 @@ export function DashboardPageClient({ user }: DashboardPageProps) {
                       <span>
                         {formatArticleStatus(
                           article.status,
-                          article.publishedAt
+                          article.publishedAt,
                         )}
                       </span>
                       <span>•</span>

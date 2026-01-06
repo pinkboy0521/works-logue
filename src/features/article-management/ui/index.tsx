@@ -7,9 +7,7 @@ import { createNewArticleAction, deleteArticleAction } from "../api";
 export function CreateArticleButton() {
   return (
     <form action={createNewArticleAction}>
-      <Button type="submit">
-        新規記事を作成
-      </Button>
+      <Button type="submit">新規記事を作成</Button>
     </form>
   );
 }
@@ -19,7 +17,7 @@ export function CreateArticleButton() {
  */
 export function DeleteArticleButton({ articleId }: { articleId: string }) {
   const deleteWithId = deleteArticleAction.bind(null, articleId);
-  
+
   return (
     <form action={deleteWithId}>
       <Button type="submit" variant="destructive">

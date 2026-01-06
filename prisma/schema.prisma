@@ -14,14 +14,32 @@ generator client {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  name      String?
-  email     String?  @unique
-  image     String?
-  accounts  Account[]  
-  articles  Article[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                String       @id @default(cuid())
+  email             String?      // OAuth プロバイダーによってはemailがない場合もある
+  image             String?
+  role              UserRole     @default(USER)
+  
+  // プロフィール情報
+  displayName       String?      // 表示名（Welcomeページで設定）
+  userId            String?      @unique // ユニークなユーザーID（Welcomeページで設定）
+  bio               String?      // 自己紹介
+  website           String?      // ウェブサイトURL
+  location          String?      // 居住地
+  statusMessage     String?      // ひとこと
+  
+  // メール認証
+  emailVerified              Boolean      @default(false)
+  emailVerificationToken     String?      // メール認証トークン
+  emailVerificationExpiresAt DateTime?    // トークン有効期限
+  
+  accounts          Account[]  
+  articles          Article[]
+  userSkills        UserSkill[]
+  userOccupations   UserOccupation[]
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+
+  @@map(name: "users")
 }
 
 model Account {
@@ -69,6 +87,77 @@ enum ArticleStatus {
   DRAFT
   PUBLISHED
   PRIVATE
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+model SkillCategory {
+  id          String   @id @default(cuid())
+  key         String   @unique // 例: 'programming', 'design', 'business', 'marketing'
+  name        String   // 表示名: 'プログラミング言語', 'デザイン・UI/UX'
+  description String?
+  skills      Skill[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Skill {
+  id          String        @id @default(cuid())
+  name        String        @unique
+  description String?
+  categoryId  String
+  category    SkillCategory @relation(fields: [categoryId], references: [id])
+  userSkills  UserSkill[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@index([categoryId])
+}
+
+model UserSkill {
+  userId    String
+  skillId   String
+  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  skill     Skill  @relation(fields: [skillId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@id([userId, skillId])
+}
+
+model OccupationCategory {
+  id          String       @id @default(cuid())
+  key         String       @unique // 例: 'engineering', 'design', 'business', 'marketing'
+  name        String       // 表示名: 'エンジニアリング', 'デザイン'
+  description String?
+  occupations Occupation[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model Occupation {
+  id              String             @id @default(cuid())
+  name            String             @unique
+  description     String?
+  categoryId      String
+  category        OccupationCategory @relation(fields: [categoryId], references: [id])
+  userOccupations UserOccupation[]
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  @@index([categoryId])
+}
+
+model UserOccupation {
+  userId       String
+  occupationId String
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  occupation   Occupation @relation(fields: [occupationId], references: [id], onDelete: Cascade)
+  createdAt    DateTime   @default(now())
+
+  @@id([userId, occupationId])
 }
 
 model Topic {

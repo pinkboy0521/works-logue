@@ -33,7 +33,7 @@ export async function incrementArticleViews(id: string): Promise<void> {
 export async function getRelatedArticles(
   articleId: string,
   topicId: string | null,
-  limit: number = 3
+  limit: number = 3,
 ): Promise<RelatedArticle[]> {
   try {
     // topicIdがnullの場合は関連記事なし
@@ -71,7 +71,7 @@ export async function getRelatedArticles(
         user: {
           select: {
             id: true,
-            name: true,
+            displayName: true,
             image: true,
           },
         },
@@ -104,7 +104,7 @@ export async function getPublishedArticles() {
         user: {
           select: {
             id: true,
-            name: true,
+            displayName: true,
             image: true,
           },
         },
@@ -149,7 +149,7 @@ export async function getLatestArticles(limit: number = 3) {
         user: {
           select: {
             id: true,
-            name: true,
+            displayName: true,
             image: true,
           },
         },
@@ -194,7 +194,7 @@ export async function getPopularArticles(limit: number = 3) {
         user: {
           select: {
             id: true,
-            name: true,
+            displayName: true,
             image: true,
           },
         },
@@ -229,7 +229,7 @@ export async function getPopularArticles(limit: number = 3) {
 }
 
 export async function getArticleById(
-  id: string
+  id: string,
 ): Promise<ArticleWithDetails | null> {
   try {
     const article = await prisma.article.findUnique({
@@ -241,7 +241,7 @@ export async function getArticleById(
         user: {
           select: {
             id: true,
-            name: true,
+            displayName: true,
             image: true,
           },
         },
@@ -277,7 +277,7 @@ export async function getArticleById(
  */
 export async function getArticleForEdit(
   id: string,
-  userId: string
+  userId: string,
 ): Promise<DraftArticle | null> {
   try {
     const article = await prisma.article.findUnique({
@@ -289,7 +289,7 @@ export async function getArticleForEdit(
         user: {
           select: {
             id: true,
-            name: true,
+            displayName: true,
             image: true,
           },
         },
@@ -334,7 +334,7 @@ export async function updateArticle(
     topicId?: string;
     status?: "DRAFT" | "PUBLISHED" | "PRIVATE";
     tagIds?: string[];
-  }
+  },
 ) {
   try {
     // 記事の所有者確認
@@ -370,7 +370,7 @@ export async function updateArticle(
         user: {
           select: {
             id: true,
-            name: true,
+            displayName: true,
             image: true,
           },
         },
@@ -418,7 +418,7 @@ export async function createDraftArticle(userId: string) {
         user: {
           select: {
             id: true,
-            name: true,
+            displayName: true,
             image: true,
           },
         },

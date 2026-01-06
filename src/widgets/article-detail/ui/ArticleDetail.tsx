@@ -59,14 +59,14 @@ export function ArticleDetail({
               <Avatar className="h-8 w-8">
                 <AvatarImage
                   src={article.user.image || undefined}
-                  alt={article.user.name || "ユーザー"}
+                  alt={article.user.displayName || "ユーザー"}
                 />
                 <AvatarFallback>
-                  {article.user.name?.charAt(0) || "U"}
+                  {article.user.displayName?.charAt(0) || "U"}
                 </AvatarFallback>
               </Avatar>
               <span className="font-medium text-foreground">
-                {article.user.name || "Anonymous"}
+                {article.user.displayName || "Anonymous"}
               </span>
             </div>
 
@@ -110,7 +110,7 @@ export function ArticleDetail({
             fill
             className="object-cover"
             priority
-            quality={95}
+            quality={90}
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
             placeholder="blur"
             blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R/mhz8="
@@ -227,16 +227,16 @@ export function ArticleDetail({
             <Avatar className="h-16 w-16">
               <AvatarImage
                 src={article.user.image || undefined}
-                alt={article.user.name || "ユーザー"}
+                alt={article.user.displayName || "ユーザー"}
               />
               <AvatarFallback className="text-lg">
-                {article.user.name?.charAt(0) || "U"}
+                {article.user.displayName?.charAt(0) || "U"}
               </AvatarFallback>
             </Avatar>
             <div>
               <p className="text-muted-foreground">この記事を書いた人</p>
               <h3 className="text-lg font-semibold text-foreground">
-                {article.user.name || "Anonymous"}
+                {article.user.displayName || "Anonymous"}
               </h3>
               {/* メタ情報 */}
               {meta && (
@@ -277,13 +277,13 @@ export function ArticleDetail({
                     <Avatar className="h-5 w-5">
                       <AvatarImage
                         src={relatedArticle.user.image || undefined}
-                        alt={relatedArticle.user.name || "ユーザー"}
+                        alt={relatedArticle.user.displayName || "ユーザー"}
                       />
                       <AvatarFallback className="text-xs">
-                        {relatedArticle.user.name?.charAt(0) || "U"}
+                        {relatedArticle.user.displayName?.charAt(0) || "U"}
                       </AvatarFallback>
                     </Avatar>
-                    <span>{relatedArticle.user.name}</span>
+                    <span>{relatedArticle.user.displayName}</span>
                     <span>•</span>
                     <span>{relatedArticle.topic.name}</span>
                   </div>

@@ -14,13 +14,16 @@ export async function createNewArticleAction() {
     redirect("/login");
   }
 
+  let newArticle;
   try {
-    const newArticle = await createDraftArticle(session.user.id);
-    redirect(`/articles/${newArticle.id}/edit`);
+    newArticle = await createDraftArticle(session.user.id);
   } catch (error) {
     console.error("Error creating new article:", error);
-    throw error;
+    throw new Error("記事の作成に失敗しました");
   }
+
+  // 成功時のみリダイレクト
+  redirect(`/articles/${newArticle.id}/edit`);
 }
 
 /**
@@ -35,9 +38,11 @@ export async function deleteArticleAction(articleId: string) {
 
   try {
     await deleteArticle(articleId, session.user.id);
-    redirect("/dashboard");
   } catch (error) {
     console.error("Error deleting article:", error);
-    throw error;
+    throw new Error("記事の削除に失敗しました");
   }
+
+  // 成功時のみリダイレクト
+  redirect("/dashboard");
 }

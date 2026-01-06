@@ -346,9 +346,9 @@ import { prisma } from "@/shared/lib/prisma";
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"] // 唯一のエイリアス
-    }
-  }
+      "@/*": ["./src/*"], // 唯一のエイリアス
+    },
+  },
 }
 ```
 

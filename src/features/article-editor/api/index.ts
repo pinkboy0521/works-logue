@@ -14,7 +14,7 @@ export interface SaveArticleData {
  */
 export async function autoSaveArticle(
   articleId: string | undefined,
-  data: SaveArticleData
+  data: SaveArticleData,
 ): Promise<{ success: boolean; id?: string }> {
   try {
     const url = articleId ? `/api/articles/${articleId}` : "/api/articles";

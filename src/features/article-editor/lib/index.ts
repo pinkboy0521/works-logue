@@ -34,7 +34,7 @@ export function generateBackupKey(articleId?: string): string {
  */
 export function hasContentChanged(
   original: { title: string; content: string },
-  current: { title: string; content: string }
+  current: { title: string; content: string },
 ): boolean {
   return (
     original.title !== current.title || original.content !== current.content

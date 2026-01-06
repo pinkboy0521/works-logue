@@ -7,7 +7,7 @@
  * パスワード強度をチェック
  */
 export function checkPasswordStrength(
-  password: string
+  password: string,
 ): "weak" | "medium" | "strong" {
   if (password.length < 8) return "weak";
 

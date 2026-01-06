@@ -1,0 +1,1 @@
+export { VerifyEmailPageComponent } from "./VerifyEmailPageComponent";

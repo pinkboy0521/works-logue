@@ -34,7 +34,7 @@ export async function getTopicsWithCount(): Promise<TopicWithCount[]> {
  * 人気のトピック一覧を取得（記事数順）
  */
 export async function getPopularTopics(
-  limit: number = 10
+  limit: number = 10,
 ): Promise<TopicWithCount[]> {
   const topics = await getTopicsWithCount();
   return topics.sort((a, b) => b.articleCount - a.articleCount).slice(0, limit);
@@ -75,7 +75,7 @@ export async function getTagsWithCount(): Promise<TagWithCount[]> {
  * 人気のタグ一覧を取得（記事数順）
  */
 export async function getPopularTags(
-  limit: number = 20
+  limit: number = 20,
 ): Promise<TagWithCount[]> {
   const tags = await getTagsWithCount();
   return tags.sort((a, b) => b.articleCount - a.articleCount).slice(0, limit);
@@ -99,7 +99,7 @@ export async function getTopicById(id: string) {
           user: {
             select: {
               id: true,
-              name: true,
+              displayName: true,
               image: true,
             },
           },
@@ -134,7 +134,7 @@ export async function getTagById(id: string) {
               user: {
                 select: {
                   id: true,
-                  name: true,
+                  displayName: true,
                   image: true,
                 },
               },

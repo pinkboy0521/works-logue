@@ -6,11 +6,12 @@ import { type User } from "../model";
  * ビジネスモデルの基本的なUI表現
  */
 export function UserCard({ user }: { user: User }) {
-  const initials = user.name
-    ?.split(" ")
-    .map(name => name[0])
-    .join("")
-    .toUpperCase() || "U";
+  const initials =
+    user.displayName
+      ?.split(" ")
+      .map((name) => name[0])
+      .join("")
+      .toUpperCase() || "U";
 
   return (
     <Card>
@@ -19,7 +20,7 @@ export function UserCard({ user }: { user: User }) {
           <AvatarFallback>{initials}</AvatarFallback>
         </Avatar>
         <div>
-          <p className="font-medium">{user.name}</p>
+          <p className="font-medium">{user.displayName}</p>
           <p className="text-sm text-muted-foreground">{user.email}</p>
         </div>
       </CardContent>
@@ -31,18 +32,19 @@ export function UserCard({ user }: { user: User }) {
  * ユーザープロフィール表示コンポーネント
  */
 export function UserProfile({ user }: { user: User }) {
-  const initials = user.name
-    ?.split(" ")
-    .map(name => name[0])
-    .join("")
-    .toUpperCase() || "U";
+  const initials =
+    user.displayName
+      ?.split(" ")
+      .map((name) => name[0])
+      .join("")
+      .toUpperCase() || "U";
 
   return (
     <div className="flex items-center space-x-3">
       <Avatar className="h-8 w-8">
         <AvatarFallback className="text-xs">{initials}</AvatarFallback>
       </Avatar>
-      <span className="text-sm font-medium">{user.name}</span>
+      <span className="text-sm font-medium">{user.displayName}</span>
     </div>
   );
 }

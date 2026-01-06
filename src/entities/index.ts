@@ -12,6 +12,7 @@ export {
   getRelatedArticles,
   calculateArticleMeta,
   calculateReadingTime,
+  type Article,
   type ArticleWithDetails,
   type ArticleListItem,
   type ArticleMeta,
@@ -29,11 +30,16 @@ export {
   getUserStats,
   getPopularUsers,
   getActiveUsers,
+  getUserProfile,
+  updateUserProfile,
+  checkProfileCompletion,
   type User,
   type UserWithArticles,
   type UserPublicInfo,
   type UserStats,
   type UserWithStats,
+  type UserWithProfile,
+  type ProfileSetupData,
 } from "./user";
 
 // Topic エンティティ
@@ -50,3 +56,11 @@ export {
   type TopicWithCount,
   type TagWithCount,
 } from "./topic";
+
+// Skill エンティティ
+export * from "./skill";
+export type { Skill } from "@prisma/client";
+
+// Occupation エンティティ
+export * from "./occupation";
+export type { Occupation } from "@prisma/client";

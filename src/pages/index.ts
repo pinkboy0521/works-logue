@@ -1,6 +1,10 @@
 // FSD Pages レイヤー - 公開API
 export { HomePage } from "./home-page";
 export { LoginPage } from "./login-page";
+export { SignupPage } from "./signup-page";
+export { VerifyEmailPage } from "./verify-email-page";
+export { WelcomePage } from "./welcome-page";
 export { ArticleDetailPage } from "./article-detail-page";
 export { DashboardPage } from "./dashboard-page";
 export { ArticleEditPage } from "./article-edit-page";
+export { AdminMastersPage } from "./admin-masters-page";

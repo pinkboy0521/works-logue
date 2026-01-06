@@ -1,5 +1,5 @@
 // ライブラリとユーティリティ
-export { prisma, themeScript, cn, useTheme } from "./lib";
+export { prisma, themeScript, cn, useTheme, isAdmin } from "./lib";
 
 // APIクライアント
 export { apiRequest, authenticatedRequest } from "./api";
@@ -11,6 +11,7 @@ export { ja } from "date-fns/locale";
 // UIコンポーネント（shadcn/ui）
 export {
   Alert,
+  AlertDescription,
   Avatar,
   AvatarFallback,
   AvatarImage,

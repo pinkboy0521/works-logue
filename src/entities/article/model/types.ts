@@ -5,7 +5,7 @@ export type Article = PrismaArticle;
 
 // 下書き記事（topic, tags は任意）
 export type DraftArticle = Article & {
-  user: Pick<User, "id" | "name" | "image">;
+  user: Pick<User, "id" | "displayName" | "image">;
   topic: Pick<Topic, "id" | "name" | "description"> | null;
   tags: Array<{
     tag: Pick<Tag, "id" | "name">;
@@ -14,7 +14,7 @@ export type DraftArticle = Article & {
 
 // 公開記事（topic, tags は必須）
 export type PublishedArticle = Article & {
-  user: Pick<User, "id" | "name" | "image">;
+  user: Pick<User, "id" | "displayName" | "image">;
   topic: Pick<Topic, "id" | "name" | "description">;
   tags: Array<{
     tag: Pick<Tag, "id" | "name">;
@@ -43,7 +43,7 @@ export type PublishedArticleListItem = {
   likeCount: number;
   user: {
     id: string;
-    name: string | null;
+    displayName: string | null;
     image: string | null;
   };
   topic: {
@@ -76,6 +76,6 @@ export type RelatedArticle = Pick<
   Article,
   "id" | "title" | "topImageUrl" | "publishedAt"
 > & {
-  user: Pick<User, "id" | "name" | "image">;
+  user: Pick<User, "id" | "displayName" | "image">;
   topic: Pick<Topic, "id" | "name">;
 };

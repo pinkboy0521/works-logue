@@ -37,7 +37,7 @@ export function ArticleMetaDisplay({
 }) {
   return (
     <div className="text-sm text-muted-foreground">
-      <p>作成者: {article.user.name}</p>
+      <p>作成者: {article.user.displayName}</p>
       <p>作成日: {new Date(article.createdAt).toLocaleDateString()}</p>
       {article.topic && <p>トピック: {article.topic.name}</p>}
     </div>
