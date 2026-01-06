@@ -17,16 +17,23 @@ export function WelcomePageComponent() {
 
   useEffect(() => {
     const checkProfile = async () => {
-      // 既にチェック済みまたはセッション読み込み中は処理しない
-      if (hasCheckedProfile || status === "loading") return;
+      // セッション読み込み中は処理しない
+      if (status === "loading") return;
+
+      // 既にチェック済みは処理しない
+      if (hasCheckedProfile) return;
 
       if (status === "unauthenticated") {
-        router.push("/login");
+        window.location.href = "/login";
         return;
       }
 
-      if (!session?.user?.email) {
-        // メールがない場合はフォーム表示
+      // セッションが存在するがuserがない場合は再試行
+      if (status === "authenticated" && !session?.user) {
+        return;
+      }
+
+      if (!session?.user) {
         setHasCheckedProfile(true);
         return;
       }
@@ -56,7 +63,7 @@ export function WelcomePageComponent() {
         if (isCompleted) {
           setIsProfileCompleted(true);
           // 即座にリダイレクト
-          router.replace("/");
+          window.location.href = "/";
           return;
         }
       } catch (error) {
@@ -69,7 +76,7 @@ export function WelcomePageComponent() {
     };
 
     checkProfile();
-  }, [status, session?.user?.email, router, hasCheckedProfile]);
+  }, [status, session?.user, router, hasCheckedProfile]);
 
   const handleProfileComplete = async () => {
     // プロフィール更新後はセッション情報を更新
@@ -83,7 +90,7 @@ export function WelcomePageComponent() {
         <div className="text-center">
           <p>
             {status === "loading"
-              ? "読み込み中..."
+              ? "セッション情報を読み込み中..."
               : "プロフィール情報を確認中..."}
           </p>
         </div>
@@ -120,11 +127,29 @@ export function WelcomePageComponent() {
         </p>
       </div>
 
-      {session?.user && (
-        <ProfileSetupForm
-          user={userProfile}
-          onComplete={handleProfileComplete}
-        />
+      {status === "authenticated" &&
+        session?.user &&
+        hasCheckedProfile &&
+        !isLoading && (
+          <ProfileSetupForm
+            user={userProfile}
+            onComplete={handleProfileComplete}
+          />
+        )}
+
+      {status === "authenticated" &&
+        session?.user &&
+        !hasCheckedProfile &&
+        !isLoading && (
+          <div className="text-center">
+            <p>プロフィール情報を確認中...</p>
+          </div>
+        )}
+
+      {status === "unauthenticated" && (
+        <div className="text-center">
+          <p>認証が必要です。ログインページに移動しています...</p>
+        </div>
       )}
     </div>
   );
