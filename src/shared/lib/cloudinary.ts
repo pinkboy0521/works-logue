@@ -1,18 +1,26 @@
 import { v2 as cloudinary } from "cloudinary";
 
-if (
-  !process.env.CLOUDINARY_CLOUD_NAME ||
-  !process.env.CLOUDINARY_API_KEY ||
-  !process.env.CLOUDINARY_API_SECRET
-) {
-  throw new Error("Cloudinary environment variables are not defined");
+// ビルド時には環境変数がないことを許可し、実行時にチェックする
+function ensureCloudinaryConfig() {
+  if (
+    !process.env.CLOUDINARY_CLOUD_NAME ||
+    !process.env.CLOUDINARY_API_KEY ||
+    !process.env.CLOUDINARY_API_SECRET
+  ) {
+    throw new Error("Cloudinary environment variables are not defined");
+  }
 }
 
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
+// Cloudinaryの設定を遅延初期化
+function configureCloudinary() {
+  ensureCloudinaryConfig();
+
+  cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+  });
+}
 
 export interface SignedUploadResponse {
   signature: string;
@@ -37,8 +45,11 @@ export interface CloudinaryUploadResult {
  * プロフィール画像用の署名付きアップロードパラメータを生成
  */
 export function generateProfileImageUploadSignature(
-  userId: string,
+  userId: string
 ): SignedUploadResponse {
+  // 実行時にCloudinaryを初期化
+  configureCloudinary();
+
   const timestamp = Math.round(Date.now() / 1000);
   const publicId = `users/${userId}/profile`;
 
@@ -56,7 +67,7 @@ export function generateProfileImageUploadSignature(
   // upload_presetがある場合は署名に含めない（unsigned uploadの場合のみ使用）
   const signature = cloudinary.utils.api_sign_request(
     params,
-    process.env.CLOUDINARY_API_SECRET!,
+    process.env.CLOUDINARY_API_SECRET!
   );
 
   console.log("Generated signature:", signature);
@@ -79,8 +90,11 @@ export function getOptimizedImageUrl(
     height?: number;
     quality?: string;
     format?: string;
-  } = {},
+  } = {}
 ): string {
+  // 実行時にCloudinaryを初期化
+  configureCloudinary();
+
   const {
     width = 400,
     height = 400,
@@ -100,6 +114,9 @@ export function getOptimizedImageUrl(
  * 古いプロフィール画像を削除
  */
 export async function deleteImage(publicId: string): Promise<void> {
+  // 実行時にCloudinaryを初期化
+  configureCloudinary();
+
   try {
     await cloudinary.uploader.destroy(publicId);
     console.log(`Image deleted: ${publicId}`);
