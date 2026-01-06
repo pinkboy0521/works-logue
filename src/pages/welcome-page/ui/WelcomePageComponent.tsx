@@ -38,14 +38,20 @@ export function WelcomePageComponent() {
         const response = await fetch("/api/user/me");
 
         if (!response.ok) {
-          throw new Error("Failed to fetch user profile");
+          console.error("API error:", response.status, response.statusText);
+          // API エラーの場合でもプロフィール設定フォームを表示
+          setUserProfile(null);
+          setIsLoading(false);
+          return;
         }
 
         const profile = await response.json();
         setUserProfile(profile);
 
         // プロフィールが完成しているかチェック
-        const isCompleted = profile && profile.displayName && profile.userId;
+        const isCompleted =
+          profile &&
+          (profile.profileCompleted || (profile.displayName && profile.userId));
 
         if (isCompleted) {
           setIsProfileCompleted(true);
@@ -55,6 +61,8 @@ export function WelcomePageComponent() {
         }
       } catch (error) {
         console.error("Failed to load user profile:", error);
+        // エラーの場合でもプロフィール設定フォームを表示
+        setUserProfile(null);
       } finally {
         setIsLoading(false);
       }

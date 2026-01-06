@@ -26,30 +26,42 @@ function isPrismaError(error: unknown): error is PrismaError {
  */
 export async function updateUserProfile(
   userId: string,
-  data: ProfileSetupData,
+  data: ProfileSetupData
 ): Promise<{ success: boolean; error?: string }> {
   try {
+    console.log("updateUserProfile called with userId:", userId);
+
+    // まずユーザーの存在を確認
+    const existingUser = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { id: true, image: true },
+    });
+
+    if (!existingUser) {
+      console.error("User not found for userId:", userId);
+      return {
+        success: false,
+        error: "ユーザーが見つかりません。セッションを再度確認してください。",
+      };
+    }
+
+    console.log("User found, proceeding with update");
+
     await prisma.$transaction(async (tx) => {
       // 既存のプロフィール画像があれば削除
-      if (data.imageUrl) {
-        const existingUser = await tx.user.findUnique({
-          where: { id: userId },
-          select: { image: true },
-        });
-
-        if (existingUser?.image && existingUser.image !== data.imageUrl) {
-          // 古い画像のpublic_idを抽出してログに記録（後でAPI Route経由で削除）
-          try {
-            const urlParts = existingUser.image.split("/");
-            const publicIdWithExtension = urlParts.slice(-3).join("/");
-            const publicId = publicIdWithExtension.split(".")[0];
-            console.log("Old profile image to be cleaned up:", publicId);
-          } catch (deleteError) {
-            console.warn(
-              "Failed to extract old profile image ID:",
-              deleteError,
-            );
-          }
+      if (
+        data.imageUrl &&
+        existingUser.image &&
+        existingUser.image !== data.imageUrl
+      ) {
+        // 古い画像のpublic_idを抽出してログに記録（後でAPI Route経由で削除）
+        try {
+          const urlParts = existingUser.image.split("/");
+          const publicIdWithExtension = urlParts.slice(-3).join("/");
+          const publicId = publicIdWithExtension.split(".")[0];
+          console.log("Old profile image to be cleaned up:", publicId);
+        } catch (deleteError) {
+          console.warn("Failed to extract old profile image ID:", deleteError);
         }
       }
 
@@ -130,33 +142,56 @@ export async function updateUserProfile(
  * ユーザープロフィール詳細を取得
  */
 export async function getUserProfile(
-  userId: string,
+  userId: string
 ): Promise<UserWithProfile | null> {
-  return await prisma.user.findUnique({
-    where: { id: userId },
-    include: {
-      userSkills: {
-        include: {
-          skill: true,
+  try {
+    console.log("getUserProfile called with userId:", userId);
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      include: {
+        userSkills: {
+          include: {
+            skill: true,
+          },
+          orderBy: {
+            skill: {
+              name: "asc",
+            },
+          },
         },
-        orderBy: {
-          skill: {
-            name: "asc",
+        userOccupations: {
+          include: {
+            occupation: true,
+          },
+          orderBy: {
+            occupation: {
+              name: "asc",
+            },
           },
         },
       },
-      userOccupations: {
-        include: {
-          occupation: true,
-        },
-        orderBy: {
-          occupation: {
-            name: "asc",
-          },
-        },
-      },
-    },
-  });
+    });
+
+    console.log(
+      "Database query result:",
+      user ? "User found" : "User not found"
+    );
+
+    if (user) {
+      console.log("User details:", {
+        id: user.id,
+        email: user.email,
+        displayName: user.displayName,
+        userId: user.userId,
+      });
+    }
+
+    return user;
+  } catch (error) {
+    console.error("Error in getUserProfile:", error);
+    throw error;
+  }
 }
 
 /**
