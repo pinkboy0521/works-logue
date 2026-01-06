@@ -23,13 +23,17 @@ export const authConfig = {
         "/signup",
         "/verify-email",
         "/auth/verify-email",
-        "/welcome",
         "/api/",
         "/auth/",
         "/_next/",
         "/favicon.ico",
       ];
       if (excludePaths.some((path) => pathname.startsWith(path))) {
+        return true;
+      }
+
+      // welcomeページ自体へのアクセスは許可（無限リダイレクト防止）
+      if (pathname === "/welcome") {
         return true;
       }
 
@@ -43,19 +47,21 @@ export const authConfig = {
         "Auth check - User:",
         auth?.user?.id,
         "EmailVerified:",
-        isEmailVerified,
+        isEmailVerified
       );
 
       // プロフィール完了チェック（認証済みユーザーのみ）
       if (isLoggedin) {
         try {
+          console.log("Checking profile completion for path:", pathname);
+
           const response = await fetch(
             `${request.nextUrl.origin}/api/user/me`,
             {
               headers: {
                 Cookie: request.headers.get("cookie") || "",
               },
-            },
+            }
           );
 
           if (response.ok) {
@@ -67,9 +73,20 @@ export const authConfig = {
                 path: pathname,
                 displayName: user.displayName,
                 userId: user.userId,
+                redirecting: true,
               });
               return Response.redirect(new URL("/welcome", request.nextUrl));
+            } else {
+              console.log("Profile complete, allowing access:", {
+                path: pathname,
+                displayName: user.displayName,
+                userId: user.userId,
+              });
             }
+          } else {
+            console.log("API response not ok:", response.status);
+            // API エラーの場合はWelcomeページにリダイレクト
+            return Response.redirect(new URL("/welcome", request.nextUrl));
           }
         } catch (error) {
           console.error("Profile check error:", error);
