@@ -23,16 +23,37 @@ export async function generateMetadata({
       };
     }
 
+    // コンテンツからプレーンテキストを抽出
+    const getContentDescription = (content: unknown): string => {
+      if (Array.isArray(content)) {
+        // BlockNote JSON形式の場合
+        const textBlocks = content
+          .map((block: unknown) => {
+            if (typeof block === "object" && block !== null) {
+              const typedBlock = block as { content?: { text?: string }[] };
+              if (typedBlock.content && Array.isArray(typedBlock.content)) {
+                return typedBlock.content.map((c) => c.text || "").join("");
+              }
+            }
+            return "";
+          })
+          .join(" ");
+        return textBlocks.substring(0, 160).replace(/\n/g, " ");
+      } else if (typeof content === "string") {
+        // Markdown形式の場合（後方互換性）
+        return content.substring(0, 160).replace(/\n/g, " ");
+      }
+      return "記事の詳細をご覧ください。";
+    };
+
+    const description = getContentDescription(article.content);
+
     return {
       title: article.title,
-      description:
-        article.content?.substring(0, 160).replace(/\n/g, " ") ||
-        "記事の詳細をご覧ください。",
+      description,
       openGraph: {
         title: article.title,
-        description:
-          article.content?.substring(0, 160).replace(/\n/g, " ") ||
-          "記事の詳細をご覧ください。",
+        description,
         images: article.topImageUrl ? [article.topImageUrl] : [],
       },
     };

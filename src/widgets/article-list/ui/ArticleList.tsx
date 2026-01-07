@@ -11,11 +11,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/shared";
+import { ArticleContent } from "@/entities";
 
 type ArticleWithRelations = {
   id: string;
   title: string;
-  content: string | null;
+  content: ArticleContent; // BlockNote JSON (PartialBlock[])
   topImageUrl: string | null;
   publishedAt: Date | null;
   viewCount: number;
@@ -69,9 +70,22 @@ function ArticleCard({ article }: { article: ArticleWithRelations }) {
     }).format(new Date(date));
   };
 
-  const getContentPreview = (content: string | null) => {
-    if (!content) return "内容がありません...";
-    return content.length > 100 ? content.substring(0, 100) + "..." : content;
+  const getContentPreview = (content: ArticleContent) => {
+    if (!content || !Array.isArray(content)) return "内容がありません...";
+
+    // BlockNote JSON形式の場合
+    const text = content
+      .map((block: unknown) => {
+        if (typeof block === "object" && block !== null) {
+          const typedBlock = block as { content?: { text?: string }[] };
+          if (typedBlock.content && Array.isArray(typedBlock.content)) {
+            return typedBlock.content.map((c) => c.text || "").join("");
+          }
+        }
+        return "";
+      })
+      .join(" ");
+    return text.length > 100 ? text.substring(0, 100) + "..." : text;
   };
 
   return (

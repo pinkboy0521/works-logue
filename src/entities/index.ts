@@ -13,6 +13,7 @@ export {
   calculateArticleMeta,
   calculateReadingTime,
   type Article,
+  type ArticleContent,
   type ArticleWithDetails,
   type ArticleListItem,
   type ArticleMeta,

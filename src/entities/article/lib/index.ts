@@ -1,4 +1,4 @@
-import { type Article } from "../model";
+import { type Article, type ArticleContent } from "../model";
 import { ArticleStatus } from "@prisma/client";
 
 /**
@@ -39,13 +39,29 @@ export function getStatusDisplayName(status: ArticleStatus): string {
 /**
  * 記事が公開可能かチェック
  */
-export function canPublishArticle(article: Partial<Article>): boolean {
-  return !!(
-    article.title &&
-    article.content &&
-    article.title.length > 0 &&
-    article.content.length > 0
-  );
+export function canPublishArticle(
+  article: Partial<Article & { content: ArticleContent }>,
+): boolean {
+  const hasTitle = article.title && article.title.length > 0;
+
+  const hasContent = () => {
+    if (!article.content || !Array.isArray(article.content)) return false;
+
+    // BlockNote JSON形式の場合
+    return article.content.some((block: unknown) => {
+      if (typeof block === "object" && block !== null) {
+        const typedBlock = block as { content?: { text?: string }[] };
+        if (typedBlock.content && Array.isArray(typedBlock.content)) {
+          return typedBlock.content.some(
+            (c) => c.text && c.text.trim().length > 0,
+          );
+        }
+      }
+      return false;
+    });
+  };
+
+  return !!(hasTitle && hasContent());
 }
 
 /**

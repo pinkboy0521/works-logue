@@ -93,7 +93,7 @@ export function VerifyEmailPageComponent() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button onClick={handleContinue} className="w-full">
+            <Button onClick={handleContinue} className="w-full cursor-pointer">
               ログイン画面へ
             </Button>
           </CardContent>

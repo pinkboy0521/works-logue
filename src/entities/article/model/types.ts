@@ -1,10 +1,15 @@
 import { Article as PrismaArticle, User, Topic, Tag } from "@prisma/client";
+import { PartialBlock } from "@blocknote/core";
 
 // ベースの記事タイプ
 export type Article = PrismaArticle;
 
+// BlockNoteコンテンツ型（保存・復元用）
+export type ArticleContent = PartialBlock[];
+
 // 下書き記事（topic, tags は任意）
-export type DraftArticle = Article & {
+export type DraftArticle = Omit<Article, "content"> & {
+  content: ArticleContent;
   user: Pick<User, "id" | "displayName" | "image">;
   topic: Pick<Topic, "id" | "name" | "description"> | null;
   tags: Array<{
@@ -13,7 +18,8 @@ export type DraftArticle = Article & {
 };
 
 // 公開記事（topic, tags は必須）
-export type PublishedArticle = Article & {
+export type PublishedArticle = Omit<Article, "content"> & {
+  content: ArticleContent;
   user: Pick<User, "id" | "displayName" | "image">;
   topic: Pick<Topic, "id" | "name" | "description">;
   tags: Array<{
@@ -36,7 +42,7 @@ export type ArticleListItem = PublishedArticle & {
 export type PublishedArticleListItem = {
   id: string;
   title: string;
-  content: string | null;
+  content: ArticleContent; // BlockNote JSONのみ
   topImageUrl: string | null;
   publishedAt: Date | null;
   viewCount: number;

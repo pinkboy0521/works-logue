@@ -1,8 +1,5 @@
 "use client";
 
-import ReactMarkdown from "react-markdown";
-import rehypeHighlight from "rehype-highlight";
-import rehypeRaw from "rehype-raw";
 import {
   Avatar,
   AvatarFallback,
@@ -12,6 +9,7 @@ import {
   Badge,
 } from "@/shared";
 import { ArticleWithDetails, ArticleMeta, RelatedArticle } from "@/entities";
+import { BlockNoteRenderer } from "./BlockNoteRenderer";
 import Image from "next/image";
 import { format } from "date-fns";
 import { ja } from "date-fns/locale";
@@ -121,100 +119,11 @@ export function ArticleDetail({
       {/* 記事コンテンツ */}
       <Card>
         <CardContent className="p-6 md:p-8">
-          {article.content ? (
-            <div className="prose prose-lg max-w-none prose-gray dark:prose-invert">
-              <ReactMarkdown
-                rehypePlugins={[rehypeHighlight, rehypeRaw]}
-                components={{
-                  // カスタムコンポーネントでスタイルを調整
-                  h1: ({ children }) => (
-                    <h1 className="text-2xl font-bold mb-4 text-foreground">
-                      {children}
-                    </h1>
-                  ),
-                  h2: ({ children }) => (
-                    <h2 className="text-xl font-bold mb-3 text-foreground mt-6">
-                      {children}
-                    </h2>
-                  ),
-                  h3: ({ children }) => (
-                    <h3 className="text-lg font-semibold mb-2 text-foreground mt-4">
-                      {children}
-                    </h3>
-                  ),
-                  p: ({ children }) => (
-                    <p className="mb-4 leading-relaxed text-muted-foreground">
-                      {children}
-                    </p>
-                  ),
-                  ul: ({ children }) => (
-                    <ul className="mb-4 ml-6 list-disc space-y-1">
-                      {children}
-                    </ul>
-                  ),
-                  ol: ({ children }) => (
-                    <ol className="mb-4 ml-6 list-decimal space-y-1">
-                      {children}
-                    </ol>
-                  ),
-                  li: ({ children }) => (
-                    <li className="text-muted-foreground">{children}</li>
-                  ),
-                  blockquote: ({ children }) => (
-                    <blockquote className="border-l-4 border-border pl-4 mb-4 italic text-muted-foreground">
-                      {children}
-                    </blockquote>
-                  ),
-                  code: ({ children, className }) => {
-                    const isInline = !className;
-                    return isInline ? (
-                      <code className="px-1 py-0.5 bg-muted text-foreground rounded text-sm font-mono">
-                        {children}
-                      </code>
-                    ) : (
-                      <code className={className}>{children}</code>
-                    );
-                  },
-                  pre: ({ children }) => (
-                    <pre className="mb-4 p-4 bg-muted text-muted-foreground rounded-lg overflow-x-auto">
-                      {children}
-                    </pre>
-                  ),
-                  a: ({ children, href }) => (
-                    <a
-                      href={href}
-                      className="text-primary hover:text-primary/80 underline"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {children}
-                    </a>
-                  ),
-                  table: ({ children }) => (
-                    <div className="overflow-x-auto mb-4">
-                      <table className="min-w-full border-collapse border border-border">
-                        {children}
-                      </table>
-                    </div>
-                  ),
-                  th: ({ children }) => (
-                    <th className="border border-border px-4 py-2 bg-muted font-semibold text-left text-foreground">
-                      {children}
-                    </th>
-                  ),
-                  td: ({ children }) => (
-                    <td className="border border-border px-4 py-2 text-muted-foreground">
-                      {children}
-                    </td>
-                  ),
-                }}
-              >
-                {article.content}
-              </ReactMarkdown>
-            </div>
+          {article.content && article.content.length > 0 ? (
+            <BlockNoteRenderer blocks={article.content} />
           ) : (
-            <div className="text-center py-12 text-muted-foreground">
-              記事の内容がありません。
+            <div className="text-center py-8 text-muted-foreground">
+              記事の内容がありません
             </div>
           )}
         </CardContent>

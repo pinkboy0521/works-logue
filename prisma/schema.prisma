@@ -61,7 +61,7 @@ model Article {
   user         User          @relation(fields: [userId], references: [id])
 
   title        String
-  content      String?
+  content      Json?
   topImageUrl  String?
 
   status       ArticleStatus @default(DRAFT)

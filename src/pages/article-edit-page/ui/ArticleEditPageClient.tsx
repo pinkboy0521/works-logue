@@ -1,15 +1,37 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
 import { Button, Input, Card } from "@/shared";
 import { updateArticle, getAllTopics, DraftArticle } from "@/entities";
+import { Block } from "@blocknote/core";
 import {
   validateDraftArticle,
   validatePublishArticle,
   extractValidationErrors,
   type ValidationErrors,
 } from "@/features";
+
+// BlockNoteEditorを動的インポートでSSRを無効化
+const BlockNoteEditor = dynamic(
+  () => import("@/features").then((mod) => ({ default: mod.BlockNoteEditor })),
+  {
+    ssr: false,
+    loading: () => (
+      <Card className="p-4">
+        <div className="space-y-4">
+          <div className="h-4 bg-muted rounded w-1/4 animate-pulse"></div>
+          <div className="h-64 bg-muted rounded animate-pulse"></div>
+          <div className="space-y-2">
+            <div className="h-4 bg-muted rounded w-3/4 animate-pulse"></div>
+            <div className="h-4 bg-muted rounded w-1/2 animate-pulse"></div>
+          </div>
+        </div>
+      </Card>
+    ),
+  },
+);
 
 interface ArticleEditPageClientProps {
   article: DraftArticle;
@@ -26,7 +48,15 @@ export function ArticleEditPageClient({
   const [errors, setErrors] = useState<ValidationErrors>({});
   const [formData, setFormData] = useState({
     title: article.title || "",
-    content: article.content || "",
+    content:
+      Array.isArray(article.content) && article.content.length > 0
+        ? (article.content as Block[])
+        : [
+            {
+              type: "paragraph",
+              content: [{ type: "text", text: "", styles: {} }],
+            } as Block,
+          ],
     topicId: article.topicId || "",
     status: article.status,
   });
@@ -41,10 +71,19 @@ export function ArticleEditPageClient({
 
   const clearErrors = () => setErrors({});
 
+  // BlockNoteエディターの内容変更処理
+  const handleContentChange = useCallback(
+    (blocks: Block[]) => {
+      setFormData((prev) => ({ ...prev, content: blocks }));
+      if (errors.content) clearFieldError("content");
+    },
+    [errors.content],
+  );
+
   const handleSaveDraft = async () => {
     clearErrors();
 
-    // 下書き保存のバリデーション（トピックのみ必須）
+    // 下書き保存のバリデーション
     const validationResult = validateDraftArticle({
       ...formData,
       status: "DRAFT",
@@ -67,14 +106,13 @@ export function ArticleEditPageClient({
       });
     } catch (error) {
       console.error("Error saving draft:", error);
-      // エラーは遷移先で適切に処理する
     }
   };
 
   const handlePublish = async () => {
     clearErrors();
 
-    // 公開のバリデーション（全項目必須）
+    // 公開のバリデーション
     const validationResult = validatePublishArticle({
       ...formData,
       status: "PUBLISHED",
@@ -86,13 +124,11 @@ export function ArticleEditPageClient({
       return;
     }
 
-    // バリデーション成功時のみ処理を続行
     try {
       const updatedArticle = await updateArticle(article.id, userId, {
         ...formData,
         status: "PUBLISHED",
       });
-      // 公開完了後に記事ページに遷移
       router.push(`/${updatedArticle.user.id}/articles/${updatedArticle.id}`);
     } catch (error) {
       console.error("Error publishing article:", error);
@@ -127,21 +163,22 @@ export function ArticleEditPageClient({
       </div>
 
       <div className="space-y-6">
+        {/* Global Error Display */}
+        {Object.keys(errors).length > 0 && (
+          <div className="p-4 bg-destructive/10 border border-destructive/20 rounded-md">
+            <h3 className="text-sm font-medium text-destructive mb-2">
+              入力エラー
+            </h3>
+            <ul className="text-sm text-destructive space-y-1">
+              {Object.entries(errors).map(([field, message]) => (
+                <li key={field}>• {message}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+
         {/* Title Input */}
         <div>
-          {/* グローバルエラー表示 */}
-          {Object.keys(errors).length > 0 && (
-            <div className="mt-6 p-4 bg-destructive/10 border border-destructive/20 rounded-md">
-              <h3 className="text-sm font-medium text-destructive mb-2">
-                入力エラー
-              </h3>
-              <ul className="text-sm text-destructive space-y-1">
-                {Object.entries(errors).map(([field, message]) => (
-                  <li key={field}>• {message}</li>
-                ))}
-              </ul>
-            </div>
-          )}
           <Input
             placeholder="記事のタイトル"
             value={formData.title}
@@ -185,53 +222,20 @@ export function ArticleEditPageClient({
           )}
         </div>
 
-        {/* Editor Layout - Split View */}
+        {/* BlockNote Editor */}
         <div className="space-y-2">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[calc(100vh-300px)]">
-            {/* Markdown Editor */}
-            <Card className="p-4">
-              <h2 className="text-lg font-semibold mb-3 text-muted-foreground">
-                編集
-              </h2>
-              <textarea
-                placeholder="Markdownで記事を書いてください..."
-                value={formData.content}
-                onChange={(e) => {
-                  setFormData((prev) => ({ ...prev, content: e.target.value }));
-                  if (errors.content) clearFieldError("content");
-                }}
-                className={`w-full h-full resize-none border-none outline-none bg-transparent text-foreground placeholder:text-muted-foreground ${
-                  errors.content ? "border-destructive" : ""
-                }`}
+          <Card className="p-4">
+            <h2 className="text-lg font-semibold mb-3 text-muted-foreground">
+              記事エディター
+            </h2>
+            <div className="min-h-[400px]">
+              <BlockNoteEditor
+                initialContent={formData.content}
+                onChange={handleContentChange}
+                className="w-full"
               />
-            </Card>
-
-            {/* Preview */}
-            <Card className="p-4">
-              <h2 className="text-lg font-semibold mb-3 text-muted-foreground">
-                プレビュー
-              </h2>
-              <div className="h-full overflow-auto prose prose-sm max-w-none">
-                {formData.content ? (
-                  <div
-                    dangerouslySetInnerHTML={{
-                      __html: formData.content
-                        .replace(/\n/g, "<br>")
-                        .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
-                        .replace(/\*(.*?)\*/g, "<em>$1</em>")
-                        .replace(/^# (.*?)$/gm, "<h1>$1</h1>")
-                        .replace(/^## (.*?)$/gm, "<h2>$1</h2>")
-                        .replace(/^### (.*?)$/gm, "<h3>$1</h3>"),
-                    }}
-                  />
-                ) : (
-                  <p className="text-muted-foreground italic">
-                    ここにプレビューが表示されます
-                  </p>
-                )}
-              </div>
-            </Card>
-          </div>
+            </div>
+          </Card>
           {errors.content && (
             <p className="text-destructive text-sm mt-1">{errors.content}</p>
           )}

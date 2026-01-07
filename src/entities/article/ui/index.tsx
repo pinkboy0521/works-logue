@@ -20,7 +20,25 @@ export function ArticleCard({ article }: { article: ArticleWithDetails }) {
       </CardHeader>
       <CardContent>
         <p className="text-sm text-muted-foreground line-clamp-3">
-          {article.content?.slice(0, 150) || "内容なし"}...
+          {(() => {
+            if (!article.content || !Array.isArray(article.content))
+              return "内容なし";
+
+            // BlockNote JSON形式の場合
+            const textBlocks = article.content
+              .map((block: unknown) => {
+                if (typeof block === "object" && block !== null) {
+                  const typedBlock = block as { content?: { text?: string }[] };
+                  if (typedBlock.content && Array.isArray(typedBlock.content)) {
+                    return typedBlock.content.map((c) => c.text || "").join("");
+                  }
+                }
+                return "";
+              })
+              .join(" ");
+            return textBlocks.slice(0, 150) || "内容なし";
+          })()}
+          ...
         </p>
       </CardContent>
     </Card>

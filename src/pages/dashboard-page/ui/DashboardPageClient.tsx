@@ -12,6 +12,51 @@ interface DashboardPageProps {
 export function DashboardPageClient({ user }: DashboardPageProps) {
   const articles = user.articles;
 
+  // JSON形式のcontentから文字数を計算
+  const getContentLength = (content: unknown): number => {
+    if (Array.isArray(content)) {
+      // BlockNote JSON形式の場合
+      return content
+        .map((block: unknown) => {
+          if (typeof block === "object" && block !== null) {
+            const typedBlock = block as { content?: { text?: string }[] };
+            if (typedBlock.content && Array.isArray(typedBlock.content)) {
+              return typedBlock.content.map((c) => c.text || "").join("");
+            }
+          }
+          return "";
+        })
+        .join(" ").length;
+    } else if (typeof content === "string") {
+      // Markdown形式の場合（後方互換性）
+      return content.length;
+    }
+    return 0;
+  };
+
+  // JSON形式のcontentからプレビューテキストを取得
+  const getPreviewText = (content: unknown): string => {
+    if (Array.isArray(content)) {
+      // BlockNote JSON形式の場合
+      const text = content
+        .map((block: unknown) => {
+          if (typeof block === "object" && block !== null) {
+            const typedBlock = block as { content?: { text?: string }[] };
+            if (typedBlock.content && Array.isArray(typedBlock.content)) {
+              return typedBlock.content.map((c) => c.text || "").join("");
+            }
+          }
+          return "";
+        })
+        .join(" ");
+      return text.substring(0, 200);
+    } else if (typeof content === "string") {
+      // Markdown形式の場合（後方互換性）
+      return content.substring(0, 200);
+    }
+    return "";
+  };
+
   const formatArticleStatus = (status: string, publishedAt: Date | null) => {
     switch (status) {
       case "PUBLISHED":
@@ -69,7 +114,7 @@ export function DashboardPageClient({ user }: DashboardPageProps) {
                       <span>•</span>
                       <span>
                         {article.content
-                          ? `${article.content.length} 文字`
+                          ? `${getContentLength(article.content)} 文字`
                           : "0 文字"}
                       </span>
                       <span>•</span>
@@ -99,7 +144,7 @@ export function DashboardPageClient({ user }: DashboardPageProps) {
                     </div>
                     {article.content && (
                       <p className="text-muted-foreground line-clamp-2">
-                        {article.content.substring(0, 200)}...
+                        {getPreviewText(article.content)}...
                       </p>
                     )}
                   </div>

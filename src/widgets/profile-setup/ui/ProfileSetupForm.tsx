@@ -545,7 +545,7 @@ export function ProfileSetupForm({ user, onComplete }: ProfileSetupFormProps) {
         </Card>
 
         <div className="flex justify-end">
-          <Button type="submit" disabled={isLoading}>
+          <Button type="submit" disabled={isLoading} className="cursor-pointer">
             {isLoading ? "保存中..." : "Works Logueを始める"}
           </Button>
         </div>

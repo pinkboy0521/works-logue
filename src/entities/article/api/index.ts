@@ -1,12 +1,50 @@
 "use server";
 
 import { prisma } from "@/shared";
+import { Block } from "@blocknote/core";
 import {
   ArticleWithDetails,
   RelatedArticle,
   DraftArticle,
   PublishedArticleListItem,
 } from "@/entities";
+
+// BlockNoteコンテンツ型
+type ArticleContent = Block[];
+
+/**
+ * BlockNoteコンテンツをPrismaで保存可能な形式に変換
+ * - tableのcolumnWidthsのundefinedをnullに変換
+ * - その他のundefined値をクリーンアップ
+ */
+function cleanBlockNoteContent(content: unknown): unknown {
+  if (Array.isArray(content)) {
+    return content.map(cleanBlockNoteContent);
+  }
+
+  if (typeof content === "object" && content !== null) {
+    const cleaned: Record<string, unknown> = {};
+
+    for (const [key, value] of Object.entries(content)) {
+      if (value === undefined) {
+        continue; // undefined値をスキップ
+      }
+
+      if (key === "columnWidths" && Array.isArray(value)) {
+        // columnWidths配列のundefinedをnullに変換
+        cleaned[key] = value.map((width) =>
+          width === undefined ? null : width,
+        );
+      } else {
+        cleaned[key] = cleanBlockNoteContent(value);
+      }
+    }
+
+    return cleaned;
+  }
+
+  return content;
+}
 
 /**
  * 記事の閲覧数を増加
@@ -131,7 +169,10 @@ export async function getPublishedArticles() {
       take: 20, // 最新20件を取得
     });
 
-    return articles as PublishedArticleListItem[]; // topicIdフィルター済みなので型安全
+    return articles.map((article) => ({
+      ...article,
+      content: article.content as ArticleContent,
+    })) as PublishedArticleListItem[]; // topicIdフィルター済みなので型安全
   } catch (error) {
     console.error("Error fetching articles:", error);
     throw new Error("記事の取得に失敗しました");
@@ -176,7 +217,10 @@ export async function getLatestArticles(limit: number = 3) {
       take: limit,
     });
 
-    return articles as PublishedArticleListItem[]; // topicIdフィルター済みなので型安全
+    return articles.map((article) => ({
+      ...article,
+      content: article.content as ArticleContent,
+    })) as PublishedArticleListItem[]; // topicIdフィルター済みなので型安全
   } catch (error) {
     console.error("Error fetching latest articles:", error);
     throw new Error("最新記事の取得に失敗しました");
@@ -221,7 +265,10 @@ export async function getPopularArticles(limit: number = 3) {
       take: limit,
     });
 
-    return articles as PublishedArticleListItem[]; // topicIdフィルター済みなので型安全
+    return articles.map((article) => ({
+      ...article,
+      content: article.content as ArticleContent,
+    })) as PublishedArticleListItem[];
   } catch (error) {
     console.error("Error fetching popular articles:", error);
     throw new Error("人気記事の取得に失敗しました");
@@ -265,7 +312,12 @@ export async function getArticleById(
       },
     });
 
-    return article;
+    return article
+      ? {
+          ...article,
+          content: article.content as ArticleContent,
+        }
+      : null;
   } catch (error) {
     console.error("Error fetching article:", error);
     throw new Error("記事の取得に失敗しました");
@@ -314,7 +366,12 @@ export async function getArticleForEdit(
       },
     });
 
-    return article;
+    return article
+      ? {
+          ...article,
+          content: article.content as ArticleContent,
+        }
+      : null;
   } catch (error) {
     console.error("Error fetching article for edit:", error);
     throw new Error("編集用記事の取得に失敗しました");
@@ -329,7 +386,7 @@ export async function updateArticle(
   userId: string,
   data: {
     title?: string;
-    content?: string;
+    content?: ArticleContent; // BlockNote JSON のみ
     topImageUrl?: string;
     topicId?: string;
     status?: "DRAFT" | "PUBLISHED" | "PRIVATE";
@@ -349,23 +406,46 @@ export async function updateArticle(
     // タグの関連データを準備
     const tagConnections = data.tagIds
       ? {
-          deleteMany: {},
+          deleteMany: {} as object,
           create: data.tagIds.map((tagId) => ({
             tag: { connect: { id: tagId } },
           })),
         }
       : undefined;
 
+    // 更新データをPrismaの型に適合させて構築
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const updateData: any = {
+      updatedAt: new Date(),
+    };
+
+    if (data.title !== undefined) updateData.title = data.title;
+    if (data.content !== undefined) {
+      // BlockNoteコンテンツをクリーンアップして保存
+      updateData.content = cleanBlockNoteContent(data.content);
+    }
+    if (data.topImageUrl !== undefined)
+      updateData.topImageUrl = data.topImageUrl;
+    if (data.topicId !== undefined) {
+      updateData.topic = {
+        connect: { id: data.topicId },
+      };
+    }
+    if (data.status !== undefined) updateData.status = data.status;
+
+    // 公開日時設定
+    if (data.status === "PUBLISHED" && !existingArticle.publishedAt) {
+      updateData.publishedAt = new Date();
+    }
+
+    // タグ設定
+    if (tagConnections) {
+      updateData.tags = tagConnections;
+    }
+
     const updatedArticle = await prisma.article.update({
       where: { id },
-      data: {
-        ...data,
-        ...(data.status === "PUBLISHED" && !existingArticle.publishedAt
-          ? { publishedAt: new Date() }
-          : {}),
-        updatedAt: new Date(),
-        ...(tagConnections ? { tags: tagConnections } : {}),
-      },
+      data: updateData,
       include: {
         user: {
           select: {
@@ -411,7 +491,12 @@ export async function createDraftArticle(userId: string) {
       data: {
         userId,
         title: "",
-        content: "",
+        content: [
+          {
+            type: "paragraph",
+            content: [{ type: "text", text: "", styles: {} }],
+          },
+        ],
         status: "DRAFT",
       },
       include: {

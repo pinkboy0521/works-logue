@@ -20,13 +20,13 @@ export async function GET() {
     const userProfile = await getUserProfile(session.user.id);
     console.log(
       "Raw user profile result:",
-      userProfile ? "Found" : "Not found"
+      userProfile ? "Found" : "Not found",
     );
 
     if (!userProfile) {
       console.log(
         "User profile not found in database for ID:",
-        session.user.id
+        session.user.id,
       );
       // プロフィール未完了の場合は404ではなく、基本的なユーザー情報を返す
       return NextResponse.json({
@@ -64,7 +64,7 @@ export async function GET() {
         error: "Internal server error",
         details: error instanceof Error ? error.message : "Unknown error",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

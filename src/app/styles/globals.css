@@ -1,5 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "@blocknote/shadcn/style.css";
+@source "@blocknote/shadcn";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -283,5 +285,12 @@
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 3;
     line-clamp: 3;
+  }
+}
+
+/* Applies some additional necessary border styles within the editor. */
+@layer base {
+  .bn-shadcn * {
+    @apply border-border outline-ring/50;
   }
 }
