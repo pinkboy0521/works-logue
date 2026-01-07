@@ -26,7 +26,7 @@ function isPrismaError(error: unknown): error is PrismaError {
  */
 export async function updateUserProfile(
   userId: string,
-  data: ProfileSetupData
+  data: ProfileSetupData,
 ): Promise<{ success: boolean; error?: string }> {
   try {
     console.log("updateUserProfile called with userId:", userId);
@@ -142,7 +142,7 @@ export async function updateUserProfile(
  * ユーザープロフィール詳細を取得
  */
 export async function getUserProfile(
-  userId: string
+  userId: string,
 ): Promise<UserWithProfile | null> {
   try {
     console.log("getUserProfile called with userId:", userId);
@@ -175,7 +175,7 @@ export async function getUserProfile(
 
     console.log(
       "Database query result:",
-      user ? "User found" : "User not found"
+      user ? "User found" : "User not found",
     );
 
     if (user) {

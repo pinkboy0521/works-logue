@@ -45,7 +45,7 @@ export interface CloudinaryUploadResult {
  * プロフィール画像用の署名付きアップロードパラメータを生成
  */
 export function generateProfileImageUploadSignature(
-  userId: string
+  userId: string,
 ): SignedUploadResponse {
   // 実行時にCloudinaryを初期化
   configureCloudinary();
@@ -67,7 +67,7 @@ export function generateProfileImageUploadSignature(
   // upload_presetがある場合は署名に含めない（unsigned uploadの場合のみ使用）
   const signature = cloudinary.utils.api_sign_request(
     params,
-    process.env.CLOUDINARY_API_SECRET!
+    process.env.CLOUDINARY_API_SECRET!,
   );
 
   console.log("Generated signature:", signature);
@@ -90,7 +90,7 @@ export function getOptimizedImageUrl(
     height?: number;
     quality?: string;
     format?: string;
-  } = {}
+  } = {},
 ): string {
   // 実行時にCloudinaryを初期化
   configureCloudinary();

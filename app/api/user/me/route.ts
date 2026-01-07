@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { auth } from "@/auth";
-import { getUserProfile } from "@/entities/user/api/profile";
+import { getUserProfile } from "@/entities";
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     console.log("API Route called: /api/user/me");
 

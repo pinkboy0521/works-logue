@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
             ? error.message
             : "プロフィールの更新に失敗しました",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -48,16 +48,16 @@ export function ProfileSetupForm({ user, onComplete }: ProfileSetupFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [profileImage, setProfileImage] = useState<string | null>(
-    user?.image || null
+    user?.image || null,
   );
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [skills, setSkills] = useState<Record<string, Skill[]>>({});
   const [occupations, setOccupations] = useState<Record<string, Occupation[]>>(
-    {}
+    {},
   );
   const [selectedSkills, setSelectedSkills] = useState<Set<string>>(new Set());
   const [selectedOccupations, setSelectedOccupations] = useState<Set<string>>(
-    new Set()
+    new Set(),
   );
   const [skillsLoaded, setSkillsLoaded] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -92,7 +92,7 @@ export function ProfileSetupForm({ user, onComplete }: ProfileSetupFormProps) {
       }
       if (user?.userOccupations) {
         setSelectedOccupations(
-          new Set(user.userOccupations.map((uo) => uo.occupation.id))
+          new Set(user.userOccupations.map((uo) => uo.occupation.id)),
         );
       }
 
@@ -144,7 +144,7 @@ export function ProfileSetupForm({ user, onComplete }: ProfileSetupFormProps) {
       formData.append("folder", signature.folder);
       formData.append(
         "transformation",
-        "c_fill,g_face,h_400,w_400,q_auto,f_auto"
+        "c_fill,g_face,h_400,w_400,q_auto,f_auto",
       );
 
       const response = await fetch(
@@ -152,13 +152,13 @@ export function ProfileSetupForm({ user, onComplete }: ProfileSetupFormProps) {
         {
           method: "POST",
           body: formData,
-        }
+        },
       );
 
       if (!response.ok) {
         const errorData = await response.text();
         throw new Error(
-          `画像のアップロードに失敗しました (${response.status}): ${errorData}`
+          `画像のアップロードに失敗しました (${response.status}): ${errorData}`,
         );
       }
 
@@ -168,7 +168,7 @@ export function ProfileSetupForm({ user, onComplete }: ProfileSetupFormProps) {
       setProfileImage(result.secure_url);
     } catch (err: unknown) {
       setError(
-        err instanceof Error ? err.message : "画像のアップロードに失敗しました"
+        err instanceof Error ? err.message : "画像のアップロードに失敗しました",
       );
     } finally {
       setIsUploadingImage(false);
@@ -189,7 +189,7 @@ export function ProfileSetupForm({ user, onComplete }: ProfileSetupFormProps) {
 
     try {
       const response = await fetch(
-        `/api/user/check-id?userId=${encodeURIComponent(userId)}`
+        `/api/user/check-id?userId=${encodeURIComponent(userId)}`,
       );
       const result = await response.json();
 
@@ -539,7 +539,7 @@ export function ProfileSetupForm({ user, onComplete }: ProfileSetupFormProps) {
                     ))}
                   </div>
                 </div>
-              )
+              ),
             )}
           </CardContent>
         </Card>

@@ -22,7 +22,7 @@ export async function sendEmail({
   }
 
   sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-  
+
   const from = process.env.EMAIL_FROM;
 
   const msg = {

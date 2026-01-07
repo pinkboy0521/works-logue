@@ -47,7 +47,7 @@ export const authConfig = {
         "Auth check - User:",
         auth?.user?.id,
         "EmailVerified:",
-        isEmailVerified
+        isEmailVerified,
       );
 
       // プロフィール完了チェック（認証済みユーザーのみ）
@@ -61,7 +61,7 @@ export const authConfig = {
               headers: {
                 Cookie: request.headers.get("cookie") || "",
               },
-            }
+            },
           );
 
           if (response.ok) {
