@@ -12,7 +12,7 @@ export async function CommentSectionWrapper({
   currentUserId,
   isAdmin = false,
 }: CommentSectionWrapperProps) {
-  const [comments] = await Promise.all([
+  const [comments, count] = await Promise.all([
     getCommentsByArticleId(articleId),
     getCommentCount(articleId),
   ]);
@@ -21,6 +21,7 @@ export async function CommentSectionWrapper({
     <CommentSection
       articleId={articleId}
       initialComments={comments}
+      initialCount={count}
       currentUserId={currentUserId}
       isAdmin={isAdmin}
     />

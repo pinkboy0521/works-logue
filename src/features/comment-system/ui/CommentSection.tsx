@@ -84,8 +84,8 @@ export function CommentSection({
       isDeleted: false,
       deletedAt: null,
       deletedBy: null,
-      createdAt: new Date().toISOString(), // Use ISO string to avoid hydration issues
-      updatedAt: new Date().toISOString(),
+      createdAt: new Date(), // Use Date object for type consistency
+      updatedAt: new Date(),
       user: {
         id: currentUserId,
         displayName: "あなた", // Will be updated after server response
