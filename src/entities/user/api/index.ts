@@ -16,7 +16,7 @@ export {
  * userIDでユーザーを取得（著者ページ用）
  */
 export async function getUserByUserId(
-  userId: string
+  userId: string,
 ): Promise<UserPublicInfo | null> {
   const user = await prisma.user.findUnique({
     where: { userId },
@@ -40,7 +40,7 @@ export async function getUserByUserId(
  * userIDでユーザーを記事とともに取得できる
  */
 export async function getUserWithArticlesByUserId(
-  userId: string
+  userId: string,
 ): Promise<UserWithArticles | null> {
   const user = await prisma.user.findUnique({
     where: { userId },
@@ -71,7 +71,7 @@ export async function getUserWithArticlesByUserId(
  * userIDでユーザー統計情報を取得
  */
 export async function getUserStatsByUserId(
-  userId: string
+  userId: string,
 ): Promise<UserWithStats | null> {
   const user = await getUserByUserId(userId);
   if (!user) return null;
@@ -131,7 +131,7 @@ export async function getUserById(id: string): Promise<UserPublicInfo | null> {
  * ユーザー詳細情報を記事と一緒に取得
  */
 export async function getUserWithArticles(
-  id: string
+  id: string,
 ): Promise<UserWithArticles | null> {
   const user = await prisma.user.findUnique({
     where: { id },
@@ -198,7 +198,7 @@ export async function getUserStats(id: string): Promise<UserWithStats | null> {
  * 人気のユーザー一覧を取得（記事のいいね数順）
  */
 export async function getPopularUsers(
-  limit: number = 10
+  limit: number = 10,
 ): Promise<UserWithStats[]> {
   const users = await prisma.user.findMany({
     take: limit,
@@ -216,7 +216,7 @@ export async function getPopularUsers(
     users.map(async (user) => {
       const stats = await getUserStats(user.id);
       return stats!;
-    })
+    }),
   );
 
   // いいね数でソート
@@ -227,7 +227,7 @@ export async function getPopularUsers(
  * 最近活動したユーザー一覧を取得
  */
 export async function getActiveUsers(
-  limit: number = 10
+  limit: number = 10,
 ): Promise<UserPublicInfo[]> {
   const users = await prisma.user.findMany({
     take: limit,

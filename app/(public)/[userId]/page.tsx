@@ -24,7 +24,7 @@ export default async function Page({ params, searchParams }: PageProps) {
 // メタデータ
 export async function generateMetadata({ params }: PageProps) {
   const { userId } = await params;
-  
+
   // TODO: ユーザー情報を取得してメタデータを動的生成することも可能
   return {
     title: `@${userId} のプロフィール | Works Logue`,

@@ -5,7 +5,23 @@ import {
   getRelatedArticles,
   calculateArticleMeta,
 } from "@/entities";
+import { CommentSectionWrapper } from "@/features";
+import { auth } from "@/auth";
+import { prisma } from "@/shared";
 import { notFound } from "next/navigation";
+
+// Helper function to check admin role
+async function checkUserRole(userId: string): Promise<boolean> {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { role: true },
+    });
+    return user?.role === "ADMIN";
+  } catch {
+    return false;
+  }
+}
 
 interface ArticleDetailPageProps {
   params: {
@@ -20,6 +36,12 @@ export async function ArticleDetailPage({ params }: ArticleDetailPageProps) {
   if (!article) {
     notFound();
   }
+
+  // Get user session for comment functionality
+  const session = await auth();
+  const currentUserId = session?.user?.id;
+  const isAdmin =
+    session?.user && session.user.id && (await checkUserRole(session.user.id));
 
   // 記事詳細ページ特有のロジック
   const getContentText = (content: unknown): string => {
@@ -52,10 +74,19 @@ export async function ArticleDetailPage({ params }: ArticleDetailPageProps) {
   incrementArticleViews(article.id).catch(console.error);
 
   return (
-    <ArticleDetail
-      article={article}
-      relatedArticles={relatedArticles}
-      meta={meta}
-    />
+    <div className="space-y-8">
+      <ArticleDetail
+        article={article}
+        relatedArticles={relatedArticles}
+        meta={meta}
+      />
+
+      {/* Comment Section */}
+      <CommentSectionWrapper
+        articleId={article.id}
+        currentUserId={currentUserId}
+        isAdmin={Boolean(isAdmin)}
+      />
+    </div>
   );
 }

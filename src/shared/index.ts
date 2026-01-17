@@ -37,6 +37,7 @@ export {
   FormMessage,
   Input,
   Label,
+  Textarea,
   NavigationMenu,
   NavigationMenuContent,
   NavigationMenuItem,
@@ -55,11 +56,7 @@ export {
 } from "./ui/shadcn";
 
 // アイコン
-export {
-  MoonIcon,
-  SunIcon,
-  ShrimpIcon,  
-} from "./ui/lucide";
+export { MoonIcon, SunIcon, ShrimpIcon } from "./ui/lucide";
 
 // レイアウト
 export { BaseLayout, AuthLayout } from "./ui/layout";

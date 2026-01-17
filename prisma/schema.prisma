@@ -34,6 +34,7 @@ model User {
   
   accounts          Account[]  
   articles          Article[]
+  comments          Comment[]
   userSkills        UserSkill[]
   userOccupations   UserOccupation[]
   createdAt         DateTime     @default(now())
@@ -74,6 +75,7 @@ model Article {
   topic        Topic?        @relation(fields: [topicId], references: [id])
 
   tags         ArticleTag[]
+  comments     Comment[]
 
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
@@ -81,6 +83,36 @@ model Article {
   @@index([userId])
   @@index([status, publishedAt])
   @@index([topicId])
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  content   String   // コメント本文
+  
+  // 関連
+  articleId String
+  article   Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  
+  // ネスト構造（自己参照）
+  parentId  String?
+  parent    Comment? @relation("CommentReplies", fields: [parentId], references: [id])
+  replies   Comment[] @relation("CommentReplies")
+  
+  // ソフトデリート
+  isDeleted   Boolean   @default(false)
+  deletedAt   DateTime?
+  deletedBy   String?   // 削除者（管理者）のユーザーID
+  
+  // タイムスタンプ
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@index([articleId, isDeleted, createdAt])
+  @@index([parentId])
+  @@index([userId])
+  @@map("comments")
 }
 
 enum ArticleStatus {

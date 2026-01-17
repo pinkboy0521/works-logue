@@ -9,7 +9,12 @@ import {
   CardContent,
   Badge,
 } from "@/shared";
-import { ArticleWithDetails, ArticleMeta, RelatedArticle, AuthorCard } from "@/entities";
+import {
+  ArticleWithDetails,
+  ArticleMeta,
+  RelatedArticle,
+  AuthorCard,
+} from "@/entities";
 import { BlockNoteRenderer } from "./BlockNoteRenderer";
 import Image from "next/image";
 import { format } from "date-fns";

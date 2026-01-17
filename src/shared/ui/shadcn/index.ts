@@ -6,6 +6,7 @@ export * from "./dropdown-menu";
 export * from "./form";
 export * from "./input";
 export * from "./label";
+export * from "./textarea";
 export * from "./navigation-menu";
 export * from "./badge";
 export * from "./skeleton";

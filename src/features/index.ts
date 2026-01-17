@@ -7,3 +7,4 @@ export {
 } from "./article-management";
 export * from "./article-editor";
 export * from "./admin-management";
+export { CommentSectionWrapper, CommentProvider } from "./comment-system";

@@ -74,3 +74,26 @@ export type { Skill } from "@prisma/client";
 // Occupation エンティティ
 export * from "./occupation";
 export type { Occupation } from "@prisma/client";
+
+// Comment エンティティ
+export {
+  getCommentsByArticleId,
+  getCommentCount,
+  createComment,
+  deleteComment,
+  createCommentSchema,
+  deleteCommentSchema,
+  buildCommentTree,
+  getTotalCommentCount,
+  canEditComment,
+  formatRelativeTime,
+  CommentCard,
+  CommentForm,
+  type Comment,
+  type CommentWithAuthor,
+  type CommentWithReplies,
+  type CreateCommentData,
+  type CommentTree,
+  type CreateCommentForm,
+  type DeleteCommentForm,
+} from "./comment";
