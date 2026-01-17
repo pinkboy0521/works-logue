@@ -231,7 +231,9 @@ function groupListItems(nodes: ArticleNode[]): ArticleNode[] {
  * CustomPartialBlock[] から ArticleNode[] への変換（エントリーポイント）
  * BlockNote依存を完全に隔離し、UI側は純粋な ArticleNode のみを扱う
  */
-export function convertBlocksToNodes(blocks: CustomPartialBlock[]): ArticleNode[] {
+export function convertBlocksToNodes(
+  blocks: CustomPartialBlock[],
+): ArticleNode[] {
   const nodes = blocks
     .map(blockToNode)
     .filter((node): node is ArticleNode => node !== null);

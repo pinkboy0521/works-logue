@@ -194,9 +194,9 @@ export const article8: SeedArticleData = {
   ],
   tags: {
     create: [
-      { tagId: "industry_web_it" },
-      { tagId: "role_marketing" },
-      { tagId: "phase_growth" },
+      { tagId: "it-internet" },
+      { tagId: "marketing-planning" },
+      { tagId: "venture" },
     ],
   },
   status: ArticleStatus.PUBLISHED,

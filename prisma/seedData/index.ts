@@ -7,3 +7,4 @@ export { article6 } from "./article6.js";
 export { article7 } from "./article7.js";
 export { article8 } from "./article8.js";
 export { article9 } from "./article9.js";
+export { tagSeedData } from "./tags.js";

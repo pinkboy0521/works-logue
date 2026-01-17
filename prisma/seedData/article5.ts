@@ -176,9 +176,9 @@ export const article5: SeedArticleData = {
   ],
   tags: {
     create: [
-      { tagId: "industry_saas" },
-      { tagId: "role_marketing" },
-      { tagId: "role_manager" },
+      { tagId: "saas-software" },
+      { tagId: "marketing-planning" },
+      { tagId: "team-manager" },
     ],
   },
   status: ArticleStatus.PUBLISHED,

@@ -5,7 +5,7 @@ import { PartialBlock } from "@blocknote/core";
 export type Article = PrismaArticle;
 
 // BlockNoteの標準タイプを拡張してdividerを追加
-export type CustomPartialBlock = 
+export type CustomPartialBlock =
   | PartialBlock
   | {
       id: string;

@@ -1,46 +1,35 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
-datasource db {
-  provider = "postgresql" 
-    url    = env("DATABASE_URL")
+generator client {
+  provider = "prisma-client-js"
 }
 
-generator client {
-  provider = "prisma-client-js"  
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model User {
-  id                String       @id @default(cuid())
-  email             String?      // OAuth プロバイダーによってはemailがない場合もある
-  image             String?
-  role              UserRole     @default(USER)
-  
-  // プロフィール情報
-  displayName       String?      // 表示名（Welcomeページで設定）
-  userId            String?      @unique // ユニークなユーザーID（Welcomeページで設定）
-  bio               String?      // 自己紹介
-  website           String?      // ウェブサイトURL
-  location          String?      // 居住地
-  statusMessage     String?      // ひとこと
-  
-  // メール認証
-  emailVerified              Boolean      @default(false)
-  emailVerificationToken     String?      // メール認証トークン
-  emailVerificationExpiresAt DateTime?    // トークン有効期限
-  
-  accounts          Account[]  
-  articles          Article[]
-  comments          Comment[]
-  userSkills        UserSkill[]
-  userOccupations   UserOccupation[]
-  createdAt         DateTime     @default(now())
-  updatedAt         DateTime     @updatedAt
+  id                         String           @id @default(cuid())
+  email                      String?
+  image                      String?
+  role                       UserRole         @default(USER)
+  displayName                String?
+  userId                     String?          @unique
+  bio                        String?
+  website                    String?
+  location                   String?
+  statusMessage              String?
+  emailVerified              Boolean          @default(false)
+  createdAt                  DateTime         @default(now())
+  updatedAt                  DateTime         @updatedAt
+  emailVerificationExpiresAt DateTime?
+  emailVerificationToken     String?
+  accounts                   Account[]
+  articles                   Article[]
+  userOccupations            UserOccupation[]
+  userSkills                 UserSkill[]
+  comments                   Comment[]
 
-  @@map(name: "users")
+  @@map("users")
 }
 
 model Account {
@@ -57,28 +46,22 @@ model Account {
 }
 
 model Article {
-  id           String        @id @default(cuid())
-  userId       String
-  user         User          @relation(fields: [userId], references: [id])
-
-  title        String
-  content      Json?
-  topImageUrl  String?
-
-  status       ArticleStatus @default(DRAFT)
-  publishedAt  DateTime?
-
-  viewCount    Int           @default(0)
-  likeCount    Int           @default(0)
-
-  topicId      String?
-  topic        Topic?        @relation(fields: [topicId], references: [id])
-
-  tags         ArticleTag[]
-  comments     Comment[]
-
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
+  id          String        @id @default(cuid())
+  userId      String
+  title       String
+  topImageUrl String?
+  status      ArticleStatus @default(DRAFT)
+  publishedAt DateTime?
+  viewCount   Int           @default(0)
+  likeCount   Int           @default(0)
+  topicId     String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  content     Json?
+  topic       Topic?        @relation(fields: [topicId], references: [id])
+  user        User          @relation(fields: [userId], references: [id])
+  tags        ArticleTag[]
+  comments    Comment[]
 
   @@index([userId])
   @@index([status, publishedAt])
@@ -86,33 +69,142 @@ model Article {
 }
 
 model Comment {
-  id        String   @id @default(cuid())
-  content   String   // コメント本文
-  
-  // 関連
+  id        String    @id @default(cuid())
+  content   String
   articleId String
-  article   Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
   userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  
-  // ネスト構造（自己参照）
   parentId  String?
-  parent    Comment? @relation("CommentReplies", fields: [parentId], references: [id])
+  isDeleted Boolean   @default(false)
+  deletedAt DateTime?
+  deletedBy String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  article   Article   @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  parent    Comment?  @relation("CommentReplies", fields: [parentId], references: [id])
   replies   Comment[] @relation("CommentReplies")
-  
-  // ソフトデリート
-  isDeleted   Boolean   @default(false)
-  deletedAt   DateTime?
-  deletedBy   String?   // 削除者（管理者）のユーザーID
-  
-  // タイムスタンプ
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
+  user      User      @relation(fields: [userId], references: [id])
+
   @@index([articleId, isDeleted, createdAt])
   @@index([parentId])
   @@index([userId])
   @@map("comments")
+}
+
+model SkillCategory {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  name        String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  skills      Skill[]
+}
+
+model Skill {
+  id          String        @id @default(cuid())
+  name        String        @unique
+  description String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  categoryId  String
+  category    SkillCategory @relation(fields: [categoryId], references: [id])
+  userSkills  UserSkill[]
+
+  @@index([categoryId])
+}
+
+model UserSkill {
+  userId    String
+  skillId   String
+  createdAt DateTime @default(now())
+  skill     Skill    @relation(fields: [skillId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, skillId])
+}
+
+model OccupationCategory {
+  id          String       @id @default(cuid())
+  key         String       @unique
+  name        String
+  description String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  occupations Occupation[]
+}
+
+model Occupation {
+  id              String             @id @default(cuid())
+  name            String             @unique
+  description     String?
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+  categoryId      String
+  category        OccupationCategory @relation(fields: [categoryId], references: [id])
+  userOccupations UserOccupation[]
+
+  @@index([categoryId])
+}
+
+model UserOccupation {
+  userId       String
+  occupationId String
+  createdAt    DateTime   @default(now())
+  occupation   Occupation @relation(fields: [occupationId], references: [id], onDelete: Cascade)
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, occupationId])
+}
+
+model Topic {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  description String
+  articles    Article[]
+}
+
+enum TagTaxonomyType {
+  INDUSTRY
+  JOB_CATEGORY
+  POSITION
+  SITUATION
+  SKILL_KNOWLEDGE
+}
+
+model Tag {
+  id           String          @id @default(cuid())
+  name         String          @unique
+  description  String
+  
+  // 階層構造
+  parentId     String?
+  parent       Tag?            @relation("TagHierarchy", fields: [parentId], references: [id])
+  children     Tag[]           @relation("TagHierarchy")
+  level        Int             // 1=業界, 2=サブ業界, 3=詳細
+  
+  // タグ種別
+  taxonomyType TagTaxonomyType // INDUSTRY, JOB_CATEGORY, POSITION, SITUATION, SKILL_KNOWLEDGE
+  
+  // 表示制御
+  sortOrder    Int             @default(0)
+  
+  articles     ArticleTag[]
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  
+  @@index([parentId])
+  @@index([taxonomyType, level, sortOrder])
+}
+
+model ArticleTag {
+  articleId String
+  tagId     String
+  article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  tag       Tag     @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@id([articleId, tagId])
+  @@index([tagId, articleId]) // タグ→記事方向の検索最適化
 }
 
 enum ArticleStatus {
@@ -124,93 +216,4 @@ enum ArticleStatus {
 enum UserRole {
   USER
   ADMIN
-}
-
-model SkillCategory {
-  id          String   @id @default(cuid())
-  key         String   @unique // 例: 'programming', 'design', 'business', 'marketing'
-  name        String   // 表示名: 'プログラミング言語', 'デザイン・UI/UX'
-  description String?
-  skills      Skill[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-}
-
-model Skill {
-  id          String        @id @default(cuid())
-  name        String        @unique
-  description String?
-  categoryId  String
-  category    SkillCategory @relation(fields: [categoryId], references: [id])
-  userSkills  UserSkill[]
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-
-  @@index([categoryId])
-}
-
-model UserSkill {
-  userId    String
-  skillId   String
-  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  skill     Skill  @relation(fields: [skillId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
-
-  @@id([userId, skillId])
-}
-
-model OccupationCategory {
-  id          String       @id @default(cuid())
-  key         String       @unique // 例: 'engineering', 'design', 'business', 'marketing'
-  name        String       // 表示名: 'エンジニアリング', 'デザイン'
-  description String?
-  occupations Occupation[]
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-}
-
-model Occupation {
-  id              String             @id @default(cuid())
-  name            String             @unique
-  description     String?
-  categoryId      String
-  category        OccupationCategory @relation(fields: [categoryId], references: [id])
-  userOccupations UserOccupation[]
-  createdAt       DateTime           @default(now())
-  updatedAt       DateTime           @updatedAt
-
-  @@index([categoryId])
-}
-
-model UserOccupation {
-  userId       String
-  occupationId String
-  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  occupation   Occupation @relation(fields: [occupationId], references: [id], onDelete: Cascade)
-  createdAt    DateTime   @default(now())
-
-  @@id([userId, occupationId])
-}
-
-model Topic {
-  id          String    @id @default(cuid())
-  name        String    @unique
-  description String    
-  articles    Article[]
-}
-
-model Tag {
-  id          String       @id @default(cuid())
-  name        String       @unique
-  description String       
-  articles    ArticleTag[]
-}
-
-model ArticleTag {
-  articleId String
-  tagId     String  
-  article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
-  tag       Tag     @relation(fields: [tagId], references: [id], onDelete: Cascade)
-
-  @@id([articleId, tagId])
 }
