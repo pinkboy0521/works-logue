@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { PartialBlock } from "@blocknote/core";
+import { type CustomPartialBlock } from "@/entities";
 import { useState } from "react";
 import {
   convertBlocksToNodes,
@@ -10,7 +10,7 @@ import {
 import { Card, CardContent } from "@/shared";
 
 interface BlockNoteRendererProps {
-  blocks: PartialBlock[];
+  blocks: CustomPartialBlock[];
   className?: string;
 }
 

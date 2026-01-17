@@ -15,6 +15,7 @@ export {
   calculateReadingTime,
   type Article,
   type ArticleContent,
+  type CustomPartialBlock,
   type ArticleWithDetails,
   type ArticleListItem,
   type ArticleMeta,

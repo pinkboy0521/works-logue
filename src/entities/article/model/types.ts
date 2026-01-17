@@ -4,8 +4,19 @@ import { PartialBlock } from "@blocknote/core";
 // ベースの記事タイプ
 export type Article = PrismaArticle;
 
+// BlockNoteの標準タイプを拡張してdividerを追加
+export type CustomPartialBlock = 
+  | PartialBlock
+  | {
+      id: string;
+      type: "divider";
+      props: Record<string, never>;
+      content: never[];
+      children: never[];
+    };
+
 // BlockNoteコンテンツ型（保存・復元用）
-export type ArticleContent = PartialBlock[];
+export type ArticleContent = CustomPartialBlock[];
 
 // 下書き記事（topic, tags は任意）
 export type DraftArticle = Omit<Article, "content"> & {

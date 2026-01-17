@@ -1,4 +1,4 @@
-import { PartialBlock } from "@blocknote/core";
+import { type CustomPartialBlock } from "@/entities";
 
 // UI設計に必要な情報だけを抽出した ViewModel
 export type ArticleNode =
@@ -18,7 +18,7 @@ export type ArticleNode =
  * BlockNote の inline content から純粋なテキストを抽出
  * ここだけが「unsafe」領域 - BlockNote内部構造に依存
  */
-function extractText(block: PartialBlock): string {
+function extractText(block: CustomPartialBlock): string {
   if (!Array.isArray(block.content)) return "";
   return block.content
     .map((c: unknown) => {
@@ -31,10 +31,10 @@ function extractText(block: PartialBlock): string {
 }
 
 /**
- * PartialBlock を ArticleNode に変換
+ * CustomPartialBlock を ArticleNode に変換
  * BlockNote 依存を1箇所に隔離
  */
-function blockToNode(block: PartialBlock): ArticleNode | null {
+function blockToNode(block: CustomPartialBlock): ArticleNode | null {
   switch (block.type) {
     case "heading":
       const level = Math.min(
@@ -228,10 +228,10 @@ function groupListItems(nodes: ArticleNode[]): ArticleNode[] {
 }
 
 /**
- * PartialBlock[] から ArticleNode[] への変換（エントリーポイント）
+ * CustomPartialBlock[] から ArticleNode[] への変換（エントリーポイント）
  * BlockNote依存を完全に隔離し、UI側は純粋な ArticleNode のみを扱う
  */
-export function convertBlocksToNodes(blocks: PartialBlock[]): ArticleNode[] {
+export function convertBlocksToNodes(blocks: CustomPartialBlock[]): ArticleNode[] {
   const nodes = blocks
     .map(blockToNode)
     .filter((node): node is ArticleNode => node !== null);
