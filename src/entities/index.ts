@@ -10,6 +10,7 @@ export {
   getPublishedArticles,
   incrementArticleViews,
   getRelatedArticles,
+  getArticlesPaginated,
   calculateArticleMeta,
   calculateReadingTime,
   type Article,
@@ -21,6 +22,9 @@ export {
   type DraftArticle,
   type PublishedArticle,
   type PublishedArticleListItem,
+  type PaginationParams,
+  type PaginationResult,
+  type ArticlesWithPagination,
 } from "./article";
 
 // User エンティティ
@@ -34,6 +38,11 @@ export {
   getUserProfile,
   updateUserProfile,
   checkProfileCompletion,
+  getUserByUserId,
+  getUserWithArticlesByUserId,
+  getUserStatsByUserId,
+  // UI コンポーネント
+  AuthorCard,
   type User,
   type UserWithArticles,
   type UserPublicInfo,

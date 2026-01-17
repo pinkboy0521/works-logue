@@ -13,6 +13,99 @@ export {
 } from "./profile";
 
 /**
+ * userIDでユーザーを取得（著者ページ用）
+ */
+export async function getUserByUserId(
+  userId: string
+): Promise<UserPublicInfo | null> {
+  const user = await prisma.user.findUnique({
+    where: { userId },
+    select: {
+      id: true,
+      image: true,
+      createdAt: true,
+      displayName: true,
+      bio: true,
+      website: true,
+      location: true,
+      statusMessage: true,
+      userId: true, // userIdも含める
+    },
+  });
+
+  return user;
+}
+
+/**
+ * userIDでユーザーを記事とともに取得できる
+ */
+export async function getUserWithArticlesByUserId(
+  userId: string
+): Promise<UserWithArticles | null> {
+  const user = await prisma.user.findUnique({
+    where: { userId },
+    include: {
+      articles: {
+        where: {
+          status: "PUBLISHED", // 公開済みの記事のみ
+        },
+        orderBy: {
+          publishedAt: "desc",
+        },
+        include: {
+          topic: true,
+          tags: {
+            include: {
+              tag: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  return user;
+}
+
+/**
+ * userIDでユーザー統計情報を取得
+ */
+export async function getUserStatsByUserId(
+  userId: string
+): Promise<UserWithStats | null> {
+  const user = await getUserByUserId(userId);
+  if (!user) return null;
+
+  const stats = await prisma.article.aggregate({
+    where: {
+      user: { userId },
+      status: "PUBLISHED",
+    },
+    _count: {
+      id: true,
+    },
+    _sum: {
+      viewCount: true,
+      likeCount: true,
+    },
+  });
+
+  const totalArticles = await prisma.article.count({
+    where: {
+      user: { userId },
+    },
+  });
+
+  return {
+    ...user,
+    totalArticles,
+    publishedArticles: stats._count.id || 0,
+    totalViews: stats._sum.viewCount || 0,
+    totalLikes: stats._sum.likeCount || 0,
+  };
+}
+
+/**
  * IDでユーザーを取得
  */
 export async function getUserById(id: string): Promise<UserPublicInfo | null> {
@@ -20,6 +113,7 @@ export async function getUserById(id: string): Promise<UserPublicInfo | null> {
     where: { id },
     select: {
       id: true,
+      userId: true,
       image: true,
       createdAt: true,
       displayName: true,
@@ -37,7 +131,7 @@ export async function getUserById(id: string): Promise<UserPublicInfo | null> {
  * ユーザー詳細情報を記事と一緒に取得
  */
 export async function getUserWithArticles(
-  id: string,
+  id: string
 ): Promise<UserWithArticles | null> {
   const user = await prisma.user.findUnique({
     where: { id },
@@ -104,7 +198,7 @@ export async function getUserStats(id: string): Promise<UserWithStats | null> {
  * 人気のユーザー一覧を取得（記事のいいね数順）
  */
 export async function getPopularUsers(
-  limit: number = 10,
+  limit: number = 10
 ): Promise<UserWithStats[]> {
   const users = await prisma.user.findMany({
     take: limit,
@@ -122,7 +216,7 @@ export async function getPopularUsers(
     users.map(async (user) => {
       const stats = await getUserStats(user.id);
       return stats!;
-    }),
+    })
   );
 
   // いいね数でソート
@@ -133,7 +227,7 @@ export async function getPopularUsers(
  * 最近活動したユーザー一覧を取得
  */
 export async function getActiveUsers(
-  limit: number = 10,
+  limit: number = 10
 ): Promise<UserPublicInfo[]> {
   const users = await prisma.user.findMany({
     take: limit,
@@ -149,6 +243,7 @@ export async function getActiveUsers(
     },
     select: {
       id: true,
+      userId: true,
       image: true,
       createdAt: true,
       displayName: true,

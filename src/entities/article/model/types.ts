@@ -10,7 +10,7 @@ export type ArticleContent = PartialBlock[];
 // 下書き記事（topic, tags は任意）
 export type DraftArticle = Omit<Article, "content"> & {
   content: ArticleContent;
-  user: Pick<User, "id" | "displayName" | "image">;
+  user: Pick<User, "id" | "displayName" | "image" | "userId">;
   topic: Pick<Topic, "id" | "name" | "description"> | null;
   tags: Array<{
     tag: Pick<Tag, "id" | "name">;
@@ -20,7 +20,7 @@ export type DraftArticle = Omit<Article, "content"> & {
 // 公開記事（topic, tags は必須）
 export type PublishedArticle = Omit<Article, "content"> & {
   content: ArticleContent;
-  user: Pick<User, "id" | "displayName" | "image">;
+  user: Pick<User, "id" | "displayName" | "image" | "userId">;
   topic: Pick<Topic, "id" | "name" | "description">;
   tags: Array<{
     tag: Pick<Tag, "id" | "name">;
@@ -51,6 +51,7 @@ export type PublishedArticleListItem = {
     id: string;
     displayName: string | null;
     image: string | null;
+    userId: string | null;
   };
   topic: {
     id: string;
@@ -63,6 +64,28 @@ export type PublishedArticleListItem = {
     };
   }>;
 };
+
+// ページネーション関連の型
+export interface PaginationParams {
+  page?: number;
+  limit?: number;
+  userId?: string;
+  topicId?: string;
+}
+
+export interface PaginationResult {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+  hasNext: boolean;
+  hasPrev: boolean;
+}
+
+export interface ArticlesWithPagination {
+  articles: PublishedArticleListItem[];
+  pagination: PaginationResult;
+}
 
 // 記事統計情報
 export interface ArticleStats {
@@ -82,6 +105,6 @@ export type RelatedArticle = Pick<
   Article,
   "id" | "title" | "topImageUrl" | "publishedAt"
 > & {
-  user: Pick<User, "id" | "displayName" | "image">;
+  user: Pick<User, "id" | "displayName" | "image" | "userId">;
   topic: Pick<Topic, "id" | "name">;
 };

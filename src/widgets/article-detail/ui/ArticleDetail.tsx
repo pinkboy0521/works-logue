@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import {
   Avatar,
   AvatarFallback,
@@ -8,7 +9,7 @@ import {
   CardContent,
   Badge,
 } from "@/shared";
-import { ArticleWithDetails, ArticleMeta, RelatedArticle } from "@/entities";
+import { ArticleWithDetails, ArticleMeta, RelatedArticle, AuthorCard } from "@/entities";
 import { BlockNoteRenderer } from "./BlockNoteRenderer";
 import Image from "next/image";
 import { format } from "date-fns";
@@ -53,20 +54,15 @@ export function ArticleDetail({
         <div className="flex items-center justify-between text-sm text-muted-foreground border-b border-border pb-4">
           <div className="flex items-center gap-4">
             {/* 著者情報 */}
-            <div className="flex items-center gap-2">
-              <Avatar className="h-8 w-8">
-                <AvatarImage
-                  src={article.user.image || undefined}
-                  alt={article.user.displayName || "ユーザー"}
-                />
-                <AvatarFallback>
-                  {article.user.displayName?.charAt(0) || "U"}
-                </AvatarFallback>
-              </Avatar>
-              <span className="font-medium text-foreground">
-                {article.user.displayName || "Anonymous"}
-              </span>
-            </div>
+            <AuthorCard
+              user={{
+                id: article.user.id,
+                displayName: article.user.displayName,
+                image: article.user.image,
+                userId: article.user.userId || "",
+              }}
+              size="medium"
+            />
 
             {/* 公開日時 */}
             <div className="flex items-center gap-1">
@@ -167,37 +163,43 @@ export function ArticleDetail({
           </h2>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {relatedArticles.map((relatedArticle) => (
-              <Card key={relatedArticle.id} className="overflow-hidden">
-                <CardContent className="p-4">
-                  {relatedArticle.topImageUrl && (
-                    <div className="relative w-full h-32 mb-3 rounded overflow-hidden">
-                      <Image
-                        src={relatedArticle.topImageUrl}
-                        alt={relatedArticle.title}
-                        fill
-                        className="object-cover"
-                      />
+              <Link
+                key={relatedArticle.id}
+                href={`/${relatedArticle.user.userId}/articles/${relatedArticle.id}`}
+                className="block"
+              >
+                <Card className="overflow-hidden hover:bg-muted transition-colors">
+                  <CardContent className="p-4">
+                    {relatedArticle.topImageUrl && (
+                      <div className="relative w-full h-32 mb-3 rounded overflow-hidden">
+                        <Image
+                          src={relatedArticle.topImageUrl}
+                          alt={relatedArticle.title}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                    )}
+                    <h3 className="font-medium text-foreground line-clamp-2 mb-2">
+                      {relatedArticle.title}
+                    </h3>
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Avatar className="h-5 w-5">
+                        <AvatarImage
+                          src={relatedArticle.user.image || undefined}
+                          alt={relatedArticle.user.displayName || "ユーザー"}
+                        />
+                        <AvatarFallback className="text-xs">
+                          {relatedArticle.user.displayName?.charAt(0) || "U"}
+                        </AvatarFallback>
+                      </Avatar>
+                      <span>{relatedArticle.user.displayName}</span>
+                      <span>•</span>
+                      <span>{relatedArticle.topic.name}</span>
                     </div>
-                  )}
-                  <h3 className="font-medium text-foreground line-clamp-2 mb-2">
-                    {relatedArticle.title}
-                  </h3>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Avatar className="h-5 w-5">
-                      <AvatarImage
-                        src={relatedArticle.user.image || undefined}
-                        alt={relatedArticle.user.displayName || "ユーザー"}
-                      />
-                      <AvatarFallback className="text-xs">
-                        {relatedArticle.user.displayName?.charAt(0) || "U"}
-                      </AvatarFallback>
-                    </Avatar>
-                    <span>{relatedArticle.user.displayName}</span>
-                    <span>•</span>
-                    <span>{relatedArticle.topic.name}</span>
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              </Link>
             ))}
           </div>
         </section>

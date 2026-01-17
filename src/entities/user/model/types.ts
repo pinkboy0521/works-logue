@@ -12,6 +12,7 @@ export type UserWithArticles = User & {
 export type UserPublicInfo = Pick<
   User,
   | "id"
+  | "userId"
   | "image"
   | "createdAt"
   | "displayName"

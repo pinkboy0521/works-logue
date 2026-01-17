@@ -8,3 +8,4 @@ export { ArticleDetailPage } from "./article-detail-page";
 export { DashboardPage } from "./dashboard-page";
 export { ArticleEditPage } from "./article-edit-page";
 export { AdminMastersPage } from "./admin-masters-page";
+export { AuthorProfilePage } from "./author-profile-page";

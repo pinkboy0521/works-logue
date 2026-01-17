@@ -7,6 +7,8 @@ import {
   RelatedArticle,
   DraftArticle,
   PublishedArticleListItem,
+  PaginationParams,
+  ArticlesWithPagination,
 } from "@/entities";
 
 // BlockNoteコンテンツ型
@@ -111,6 +113,7 @@ export async function getRelatedArticles(
             id: true,
             displayName: true,
             image: true,
+            userId: true,
           },
         },
         topic: {
@@ -131,6 +134,89 @@ export async function getRelatedArticles(
   }
 }
 
+/**
+ * ページネーション対応の記事一覧取得
+ */
+export async function getArticlesPaginated({
+  page = 1,
+  limit = 10,
+  userId,
+  topicId,
+}: PaginationParams = {}): Promise<ArticlesWithPagination> {
+  try {
+    const skip = (page - 1) * limit;
+
+    // WHERE条件を組み立て
+    const whereCondition = {
+      status: "PUBLISHED" as const,
+      topicId: { not: null },
+      ...(userId && { userId }),
+      ...(topicId && { topicId }),
+    };
+
+    // 記事とトータル数を並行取得
+    const [articles, total] = await Promise.all([
+      prisma.article.findMany({
+        where: whereCondition,
+        skip,
+        take: limit,
+        include: {
+          user: {
+            select: {
+              id: true,
+              displayName: true,
+              image: true,
+              userId: true,
+            },
+          },
+          topic: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+          tags: {
+            include: {
+              tag: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+            },
+          },
+        },
+        orderBy: {
+          publishedAt: "desc",
+        },
+      }),
+      prisma.article.count({
+        where: whereCondition,
+      }),
+    ]);
+
+    const totalPages = Math.ceil(total / limit);
+
+    return {
+      articles: articles.map((article) => ({
+        ...article,
+        content: article.content as ArticleContent,
+      })) as PublishedArticleListItem[],
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages,
+        hasNext: page < totalPages,
+        hasPrev: page > 1,
+      },
+    };
+  } catch (error) {
+    console.error("Error fetching paginated articles:", error);
+    throw new Error("記事の取得に失敗しました");
+  }
+}
+
 export async function getPublishedArticles() {
   try {
     const articles = await prisma.article.findMany({
@@ -144,6 +230,7 @@ export async function getPublishedArticles() {
             id: true,
             displayName: true,
             image: true,
+            userId: true,
           },
         },
         topic: {
@@ -192,6 +279,7 @@ export async function getLatestArticles(limit: number = 3) {
             id: true,
             displayName: true,
             image: true,
+            userId: true,
           },
         },
         topic: {
@@ -240,6 +328,7 @@ export async function getPopularArticles(limit: number = 3) {
             id: true,
             displayName: true,
             image: true,
+            userId: true,
           },
         },
         topic: {
@@ -290,6 +379,7 @@ export async function getArticleById(
             id: true,
             displayName: true,
             image: true,
+            userId: true,
           },
         },
         topic: {
@@ -343,6 +433,7 @@ export async function getArticleForEdit(
             id: true,
             displayName: true,
             image: true,
+            userId: true,
           },
         },
         topic: {

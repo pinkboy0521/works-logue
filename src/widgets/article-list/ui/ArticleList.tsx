@@ -1,9 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
   Badge,
   Card,
   CardContent,
@@ -11,7 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/shared";
-import { ArticleContent } from "@/entities";
+import { ArticleContent, AuthorCard } from "@/entities";
 
 type ArticleWithRelations = {
   id: string;
@@ -25,6 +22,7 @@ type ArticleWithRelations = {
     id: string;
     displayName: string | null;
     image: string | null;
+    userId: string | null;
   };
   topic: {
     id: string;
@@ -63,11 +61,8 @@ export function ArticleList({ articles }: ArticleListProps) {
 function ArticleCard({ article }: { article: ArticleWithRelations }) {
   const formatDate = (date: Date | null) => {
     if (!date) return "";
-    return new Intl.DateTimeFormat("ja-JP", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    }).format(new Date(date));
+    // より一貫性のある日付フォーマット（ハイドレーション対策）
+    return new Date(date).toLocaleDateString("ja-JP");
   };
 
   const getContentPreview = (content: ArticleContent) => {
@@ -89,8 +84,11 @@ function ArticleCard({ article }: { article: ArticleWithRelations }) {
   };
 
   return (
-    <Link href={`/${article.user.id}/articles/${article.id}`} className="block">
-      <Card className="h-full flex flex-col hover:bg-muted transition-all duration-300 gap-xs cursor-pointer">
+    <Link
+      href={`/${article.user.userId}/articles/${article.id}`}
+      className="block"
+    >
+      <Card className="h-full flex flex-col hover:bg-muted transition-all duration-300 gap-2 cursor-pointer">
         <CardHeader className="p-0">
           {article.topImageUrl && (
             <div className="relative w-full h-48">
@@ -98,7 +96,7 @@ function ArticleCard({ article }: { article: ArticleWithRelations }) {
                 src={article.topImageUrl}
                 alt={article.title}
                 fill
-                className="object-cover rounded-m"
+                className="object-cover rounded-t-lg"
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 quality={90}
                 placeholder="blur"
@@ -109,7 +107,7 @@ function ArticleCard({ article }: { article: ArticleWithRelations }) {
         </CardHeader>
 
         <CardContent className="flex-1">
-          <div className="mb-s">
+          <div className="mb-3">
             <Badge variant="secondary" className="text-primary bg-primary/10">
               {article.topic.name}
             </Badge>
@@ -132,21 +130,17 @@ function ArticleCard({ article }: { article: ArticleWithRelations }) {
           )}
         </CardContent>
 
-        <CardFooter className="pt-0 -mx-l px-l flex items-center justify-between text-sm text-muted-foreground">
-          <div className="flex items-center gap-2 flex-1 min-w-0">
-            <Avatar className="h-6 w-6 shrink-0">
-              <AvatarImage
-                src={article.user.image || ""}
-                alt={article.user.displayName || ""}
-              />
-              <AvatarFallback>
-                {article.user.displayName?.charAt(0) || "U"}
-              </AvatarFallback>
-            </Avatar>
-            <span className="truncate">
-              {article.user.displayName || "Anonymous"}
-            </span>
-          </div>
+        <CardFooter className="pt-0 flex items-center justify-between text-sm text-muted-foreground">
+          <AuthorCard
+            user={{
+              id: article.user.id,
+              displayName: article.user.displayName,
+              image: article.user.image,
+              userId: article.user.userId || "", // フォールバック値
+            }}
+            size="small"
+            clickable={false} // ネストしたリンクを避けるためクリック無効
+          />
 
           <div className="flex flex-col items-end gap-1 shrink-0">
             <span className="whitespace-nowrap">
