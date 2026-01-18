@@ -9,3 +9,6 @@ export { ArticleDetail } from "./article-detail";
 
 // プロフィール設定ウィジェット
 export { ProfileSetupForm } from "./profile-setup";
+
+// タグサイドバーウィジェット
+export { TagSidebar } from "./tag-sidebar";

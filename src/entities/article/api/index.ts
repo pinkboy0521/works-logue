@@ -9,6 +9,8 @@ import {
   PublishedArticleListItem,
   PaginationParams,
   ArticlesWithPagination,
+  ArticleSearchParams,
+  ArticleSearchResult,
 } from "@/entities";
 
 // BlockNoteコンテンツ型
@@ -636,5 +638,142 @@ export async function deleteArticle(id: string, userId: string) {
   } catch (error) {
     console.error("Error deleting article:", error);
     throw new Error("記事の削除に失敗しました");
+  }
+}
+
+/**
+ * 記事検索機能 - title, content, tags に対する部分マッチ検索
+ */
+export async function searchArticles({
+  query = "",
+  topicId,
+  tagIds,
+  page = 1,
+  limit = 12,
+}: ArticleSearchParams): Promise<ArticleSearchResult> {
+  try {
+    const skip = (page - 1) * limit;
+
+    // 基本的な検索条件
+    const baseConditions = {
+      status: "PUBLISHED" as const,
+      topicId: { not: null },
+      ...(topicId && { topicId }),
+    };
+
+    // 検索クエリ条件の構築
+    const searchConditions = [];
+
+    if (query.trim()) {
+      const searchTerms = {
+        contains: query.trim(),
+        mode: "insensitive" as const,
+      };
+
+      searchConditions.push(
+        // タイトル検索
+        { title: searchTerms },
+        // TODO: コンテンツ検索は将来的にBlockNote JSON内のテキスト抽出で実装
+        // タグ名検索
+        {
+          tags: {
+            some: {
+              tag: {
+                name: searchTerms,
+              },
+            },
+          },
+        },
+      );
+    }
+
+    // タグフィルタ条件
+    const tagConditions = [];
+    if (tagIds && tagIds.length > 0) {
+      tagConditions.push({
+        tags: {
+          some: {
+            tagId: {
+              in: tagIds,
+            },
+          },
+        },
+      });
+    }
+
+    // 最終的なwhere条件
+    const whereCondition = {
+      ...baseConditions,
+      ...(searchConditions.length > 0 && {
+        OR: searchConditions,
+      }),
+      ...(tagConditions.length > 0 && {
+        AND: tagConditions,
+      }),
+    };
+
+    // 記事とトータル数を並行取得
+    const [articles, total] = await Promise.all([
+      prisma.article.findMany({
+        where: whereCondition,
+        skip,
+        take: limit,
+        include: {
+          user: {
+            select: {
+              id: true,
+              displayName: true,
+              image: true,
+              userId: true,
+            },
+          },
+          topic: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+          tags: {
+            include: {
+              tag: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+            },
+          },
+        },
+        orderBy: {
+          publishedAt: "desc",
+        },
+      }),
+      prisma.article.count({
+        where: whereCondition,
+      }),
+    ]);
+
+    const totalPages = Math.ceil(total / limit);
+
+    return {
+      articles: articles as PublishedArticleListItem[],
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages,
+        hasNext: page < totalPages,
+        hasPrev: page > 1,
+      },
+      searchInfo: {
+        query: query.trim() || undefined,
+        topicId,
+        tagIds,
+        totalFound: total,
+      },
+    };
+  } catch (error) {
+    console.error("記事検索エラー:", error);
+    throw new Error("記事検索に失敗しました");
   }
 }

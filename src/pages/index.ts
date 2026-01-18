@@ -9,3 +9,5 @@ export { DashboardPage } from "./dashboard-page";
 export { ArticleEditPage } from "./article-edit-page";
 export { AdminMastersPage } from "./admin-masters-page";
 export { AuthorProfilePage } from "./author-profile-page";
+export { SearchPage } from "./search-page";
+export { TopicDetailPage } from "./topic-detail-page";

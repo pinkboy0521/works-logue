@@ -204,9 +204,9 @@ export const article3: SeedArticleData = {
   ],
   tags: {
     create: [
-      { tagId: "manufacturing" },
-      { tagId: "hr-recruitment" },
-      { tagId: "large-enterprise" },
+      { tagId: "industry-manufacturing" },
+      { tagId: "job-corporate-hr-recruiting" },
+      { tagId: "situation-large" },
     ],
   },
   status: ArticleStatus.PUBLISHED,

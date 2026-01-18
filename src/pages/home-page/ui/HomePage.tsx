@@ -1,5 +1,8 @@
 import { ArticleList } from "@/widgets";
-import { getLatestArticles, getPopularArticles } from "@/entities";
+import {
+  getLatestArticles,
+  getPopularArticles,
+} from "@/entities";
 import type { PublishedArticleListItem } from "@/entities";
 
 export async function HomePage() {
@@ -12,7 +15,7 @@ export async function HomePage() {
       getPopularArticles(6),
     ]);
   } catch (error) {
-    console.error("Failed to fetch articles:", error);
+    console.error("Failed to fetch data:", error);
     // データベース接続エラーの場合、空の配列でフォールバック
     latestArticles = [];
     popularArticles = [];

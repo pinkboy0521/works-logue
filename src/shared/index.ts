@@ -1,5 +1,5 @@
 // ライブラリとユーティリティ
-export { prisma, themeScript, cn, useTheme, isAdmin } from "./lib";
+export { prisma, themeScript, cn, useTheme, isAdmin, useDebounce } from "./lib";
 
 // APIクライアント
 export { apiRequest, authenticatedRequest } from "./api";
@@ -60,3 +60,6 @@ export { MoonIcon, SunIcon, ShrimpIcon } from "./ui/lucide";
 
 // レイアウト
 export { BaseLayout, AuthLayout } from "./ui/layout";
+
+// 型定義
+export { type TagNode } from "./ui/types";

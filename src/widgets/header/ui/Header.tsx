@@ -8,13 +8,14 @@ import {
 } from "@/shared";
 import Link from "next/link";
 import { HeaderMenu } from "./HeaderMenu";
+import { SearchBar } from "./SearchBar";
 import { createNewArticleAction } from "@/features";
 
 export async function Header() {
   const session = await auth();
 
   return (
-    <header className="bg-background border-b shadow-md flex items-center h-16">
+    <header className="bg-background border-b shadow-md flex items-center h-16 sticky top-0 z-50">
       <div className="px-xxl flex items-center justify-between w-full">
         <NavigationMenu>
           <NavigationMenuList>
@@ -26,6 +27,12 @@ export async function Header() {
             </NavigationMenuItem>
           </NavigationMenuList>
         </NavigationMenu>
+
+        {/* 検索窓を中央に配置 */}
+        <div className="flex-1 max-w-md mx-8 hidden md:block">
+          <SearchBar />
+        </div>
+
         <div className="flex items-center gap-4">
           <HeaderMenu session={session} />
           {session && (

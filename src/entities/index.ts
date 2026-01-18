@@ -11,6 +11,7 @@ export {
   incrementArticleViews,
   getRelatedArticles,
   getArticlesPaginated,
+  searchArticles,
   calculateArticleMeta,
   calculateReadingTime,
   type Article,
@@ -26,6 +27,9 @@ export {
   type PaginationParams,
   type PaginationResult,
   type ArticlesWithPagination,
+  type ArticleSearchParams,
+  type ArticleSearchResult,
+  type TagFilter,
 } from "./article";
 
 // User エンティティ
@@ -75,6 +79,9 @@ export type { Skill } from "@prisma/client";
 // Occupation エンティティ
 export * from "./occupation";
 export type { Occupation } from "@prisma/client";
+
+// Tag エンティティ
+export { getTagsWithHierarchy } from "./tag";
 
 // Comment エンティティ
 export {

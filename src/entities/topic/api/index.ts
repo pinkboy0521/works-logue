@@ -23,9 +23,7 @@ export async function getTopicsWithCount(): Promise<TopicWithCount[]> {
   });
 
   return topics.map((topic) => ({
-    id: topic.id,
-    name: topic.name,
-    description: topic.description,
+    ...topic, // PrismaTopicの全プロパティを含める
     articleCount: topic._count.articles,
   }));
 }
@@ -64,9 +62,7 @@ export async function getTagsWithCount(): Promise<TagWithCount[]> {
   });
 
   return tags.map((tag) => ({
-    id: tag.id,
-    name: tag.name,
-    description: tag.description,
+    ...tag, // PrismaTagの全プロパティを含める
     articleCount: tag._count.articles,
   }));
 }

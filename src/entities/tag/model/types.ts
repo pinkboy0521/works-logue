@@ -44,7 +44,7 @@ export interface ArticleSearchResult {
 export interface ArticleWithTags {
   id: string;
   title: string;
-  content: any;
+  content: unknown; // BlockNote JSON content
   topImageUrl?: string;
   publishedAt: Date;
   viewCount: number;

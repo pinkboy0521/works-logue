@@ -119,3 +119,30 @@ export type RelatedArticle = Pick<
   user: Pick<User, "id" | "displayName" | "image" | "userId">;
   topic: Pick<Topic, "id" | "name">;
 };
+
+// 検索関連の型
+export interface ArticleSearchParams {
+  query?: string; // 検索クエリ
+  topicId?: string; // トピックフィルタ
+  tagIds?: string[]; // タグフィルタ
+  page?: number;
+  limit?: number;
+}
+
+export interface ArticleSearchResult {
+  articles: PublishedArticleListItem[];
+  pagination: PaginationResult;
+  searchInfo: {
+    query?: string;
+    topicId?: string;
+    tagIds?: string[];
+    totalFound: number;
+  };
+}
+
+export interface TagFilter {
+  id: string;
+  name: string;
+  level: number;
+  taxonomyType: string;
+}

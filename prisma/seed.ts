@@ -31,7 +31,58 @@ async function main() {
   await prisma.skillCategory.deleteMany();
   await prisma.occupationCategory.deleteMany();
   await prisma.tag.deleteMany();
+  await prisma.taxonomyType.deleteMany();
   await prisma.topic.deleteMany();
+
+  // =====================
+  // タクソノミータイプマスタデータ
+  // =====================
+  await prisma.taxonomyType.createMany({
+    data: [
+      {
+        id: "taxonomy_industry",
+        code: "INDUSTRY",
+        displayName: "業界",
+        description: "業界・領域分類",
+        sortOrder: 1,
+      },
+      {
+        id: "taxonomy_job_category",
+        code: "JOB_CATEGORY", 
+        displayName: "職種",
+        description: "職種・役割分類",
+        sortOrder: 2,
+      },
+      {
+        id: "taxonomy_position",
+        code: "POSITION",
+        displayName: "役職・立場",
+        description: "組織内での役職・立場",
+        sortOrder: 3,
+      },
+      {
+        id: "taxonomy_situation",
+        code: "SITUATION",
+        displayName: "状況",
+        description: "ワークスタイル・環境",
+        sortOrder: 4,
+      },
+      {
+        id: "taxonomy_skill_method",
+        code: "SKILL_METHOD",
+        displayName: "スキル・メソッド",
+        description: "技術スキル・メソッド",
+        sortOrder: 5,
+      },
+      {
+        id: "taxonomy_knowledge",
+        code: "KNOWLEDGE",
+        displayName: "ナレッジ",
+        description: "専門知識・理論",
+        sortOrder: 6,
+      },
+    ],
+  });
 
   // =====================
   // 管理者ユーザー作成
@@ -395,8 +446,26 @@ async function main() {
   // =====================
   // 新しい階層タグシステム
   // =====================
+  // タクソノミータイプのcodeからIDをマッピング
+  const taxonomyMapping = {
+    INDUSTRY: "taxonomy_industry",
+    JOB_CATEGORY: "taxonomy_job_category", 
+    POSITION: "taxonomy_position",
+    SITUATION: "taxonomy_situation",
+    SKILL_METHOD: "taxonomy_skill_method",
+    KNOWLEDGE: "taxonomy_knowledge",
+  };
+
   await prisma.tag.createMany({
-    data: tagSeedData,
+    data: tagSeedData.map(tag => ({
+      id: tag.id,
+      name: tag.name,
+      description: tag.description,
+      parentId: tag.parentId,
+      level: tag.level,
+      taxonomyTypeId: taxonomyMapping[tag.taxonomyTypeCode as keyof typeof taxonomyMapping],
+      sortOrder: tag.sortOrder,
+    })),
   });
 
   // =====================
@@ -490,7 +559,15 @@ async function main() {
   ];
 
   for (const article of articles) {
-    await prisma.article.create({ data: article });
+    try {
+      console.log(`記事を作成中: ${article.title} (ID: ${article.id})`);
+      await prisma.article.create({ data: article });
+      console.log(`✓ 記事作成成功: ${article.id}`);
+    } catch (error) {
+      console.error(`❌ 記事作成失敗: ${article.id}`);
+      console.error('エラー:', error);
+      throw error;
+    }
   }
 
   console.log("🌱 Works Logue seed completed");

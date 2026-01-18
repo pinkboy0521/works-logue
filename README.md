@@ -27,6 +27,7 @@ cloud-sql-proxy works-logue:asia-northeast1:workslogue-postgres --port 5432
 
 ```bash
 npx prisma migrate dev
+npx prisma migrate dev reset
 ```
 
 4. データベースにシードデータを投入:

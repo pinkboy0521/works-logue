@@ -163,37 +163,47 @@ model Topic {
   articles    Article[]
 }
 
-enum TagTaxonomyType {
-  INDUSTRY
-  JOB_CATEGORY
-  POSITION
-  SITUATION
-  SKILL_KNOWLEDGE
+model TaxonomyType {
+  id          String  @id @default(cuid())
+  code        String  @unique
+  displayName String
+  description String?
+  sortOrder   Int     @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  tags        Tag[]
+  
+  @@index([sortOrder])
+  @@map("taxonomy_types")
 }
 
 model Tag {
-  id           String          @id @default(cuid())
-  name         String          @unique
-  description  String
+  id             String        @id @default(cuid())
+  name           String
+  description    String
   
   // 階層構造
-  parentId     String?
-  parent       Tag?            @relation("TagHierarchy", fields: [parentId], references: [id])
-  children     Tag[]           @relation("TagHierarchy")
-  level        Int             // 1=業界, 2=サブ業界, 3=詳細
+  parentId       String?
+  parent         Tag?          @relation("TagHierarchy", fields: [parentId], references: [id])
+  children       Tag[]         @relation("TagHierarchy")
+  level          Int           // 1=業界, 2=サブ業界, 3=詳細
   
-  // タグ種別
-  taxonomyType TagTaxonomyType // INDUSTRY, JOB_CATEGORY, POSITION, SITUATION, SKILL_KNOWLEDGE
+  // タグ種別（マスタテーブル参照）
+  taxonomyTypeId String
+  taxonomyType   TaxonomyType  @relation(fields: [taxonomyTypeId], references: [id])
   
   // 表示制御
-  sortOrder    Int             @default(0)
+  sortOrder      Int           @default(0)
   
-  articles     ArticleTag[]
-  createdAt    DateTime        @default(now())
-  updatedAt    DateTime        @updatedAt
+  articles       ArticleTag[]
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
   
   @@index([parentId])
-  @@index([taxonomyType, level, sortOrder])
+  @@index([taxonomyTypeId, level, sortOrder])
+  @@unique([parentId, name], name: "unique_name_per_parent")
+  @@map("tags")
 }
 
 model ArticleTag {
