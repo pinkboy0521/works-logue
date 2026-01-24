@@ -224,10 +224,7 @@ export function ArticleEditPageClient({
 
         {/* BlockNote Editor */}
         <div className="space-y-2">
-          <Card className="p-4">
-            <h2 className="text-lg font-semibold mb-3 text-muted-foreground">
-              記事エディター
-            </h2>
+          <Card >            
             <div className="min-h-[400px]">
               <BlockNoteEditor
                 initialContent={formData.content}

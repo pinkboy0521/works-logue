@@ -380,4 +380,32 @@
     border: 0;
     border-top: 1px solid hsl(var(--border));
   }
+
+  /* カスタム画像ブロックのスタイル */
+  .upload-image-block {
+    margin: 1rem 0;
+  }
+
+  .upload-image-block img {
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease-in-out;
+  }
+
+  .upload-image-block img:hover {
+    transform: scale(1.02);
+  }
+
+  .upload-image-block input[type="file"] {
+    @apply file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/80;
+  }
+
+  /* ドラッグ&ドロップエリアのスタイル */
+  .upload-image-block .border-dashed {
+    transition: border-color 0.2s ease-in-out;
+  }
+
+  .upload-image-block .border-dashed:hover {
+    border-color: hsl(var(--primary));
+  }
 }

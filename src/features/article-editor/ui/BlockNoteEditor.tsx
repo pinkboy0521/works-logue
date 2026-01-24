@@ -6,7 +6,8 @@ import { BlockNoteView } from "@blocknote/shadcn";
 import { Block } from "@blocknote/core";
 import { useTheme } from "@/shared";
 import { ja } from "@blocknote/core/locales";
-import { articleSchema } from "../lib/blocknoteSchema";
+import { articleSchema, uploadImageSlashMenuItem } from "../lib/blocknoteSchema";
+import { useImageUpload } from "@/features/image-upload";
 import type { CustomPartialBlock } from "@/entities";
 
 interface BlockNoteEditorProps {
@@ -26,6 +27,7 @@ export function BlockNoteEditor({
   className,
 }: BlockNoteEditorProps) {
   const { theme } = useTheme();
+  const { uploadImage } = useImageUpload();
 
   // 共有スキーマを使用してBlockNoteエディターを初期化
   const editor = useCreateBlockNote({
@@ -45,6 +47,11 @@ export function BlockNoteEditor({
     editable,
     trailingBlock: true,
     animations: true,
+    slashMenuItems: [
+      uploadImageSlashMenuItem,
+      // 他のカスタムスラッシュメニューアイテムをここに追加
+    ],
+    uploadFile: uploadImage,
   });
 
   // コンテンツ変更時のコールバック
@@ -69,12 +76,15 @@ export function BlockNoteEditor({
   }
 
   return (
-    <div className={`blocknote-editor-container w-full ${className || ""}`}>
+    <div 
+      className={`blocknote-editor-container w-full ${className || ""}`}
+    >
       <BlockNoteView
         editor={editor}
         theme={blockNoteTheme}
         onChange={handleChange}
         className="blocknote-editor min-h-[200px] w-full"
+        slashMenu={true}
       />
     </div>
   );

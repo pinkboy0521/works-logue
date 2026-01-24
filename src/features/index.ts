@@ -9,3 +9,4 @@ export * from "./article-editor";
 export * from "./article-reaction";
 export * from "./admin-management";
 export { CommentSectionWrapper, CommentProvider } from "./comment-system";
+export * from "./image-upload";

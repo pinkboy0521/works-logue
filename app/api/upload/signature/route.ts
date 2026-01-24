@@ -1,6 +1,11 @@
 import { NextResponse } from "next/server";
-import { generateProfileUploadSignature } from "@/features/profile";
 import { auth } from "@/auth";
+
+// プロフィール画像アップロード関数を動的にインポート
+async function generateProfileUploadSignature(userId: string) {
+  const { generateProfileUploadSignature: profileFunction } = await import("@/features/profile");
+  return profileFunction(userId);
+}
 
 export async function POST() {
   try {
