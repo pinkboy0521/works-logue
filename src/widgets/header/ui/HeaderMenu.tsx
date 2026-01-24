@@ -92,6 +92,11 @@ export function HeaderMenu({ session }: { session: Session | null }) {
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-48" align="end">
             <DropdownMenuItem asChild>
+              <Link href="/mypage/profile/edit" className="w-full cursor-pointer">
+                プロフィール編集
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
               <Link href="/mypage/articles" className="w-full cursor-pointer">
                 記事の管理
               </Link>
