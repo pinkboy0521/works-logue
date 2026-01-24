@@ -293,4 +293,86 @@
   .bn-shadcn * {
     @apply border-border outline-ring/50;
   }
+
+  /* BlockNote統一スタイル（編集・表示共通） */
+  .blocknote-editor-container,
+  .blocknote-article-display {
+    font-family: var(--font-family-base, "Noto Sans", "Noto Sans JP", sans-serif);
+  }
+
+  .blocknote-editor-container .ProseMirror,
+  .blocknote-article-display .ProseMirror {
+    min-height: 400px;
+    padding: 16px;
+    outline: none;
+    font-family: inherit;
+    line-height: 1.6;
+  }
+
+  .blocknote-editor-container .bn-editor,
+  .blocknote-article-display .bn-editor {
+    height: auto;
+    min-height: 400px;
+    font-family: inherit;
+    line-height: 1.6;
+  }
+
+  /* 表示専用モードでは最小高を調整 */
+  .blocknote-article-display .ProseMirror {
+    min-height: auto;
+    padding: 0;
+  }
+
+  .blocknote-article-display .bn-editor {
+    min-height: auto;
+  }
+
+  /* ブロック要素の統一スタイル */
+  .blocknote-editor-container h1,
+  .blocknote-article-display h1,
+  .blocknote-editor-container h2,
+  .blocknote-article-display h2,
+  .blocknote-editor-container h3,
+  .blocknote-article-display h3 {
+    font-weight: 600;
+    line-height: 1.25;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .blocknote-editor-container h1,
+  .blocknote-article-display h1 {
+    font-size: 2rem;
+  }
+
+  .blocknote-editor-container h2,
+  .blocknote-article-display h2 {
+    font-size: 1.5rem;
+  }
+
+  .blocknote-editor-container h3,
+  .blocknote-article-display h3 {
+    font-size: 1.25rem;
+  }
+
+  .blocknote-editor-container p,
+  .blocknote-article-display p {
+    margin-bottom: 1rem;
+    line-height: 1.6;
+  }
+
+  .blocknote-editor-container ul,
+  .blocknote-article-display ul,
+  .blocknote-editor-container ol,
+  .blocknote-article-display ol {
+    padding-left: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .blocknote-editor-container hr,
+  .blocknote-article-display hr {
+    margin: 1.5rem 0;
+    border: 0;
+    border-top: 1px solid hsl(var(--border));
+  }
 }

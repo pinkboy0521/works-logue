@@ -6,6 +6,8 @@ import { BlockNoteView } from "@blocknote/shadcn";
 import { Block } from "@blocknote/core";
 import { useTheme } from "@/shared";
 import { ja } from "@blocknote/core/locales";
+import { articleSchema } from "../lib/blocknoteSchema";
+import type { CustomPartialBlock } from "@/entities";
 
 interface BlockNoteEditorProps {
   value?: string;
@@ -25,14 +27,15 @@ export function BlockNoteEditor({
 }: BlockNoteEditorProps) {
   const { theme } = useTheme();
 
-  // BlockNoteエディターの初期化
+  // 共有スキーマを使用してBlockNoteエディターを初期化
   const editor = useCreateBlockNote({
+    schema: articleSchema,
     dictionary: ja,
     initialContent:
       initialContent &&
       Array.isArray(initialContent) &&
       initialContent.length > 0
-        ? initialContent
+        ? (initialContent as CustomPartialBlock[])
         : [
             {
               type: "paragraph",
@@ -56,30 +59,23 @@ export function BlockNoteEditor({
     return theme === "dark" ? "dark" : "light";
   }, [theme]);
 
+  // editorが初期化されるまで描画しない
+  if (!editor) {
+    return (
+      <div className="min-h-[200px] w-full flex items-center justify-center border rounded-md">
+        <div className="text-muted-foreground">エディターを初期化中...</div>
+      </div>
+    );
+  }
+
   return (
     <div className={`blocknote-editor-container w-full ${className || ""}`}>
       <BlockNoteView
         editor={editor}
         theme={blockNoteTheme}
         onChange={handleChange}
-        className="min-h-[200px] w-full"
+        className="blocknote-editor min-h-[200px] w-full"
       />
-      <style jsx global>{`
-        .blocknote-editor-container .ProseMirror {
-          min-height: 400px;
-          padding: 16px;
-          outline: none;
-          font-family: "Noto Sans", "Noto Sans JP", sans-serif;
-        }
-        .blocknote-editor-container .bn-editor {
-          height: auto;
-          min-height: 400px;
-          font-family: "Noto Sans", "Noto Sans JP", sans-serif;
-        }
-        .blocknote-editor-container {
-          font-family: "Noto Sans", "Noto Sans JP", sans-serif;
-        }
-      `}</style>
     </div>
   );
 }

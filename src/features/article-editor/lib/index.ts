@@ -2,6 +2,9 @@
  * 記事編集機能のユーティリティ関数
  */
 
+export { articleSchema } from "./blocknoteSchema";
+export type { ArticleSchema } from "./blocknoteSchema";
+
 /**
  * マークダウンテキストをプレーンテキストに変換
  */

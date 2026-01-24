@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { ArticleViewer } from "@/features";
 import {
   Avatar,
   AvatarFallback,
@@ -15,7 +16,6 @@ import {
   RelatedArticle,
   AuthorCard,
 } from "@/entities";
-import { BlockNoteRenderer } from "./BlockNoteRenderer";
 import Image from "next/image";
 import { format } from "date-fns";
 import { ja } from "date-fns/locale";
@@ -120,13 +120,7 @@ export function ArticleDetail({
       {/* 記事コンテンツ */}
       <Card>
         <CardContent className="p-6 md:p-8">
-          {article.content && article.content.length > 0 ? (
-            <BlockNoteRenderer blocks={article.content} />
-          ) : (
-            <div className="text-center py-8 text-muted-foreground">
-              記事の内容がありません
-            </div>
-          )}
+          <ArticleViewer content={article.content} />
         </CardContent>
       </Card>
 
