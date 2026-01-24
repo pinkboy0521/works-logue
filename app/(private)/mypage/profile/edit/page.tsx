@@ -3,7 +3,6 @@
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import { getUserById } from "@/entities/user";
 import { ProfileSetupForm } from "@/widgets/profile-setup";
 import type { UserWithProfile } from "@/entities/user/model/types";
 
@@ -14,15 +13,27 @@ export default function ProfileEditPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    console.log("ProfileEditPage useEffect - session:", session?.user?.id);
     const fetchUser = async () => {
       if (!session?.user?.id) {
+        console.log("No session, redirecting to login");
         router.push("/login");
         return;
       }
 
       try {
-        const userData = await getUserById(session.user.id);
+        console.log("Fetching user data from /api/user/me");
+        const response = await fetch("/api/user/me");
+        console.log("API response status:", response.status);
+        if (!response.ok) {
+          console.log("API response not ok, redirecting to login");
+          router.push("/login");
+          return;
+        }
+        const userData = await response.json();
+        console.log("API response data:", userData);
         if (!userData) {
+          console.log("No user data received, redirecting to login");
           router.push("/login");
           return;
         }
@@ -39,6 +50,9 @@ export default function ProfileEditPage() {
   }, [session?.user?.id, router]);
 
   const handleProfileEditComplete = () => {
+    console.log(
+      "handleProfileEditComplete called - redirecting to /mypage/profile",
+    );
     router.push("/mypage/profile");
   };
 
@@ -64,10 +78,10 @@ export default function ProfileEditPage() {
           あなたの情報を編集できます。変更は即座に反映されます。
         </p>
       </div>
-      
+
       <div className="grid gap-6 lg:gap-8">
-        <ProfileSetupForm 
-          user={user} 
+        <ProfileSetupForm
+          user={user}
           mode="edit"
           onComplete={handleProfileEditComplete}
         />

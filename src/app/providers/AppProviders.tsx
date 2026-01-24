@@ -3,6 +3,7 @@
 import { ReactNode } from "react";
 import { SessionProvider } from "next-auth/react";
 import type { Session } from "next-auth";
+import { Toaster } from "@/shared";
 
 interface AppProvidersProps {
   children: ReactNode;
@@ -10,5 +11,10 @@ interface AppProvidersProps {
 }
 
 export function AppProviders({ children, session }: AppProvidersProps) {
-  return <SessionProvider session={session}>{children}</SessionProvider>;
+  return (
+    <SessionProvider session={session}>
+      {children}
+      <Toaster position="bottom-left" />
+    </SessionProvider>
+  );
 }

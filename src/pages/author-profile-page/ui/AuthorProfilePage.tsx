@@ -90,7 +90,9 @@ function AuthorHeader({ user }: { user: UserWithStats }) {
       <CardContent className="pt-6">
         <div className="flex flex-col items-center text-center space-y-4">
           <Avatar className="h-24 w-24">
-            <AvatarImage src={user.image || ""} alt={user.displayName || ""} />
+            {user.image ? (
+              <AvatarImage src={user.image} alt={user.displayName || ""} />
+            ) : null}
             <AvatarFallback className="text-2xl">{initials}</AvatarFallback>
           </Avatar>
 

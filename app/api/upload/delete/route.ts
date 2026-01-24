@@ -7,10 +7,7 @@ export async function DELETE(request: Request) {
     const session = await auth();
 
     if (!session?.user?.id) {
-      return NextResponse.json(
-        { error: "認証が必要です" },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "認証が必要です" }, { status: 401 });
     }
 
     const { publicId } = await request.json();
@@ -18,7 +15,7 @@ export async function DELETE(request: Request) {
     if (!publicId) {
       return NextResponse.json(
         { error: "publicIdが必要です" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -30,7 +27,7 @@ export async function DELETE(request: Request) {
     console.error("画像削除エラー:", error);
     return NextResponse.json(
       { error: "画像の削除に失敗しました" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -12,23 +12,23 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    console.log("Profile update - Request body keys:", Object.keys(body));
 
     const result = await updateUserProfile(session.user.id, {
-      displayName: body.displayName,
-      userId: body.userId,
-      bio: body.bio,
-      website: body.website,
-      location: body.location,
-      statusMessage: body.statusMessage,
-      skillIds: body.skillIds || [],
-      occupationIds: body.occupationIds || [],
+      displayName: body.onlyImage ? undefined : body.displayName,
+      userId: body.onlyImage ? undefined : body.userId,
+      bio: body.onlyImage ? undefined : body.bio,
+      website: body.onlyImage ? undefined : body.website,
+      location: body.onlyImage ? undefined : body.location,
+      statusMessage: body.onlyImage ? undefined : body.statusMessage,
+      skillIds: body.onlyImage ? undefined : body.skillIds || [],
+      occupationIds: body.onlyImage ? undefined : body.occupationIds || [],
       imageUrl: body.imageUrl,
     });
 
     console.log("Profile update result:", result);
 
     if (!result.success) {
+      console.error("Profile update failed:", result.error);
       return NextResponse.json({ error: result.error }, { status: 400 });
     }
 

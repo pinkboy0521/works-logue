@@ -26,7 +26,9 @@ export function AuthorCard({
     return (
       <div className="flex items-center gap-2">
         <Avatar className={getAvatarSize(size)}>
-          <AvatarImage src={user.image || ""} alt={user.displayName || ""} />
+          {user.image ? (
+            <AvatarImage src={user.image} alt={user.displayName || ""} />
+          ) : null}
           <AvatarFallback>{initials}</AvatarFallback>
         </Avatar>
         {showDisplayName && (
@@ -44,7 +46,9 @@ export function AuthorCard({
       className="flex items-center gap-2 hover:opacity-80 transition-opacity"
     >
       <Avatar className={getAvatarSize(size)}>
-        <AvatarImage src={user.image || ""} alt={user.displayName || ""} />
+        {user.image ? (
+          <AvatarImage src={user.image} alt={user.displayName || ""} />
+        ) : null}
         <AvatarFallback>{initials}</AvatarFallback>
       </Avatar>
       {showDisplayName && (

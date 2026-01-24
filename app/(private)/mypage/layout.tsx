@@ -3,7 +3,17 @@
 import Link from "next/link";
 import { Suspense, useState } from "react";
 import { usePathname } from "next/navigation";
-import { Button, Sheet, SheetContent, SheetTrigger, Menu, Settings, BookmarkIcon, Heart, FileText, User } from "@/shared";
+import {
+  Button,
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+  Menu,
+  Settings,
+  BookmarkIcon,
+  Heart,
+  FileText,
+} from "@/shared";
 import { cn } from "@/shared";
 
 interface NavItem {
@@ -15,11 +25,6 @@ interface NavItem {
 const navItems: NavItem[] = [
   {
     href: "/mypage/profile",
-    label: "プロフィール",
-    icon: User,
-  },
-  {
-    href: "/mypage/profile/edit",
     label: "プロフィール編集",
     icon: Settings,
   },
@@ -40,7 +45,13 @@ const navItems: NavItem[] = [
   },
 ];
 
-function NavItems({ currentPath, onItemClick }: { currentPath: string; onItemClick?: () => void }) {
+function NavItems({
+  currentPath,
+  onItemClick,
+}: {
+  currentPath: string;
+  onItemClick?: () => void;
+}) {
   return (
     <nav className="space-y-1">
       {navItems.map((item) => {
@@ -55,7 +66,7 @@ function NavItems({ currentPath, onItemClick }: { currentPath: string; onItemCli
               "flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md transition-colors",
               isActive
                 ? "bg-primary text-primary-foreground"
-                : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                : "text-muted-foreground hover:bg-muted hover:text-foreground",
             )}
           >
             <Icon className="h-4 w-4" />
@@ -73,7 +84,7 @@ export default function MyPageLayout({
   children: React.ReactNode;
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const pathname = usePathname();
+  const pathname = usePathname() || "/mypage";
 
   return (
     <div className="container mx-auto px-4 py-4 md:py-8">
@@ -109,11 +120,13 @@ export default function MyPageLayout({
 
         {/* メインコンテンツ */}
         <main className="flex-1 min-w-0">
-          <Suspense fallback={
-            <div className="flex items-center justify-center p-8">
-              <div className="text-muted-foreground">読み込み中...</div>
-            </div>
-          }>
+          <Suspense
+            fallback={
+              <div className="flex items-center justify-center p-8">
+                <div className="text-muted-foreground">読み込み中...</div>
+              </div>
+            }
+          >
             {children}
           </Suspense>
         </main>

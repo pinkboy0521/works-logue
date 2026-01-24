@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Button, Card, formatDistanceToNow, ja } from "@/shared";
+import { Button, Card } from "@/shared";
 import { getUserWithAllArticles } from "@/entities";
 import { createNewArticleAction, deleteArticleAction } from "@/features";
 
@@ -58,13 +58,20 @@ export function DashboardPageClient({ user }: DashboardPageProps) {
   };
 
   const formatArticleStatus = (status: string, publishedAt: Date | null) => {
+    const formatDate = (date: Date | null) => {
+      if (!date) return "";
+      return new Intl.DateTimeFormat("ja-JP", {
+        year: "numeric",
+        month: "numeric",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      }).format(new Date(date));
+    };
+
     switch (status) {
       case "PUBLISHED":
-        return `公開済み • ${
-          publishedAt
-            ? formatDistanceToNow(publishedAt, { locale: ja, addSuffix: true })
-            : ""
-        }`;
+        return `公開済み • ${formatDate(publishedAt)}`;
       case "DRAFT":
         return "下書き";
       case "PRIVATE":
@@ -120,10 +127,13 @@ export function DashboardPageClient({ user }: DashboardPageProps) {
                       <span>•</span>
                       <span>
                         最終更新:{" "}
-                        {formatDistanceToNow(article.updatedAt, {
-                          locale: ja,
-                          addSuffix: true,
-                        })}
+                        {new Intl.DateTimeFormat("ja-JP", {
+                          year: "numeric",
+                          month: "numeric",
+                          day: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        }).format(new Date(article.updatedAt))}
                       </span>
                       {article.topic && (
                         <>

@@ -6,7 +6,7 @@ import type { TagNode } from "@/shared";
  * @param _topicId トピックでフィルタリングする場合のトピックID（将来の機能拡張用、現在は未実装）
  */
 export async function getTagsWithHierarchy(
-  _topicId?: string,
+  _topicId?: string, // トピックでフィルタリング用（将来実装予定）
 ): Promise<TagNode[]> {
   const tags = await prisma.tag.findMany({
     include: {

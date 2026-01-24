@@ -26,7 +26,9 @@ export async function Header() {
             <NavigationMenuItem>
               <Link href={"/"} className="heading-1 flex items-center gap-2">
                 <ShrimpIcon className="w-6 h-6 md:w-8 md:h-8 text-primary" />
-                <span className="text-lg md:text-xl font-bold">Works Logue</span>
+                <span className="text-lg md:text-xl font-bold">
+                  Works Logue
+                </span>
               </Link>
             </NavigationMenuItem>
           </NavigationMenuList>

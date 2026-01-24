@@ -15,6 +15,7 @@ export async function checkAuthStatus() {
  * 認証が必要な操作かチェック
  */
 export function requiresAuthentication(_action: "like" | "bookmark"): boolean {
+  // アクション名は将来のログ用
   // すべてのリアクション操作にログインが必要
   return true;
 }

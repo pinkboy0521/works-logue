@@ -24,7 +24,7 @@ export async function getArticleLikeStats(
  */
 export function isLikeOperationValid(
   currentUserId?: string,
-  _articleAuthorId?: string,
+  _articleAuthorId?: string, // 作者IDは現在未使用
 ): { valid: boolean; reason?: string } {
   if (!currentUserId) {
     return { valid: false, reason: "ログインが必要です" };

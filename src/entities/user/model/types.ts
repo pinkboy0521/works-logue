@@ -52,14 +52,14 @@ export interface EmailVerificationRequest {
 
 // プロフィール設定データ
 export interface ProfileSetupData {
-  displayName: string;
-  userId: string;
+  displayName?: string;
+  userId?: string;
   bio?: string;
   website?: string;
   location?: string;
   statusMessage?: string;
-  skillIds: string[];
-  occupationIds: string[];
+  skillIds?: string[];
+  occupationIds?: string[];
   imageUrl?: string;
 }
 

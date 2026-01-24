@@ -66,29 +66,37 @@ export async function updateUserProfile(
       }
 
       // ユーザー情報を更新
+      const updateData: Record<string, string | null> = {};
+      if (data.displayName !== undefined)
+        updateData.displayName = data.displayName;
+      if (data.userId !== undefined) updateData.userId = data.userId;
+      if (data.bio !== undefined) updateData.bio = data.bio || null;
+      if (data.website !== undefined) updateData.website = data.website || null;
+      if (data.location !== undefined)
+        updateData.location = data.location || null;
+      if (data.statusMessage !== undefined)
+        updateData.statusMessage = data.statusMessage || null;
+      if (data.imageUrl !== undefined) updateData.image = data.imageUrl || null;
+
       const updatedUser = await tx.user.update({
         where: { id: userId },
-        data: {
-          displayName: data.displayName,
-          userId: data.userId,
-          bio: data.bio || null,
-          website: data.website || null,
-          location: data.location || null,
-          statusMessage: data.statusMessage || null,
-          image: data.imageUrl || null,
-        },
+        data: updateData,
       });
 
-      // 既存のスキル・職業関連を削除
-      await tx.userSkill.deleteMany({
-        where: { userId },
-      });
-      await tx.userOccupation.deleteMany({
-        where: { userId },
-      });
+      // 既存のスキル・職業関連を削除（画像のみ更新の場合はスキップ）
+      if (data.skillIds !== undefined) {
+        await tx.userSkill.deleteMany({
+          where: { userId },
+        });
+      }
+      if (data.occupationIds !== undefined) {
+        await tx.userOccupation.deleteMany({
+          where: { userId },
+        });
+      }
 
       // 新しいスキルを追加
-      if (data.skillIds.length > 0) {
+      if (data.skillIds && data.skillIds.length > 0) {
         await tx.userSkill.createMany({
           data: data.skillIds.map((skillId) => ({
             userId,
@@ -98,7 +106,7 @@ export async function updateUserProfile(
       }
 
       // 新しい職業を追加
-      if (data.occupationIds.length > 0) {
+      if (data.occupationIds && data.occupationIds.length > 0) {
         await tx.userOccupation.createMany({
           data: data.occupationIds.map((occupationId) => ({
             userId,

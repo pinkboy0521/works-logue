@@ -12,11 +12,17 @@ import {
 } from "@/shared";
 import { logoutAction } from "@/features";
 import { Session } from "next-auth";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { ThemeToggle } from "./ThemeToggle";
 import { useEffect, useState } from "react";
 
-export function HeaderMenu({ session }: { session: Session | null }) {
+export function HeaderMenu({
+  session: initialSession,
+}: {
+  session: Session | null;
+}) {
+  const { data: session } = useSession(); // リアルタイムセッション監視
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [userProfile, setUserProfile] = useState<{
@@ -26,9 +32,11 @@ export function HeaderMenu({ session }: { session: Session | null }) {
 
   useEffect(() => {
     const checkAdminStatus = async () => {
+      // セッションがない場合、またはemailがない場合
       if (!session?.user?.email) {
         setIsAdmin(false);
         setIsLoading(false);
+        setUserProfile(null);
         return;
       }
 
@@ -42,13 +50,14 @@ export function HeaderMenu({ session }: { session: Session | null }) {
       } catch (error) {
         console.error("Failed to check admin status:", error);
         setIsAdmin(false);
+        setUserProfile(null);
       } finally {
         setIsLoading(false);
       }
     };
 
     checkAdminStatus();
-  }, [session?.user?.email]); // sessionData依存を削除
+  }, [session?.user?.email, session?.user?.image]); // session.user.imageも監視
 
   // プロフィール画像の更新イベントをリッスン
   useEffect(() => {
@@ -79,21 +88,22 @@ export function HeaderMenu({ session }: { session: Session | null }) {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Avatar className="cursor-pointer w-12 h-12">
-              <AvatarImage
-                src={userProfile?.image || session.user?.image || ""}
-              />
-              <AvatarFallback>
-                {(userProfile?.displayName || session.user?.name)?.slice(
-                  0,
-                  1,
-                ) || ""}
+              {userProfile?.image || session.user?.image ? (
+                <AvatarImage
+                  src={userProfile?.image || session.user?.image || undefined}
+                />
+              ) : null}
+              <AvatarFallback className="font-semibold">
+                {(userProfile?.displayName || session.user?.name)
+                  ?.charAt(0)
+                  ?.toUpperCase() || "ユ"}
               </AvatarFallback>
             </Avatar>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-48" align="end">
             <DropdownMenuItem asChild>
-              <Link href="/mypage/profile/edit" className="w-full cursor-pointer">
-                プロフィール編集
+              <Link href="/mypage/profile" className="w-full cursor-pointer">
+                プロフィール
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>

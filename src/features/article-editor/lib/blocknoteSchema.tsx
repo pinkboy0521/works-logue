@@ -1,3 +1,5 @@
+"use client";
+
 // 共有BlockNoteスキーマ（編集・表示共通）
 import { BlockNoteSchema, defaultBlockSpecs } from "@blocknote/core";
 
