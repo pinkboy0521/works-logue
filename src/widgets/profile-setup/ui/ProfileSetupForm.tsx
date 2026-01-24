@@ -41,9 +41,10 @@ interface ProfileSetupFormData {
 interface ProfileSetupFormProps {
   user: UserWithProfile | null;
   onComplete: () => void;
+  mode?: "setup" | "edit"; // 編集モード判定用
 }
 
-export function ProfileSetupForm({ user, onComplete }: ProfileSetupFormProps) {
+export function ProfileSetupForm({ user, onComplete, mode = "setup" }: ProfileSetupFormProps) {
   const { data: session, update } = useSession();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -51,6 +52,7 @@ export function ProfileSetupForm({ user, onComplete }: ProfileSetupFormProps) {
     user?.image || null,
   );
   const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [isDeletingImage, setIsDeletingImage] = useState(false);
   const [skills, setSkills] = useState<Record<string, Skill[]>>({});
   const [occupations, setOccupations] = useState<Record<string, Occupation[]>>(
     {},
@@ -61,6 +63,9 @@ export function ProfileSetupForm({ user, onComplete }: ProfileSetupFormProps) {
   );
   const [skillsLoaded, setSkillsLoaded] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  
+  // 編集モードの場合はユーザーIDの変更を禁止
+  const isExistingUser = mode === "edit" || !!user?.userId;
 
   const form = useForm<ProfileSetupFormData>({
     defaultValues: {
@@ -88,11 +93,11 @@ export function ProfileSetupForm({ user, onComplete }: ProfileSetupFormProps) {
 
       // 既存の選択状態を復元
       if (user?.userSkills) {
-        setSelectedSkills(new Set(user.userSkills.map((us) => us.skill.id)));
+        setSelectedSkills(new Set(user.userSkills.map((us: { skill: { id: string } }) => us.skill.id)));
       }
       if (user?.userOccupations) {
         setSelectedOccupations(
-          new Set(user.userOccupations.map((uo) => uo.occupation.id)),
+          new Set(user.userOccupations.map((uo: { occupation: { id: string } }) => uo.occupation.id)),
         );
       }
 
@@ -179,6 +184,49 @@ export function ProfileSetupForm({ user, onComplete }: ProfileSetupFormProps) {
     const file = event.target.files?.[0];
     if (file) {
       handleImageUpload(file);
+    }
+  };
+
+  const handleImageDelete = async () => {
+    if (!profileImage) return;
+    
+    setIsDeletingImage(true);
+    setError(null);
+    
+    try {
+      // API経由で画像を削除
+      if (user?.image) {
+        // プロフィール画像のURLからpublicIdを抽出
+        const urlParts = user.image.split("/");
+        const fileWithExtension = urlParts[urlParts.length - 1];
+        const publicId = `profile_images/${fileWithExtension.split(".")[0]}`;
+        
+        const response = await fetch("/api/upload/delete", {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ publicId }),
+        });
+        
+        if (!response.ok) {
+          throw new Error("画像の削除にAPIレベルで失敗しました");
+        }
+      }
+      
+      // ローカル状態を更新
+      setProfileImage(null);
+      
+      // ファイル入力をリセット
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    } catch (err: unknown) {
+      setError(
+        err instanceof Error ? err.message : "画像の削除に失敗しました"
+      );
+    } finally {
+      setIsDeletingImage(false);
     }
   };
 
@@ -326,15 +374,28 @@ export function ProfileSetupForm({ user, onComplete }: ProfileSetupFormProps) {
                     "？"}
                 </AvatarFallback>
               </Avatar>
-              <div>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={isUploadingImage}
-                >
-                  {isUploadingImage ? "アップロード中..." : "画像を選択"}
-                </Button>
+              <div className="space-y-2">
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={isUploadingImage || isDeletingImage}
+                  >
+                    {isUploadingImage ? "アップロード中..." : "画像を選択"}
+                  </Button>
+                  {profileImage && (
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
+                      onClick={handleImageDelete}
+                      disabled={isUploadingImage || isDeletingImage}
+                    >
+                      {isDeletingImage ? "削除中..." : "削除"}
+                    </Button>
+                  )}
+                </div>
                 <input
                   ref={fileInputRef}
                   type="file"
@@ -342,7 +403,7 @@ export function ProfileSetupForm({ user, onComplete }: ProfileSetupFormProps) {
                   onChange={handleFileChange}
                   className="hidden"
                 />
-                <p className="text-xs text-muted-foreground mt-1">
+                <p className="text-xs text-muted-foreground">
                   JPG、PNG、WebP対応（最大5MB）
                 </p>
               </div>
@@ -388,11 +449,14 @@ export function ProfileSetupForm({ user, onComplete }: ProfileSetupFormProps) {
                     <Input
                       placeholder="tanaka_taro"
                       {...field}
-                      disabled={isLoading}
+                      disabled={isLoading || isExistingUser}
                     />
                   </FormControl>
                   <FormDescription>
-                    プロフィールページのURLに使用されます（半角英数字とアンダースコアのみ）
+                    {isExistingUser 
+                      ? "ユーザーIDは登録後は変更できません"
+                      : "プロフィールページのURLに使用されます（半角英数字とアンダースコアのみ）"
+                    }
                   </FormDescription>
                   <FormMessage />
                 </FormItem>

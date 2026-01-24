@@ -11,3 +11,4 @@ export * from "./navigation-menu";
 export * from "./badge";
 export * from "./skeleton";
 export * from "./pagination";
+export * from "./sheet";
