@@ -76,13 +76,7 @@ export const authConfig = {
                 redirecting: true,
               });
               return Response.redirect(new URL("/welcome", request.nextUrl));
-            } else {
-              console.log("Profile complete, allowing access:", {
-                path: pathname,
-                displayName: user.displayName,
-                userId: user.userId,
-              });
-            }
+            } 
           } else {
             console.log("API response not ok:", response.status);
             // API エラーの場合はWelcomeページにリダイレクト

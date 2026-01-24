@@ -722,3 +722,151 @@ import { HomePage } from "@/pages";
 - NextAuth.js の認証・認可を適切に実装してください
 - CSRF や XSS 対策を考慮してください
 - データベースクエリでは常に Prisma のパラメータ化クエリを使用してください
+
+# 仕様書・設計書の管理とメンテナンス
+
+## 仕様書の構成
+
+このプロジェクトでは、ウォーターフォール開発レベルの体系的な仕様・設計書を `/docs/specifications/` ディレクトリでサブディレクトリ単位で管理しています：
+
+### ドキュメント一覧（サブディレクトリ構造）
+
+| カテゴリ | ディレクトリ | 内容 | 主要ファイル |
+|---------|-------------|------|-------------|
+| **要件定義書** | `requirements/` | 機能要件・非機能要件・制約事項 | functional.md, non-functional.md, constraints.md, acceptance-criteria.md |
+| **外部設計書** | `external-design/` | UI/UX設計・API仕様・画面遷移図 | ui-design.md, api-specification.md, screen-transition.md, error-handling.md |
+| **内部設計書** | `internal-design/` | アーキテクチャ・DB設計・コンポーネント設計 | architecture.md, database.md, component-design.md, performance.md |
+| **開発・運用仕様書** | `deployment/` | 環境構築・デプロイ・運用手順 | development.md, production.md, ci-cd.md, monitoring.md |
+
+各サブディレクトリには **README.md** ファイルが含まれ、ディレクトリ内のナビゲーションと概要を提供しています。
+
+### ドキュメント更新の必要なタイミング
+
+#### 新機能追加時
+新機能を実装する際は、以下の順序で仕様書を更新してください：
+
+1. **要件定義書の更新** (`docs/specifications/requirements/`)
+   - `functional.md`: 新機能の要件を機能要件に追加
+   - `non-functional.md`: 必要に応じて非機能要件を見直し
+   - `constraints.md`: 技術制約・ビジネス制約を確認
+   - `acceptance-criteria.md`: 受け入れ基準を明確化
+
+2. **外部設計書の更新** (`docs/specifications/external-design/`)  
+   - `ui-design.md`: 新しい画面・UI要素の設計を追加
+   - `api-specification.md`: API仕様の追加・変更を記載
+   - `screen-transition.md`: 画面遷移図の更新
+   - `error-handling.md`: エラー処理の追加・変更
+
+3. **内部設計書の更新** (`docs/specifications/internal-design/`)
+   - `database.md`: データベーススキーマ変更の反映
+   - `component-design.md`: コンポーネント設計の追加
+   - `architecture.md`: アーキテクチャへの影響を記載
+   - `performance.md`: パフォーマンス要件の見直し
+
+4. **開発・運用仕様書の更新** (`docs/specifications/deployment/`)
+   - `development.md`: 開発環境の変更・新規セットアップ
+   - `production.md`: 本番環境構成の変更
+   - `ci-cd.md`: デプロイメントパイプラインの変更
+   - `monitoring.md`: 監視・運用手順の更新
+
+#### 技術的変更時
+- ライブラリのメジャーアップデート
+- アーキテクチャの変更
+- データベーススキーマの変更
+- デプロイメント設定の変更
+
+#### バグ修正・セキュリティ対応時
+- セキュリティ仕様の変更
+- パフォーマンス要件の見直し
+- 運用手順の改善
+
+### 更新フロー
+
+#### 機能追加のワークフロー例
+
+```bash
+# 1. 仕様書更新（実装前）
+git checkout -b feature/new-feature-spec
+# docs/specifications/ 内の関連ディレクトリ・ファイルを更新
+# 例: docs/specifications/requirements/functional.md に新機能追加
+# 例: docs/specifications/external-design/api-specification.md にAPI仕様追加
+git commit -m "docs: 新機能XXXの仕様書を更新"
+
+# 2. 仕様レビュー・承認
+# Pull Request でドキュメント変更をレビュー
+
+# 3. 実装開始（仕様確定後）
+git checkout -b feature/new-feature-impl
+# 実装作業...
+git commit -m "feat: 新機能XXXを実装"
+
+# 4. 実装完了後の仕様書修正（必要に応じて）
+# 実装時に判明した変更点を仕様書に反映
+git commit -m "docs: 実装に基づく仕様書の微修正"
+```
+
+#### サブディレクトリ構造でのファイル管理
+
+各サブディレクトリは独立した関心事を持ち、以下のように管理してください：
+
+```
+docs/specifications/
+├── requirements/
+│   ├── README.md           # 要件定義の概要・ナビゲーション
+│   ├── functional.md       # 機能要件（15項目）
+│   ├── non-functional.md   # 非機能要件（8項目）
+│   ├── constraints.md      # 制約事項（技術・ビジネス・運用）
+│   └── acceptance-criteria.md # 受け入れ基準・テストケース
+├── external-design/
+│   ├── README.md           # 外部設計の概要・ナビゲーション
+│   ├── ui-design.md        # UI/UX設計・画面設計
+│   ├── api-specification.md # REST API仕様・エンドポイント
+│   ├── screen-transition.md # 画面遷移図・ユーザーフロー
+│   └── error-handling.md   # エラーハンドリング・メッセージ
+├── internal-design/
+│   ├── README.md           # 内部設計の概要・ナビゲーション
+│   ├── architecture.md     # システムアーキテクチャ・FSD設計
+│   ├── database.md         # データベース設計・スキーマ
+│   ├── component-design.md # コンポーネント設計・UI構造
+│   └── performance.md      # パフォーマンス設計・最適化
+└── deployment/
+    ├── README.md           # 運用の概要・ナビゲーション
+    ├── development.md      # ローカル開発環境構築
+    ├── production.md       # 本番環境構成・デプロイ
+    ├── ci-cd.md           # CI/CDパイプライン・自動化
+    └── monitoring.md       # 監視・ログ・アラート
+```
+
+### ドキュメント品質ガイドライン
+
+#### 記述ルール
+- **日本語**: すべてのドキュメントは日本語で記載
+- **Markdown形式**: .md ファイルとして管理
+- **バージョン管理**: 各ドキュメントにバージョン・更新日を記載
+- **変更履歴**: 主要な変更は文書末尾の変更履歴テーブルに記録
+
+#### 技術仕様の記載方針
+- **具体性**: 実装可能なレベルで詳細に記載
+- **トレーサビリティ**: 要件ID・設計IDで関連を明確化
+- **実装状況**: ✅完了、🔄部分実装、❌未実装の表示
+- **制約事項**: 技術制約・運用制約を明記
+
+#### レビューポイント
+- 仕様の矛盾がないか
+- 実装との乖離がないか  
+- 必要な情報が網羅されているか
+- 将来の保守者が理解できるか
+
+### 継続的改善
+
+#### 定期レビュー
+- **四半期レビュー**: 仕様書全体の見直し
+- **リリース時**: 実装との整合性確認
+- **技術変更時**: 関連仕様書の影響調査
+
+#### 品質向上
+- 開発者からの仕様書フィードバック収集
+- 実装時の仕様書参照状況の把握
+- ドキュメント検索性・可読性の改善
+
+この仕様書管理プロセスにより、プロジェクトの設計品質と保守性を継続的に向上させてください。
