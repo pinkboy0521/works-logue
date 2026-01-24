@@ -8,22 +8,22 @@
 
 ### 1.1 エラー分類
 
-| 分類 | 説明 | 対応方針 |
-|------|------|----------|
-| **システムエラー** | サーバーエラー、DB接続エラー等 | Error Boundary、フォールバック表示 |
-| **ユーザーエラー** | 入力値不正、権限不足等 | インライン表示、明確なメッセージ |
-| **ネットワークエラー** | 接続失敗、タイムアウト等 | リトライ機能、オフライン通知 |
-| **認証エラー** | セッション切れ、無効トークン等 | 自動リダイレクト、再認証 |
+| 分類                   | 説明                           | 対応方針                           |
+| ---------------------- | ------------------------------ | ---------------------------------- |
+| **システムエラー**     | サーバーエラー、DB接続エラー等 | Error Boundary、フォールバック表示 |
+| **ユーザーエラー**     | 入力値不正、権限不足等         | インライン表示、明確なメッセージ   |
+| **ネットワークエラー** | 接続失敗、タイムアウト等       | リトライ機能、オフライン通知       |
+| **認証エラー**         | セッション切れ、無効トークン等 | 自動リダイレクト、再認証           |
 
 ### 1.2 エラーレベル定義
 
 ```typescript
 // 実装: src/shared/lib/error-levels.ts
 export enum ErrorLevel {
-  INFO = "info",      // 情報通知（青）
+  INFO = "info", // 情報通知（青）
   WARNING = "warning", // 警告（黄）
-  ERROR = "error",    // エラー（赤）
-  SUCCESS = "success"  // 成功（緑）
+  ERROR = "error", // エラー（赤）
+  SUCCESS = "success", // 成功（緑）
 }
 
 export interface AppError {
@@ -40,6 +40,7 @@ export interface AppError {
 ## 2. グローバルエラーハンドリング
 
 ### 2.1 Error Boundary
+
 ```tsx
 // 実装: src/shared/ui/error-boundary/ErrorBoundary.tsx
 "use client";
@@ -49,7 +50,10 @@ interface ErrorBoundaryProps {
   fallback?: React.ComponentType<{ error: Error; reset: () => void }>;
 }
 
-export function ErrorBoundary({ children, fallback: Fallback }: ErrorBoundaryProps) {
+export function ErrorBoundary({
+  children,
+  fallback: Fallback,
+}: ErrorBoundaryProps) {
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
@@ -83,6 +87,7 @@ export function ErrorBoundary({ children, fallback: Fallback }: ErrorBoundaryPro
 ```
 
 ### 2.2 デフォルトエラーフォールバック
+
 ```tsx
 // 実装: src/shared/ui/error-boundary/DefaultErrorFallback.tsx
 interface DefaultErrorFallbackProps {
@@ -90,7 +95,10 @@ interface DefaultErrorFallbackProps {
   reset: () => void;
 }
 
-export function DefaultErrorFallback({ error, reset }: DefaultErrorFallbackProps) {
+export function DefaultErrorFallback({
+  error,
+  reset,
+}: DefaultErrorFallbackProps) {
   return (
     <div className="flex flex-col items-center justify-center min-h-[400px] p-8">
       <AlertTriangleIcon className="w-16 h-16 text-destructive mb-4" />
@@ -125,6 +133,7 @@ export function DefaultErrorFallback({ error, reset }: DefaultErrorFallbackProps
 ### 2.3 Next.js App Router エラーページ
 
 #### 2.3.1 グローバルエラーページ
+
 ```tsx
 // 実装: app/error.tsx
 "use client";
@@ -184,6 +193,7 @@ export default function Error({
 ```
 
 #### 2.3.2 404 Not Foundページ
+
 ```tsx
 // 実装: app/not-found.tsx
 import { Metadata } from "next";
@@ -218,6 +228,7 @@ export default function NotFound() {
 ## 3. フォームエラーハンドリング
 
 ### 3.1 フォームバリデーションエラー
+
 ```tsx
 // 実装: src/shared/ui/form/FormField.tsx
 import { useFormContext } from "react-hook-form";
@@ -241,9 +252,7 @@ export function FormField({ name, children }: FormFieldProps) {
       {error && (
         <Alert variant="destructive">
           <AlertCircleIcon className="w-4 h-4" />
-          <AlertDescription>
-            {error.message as string}
-          </AlertDescription>
+          <AlertDescription>{error.message as string}</AlertDescription>
         </Alert>
       )}
     </div>
@@ -252,6 +261,7 @@ export function FormField({ name, children }: FormFieldProps) {
 ```
 
 ### 3.2 非同期フォーム送信エラー
+
 ```tsx
 // 実装: src/features/auth/ui/LoginForm.tsx
 export function LoginForm() {
@@ -276,7 +286,9 @@ export function LoginForm() {
 
       router.push("/dashboard");
     } catch (error) {
-      setSubmitError("ログインに失敗しました。しばらく時間をおいてから再度お試しください。");
+      setSubmitError(
+        "ログインに失敗しました。しばらく時間をおいてから再度お試しください。",
+      );
     } finally {
       setIsLoading(false);
     }
@@ -290,17 +302,17 @@ export function LoginForm() {
           <AlertDescription>{submitError}</AlertDescription>
         </Alert>
       )}
-      
+
       <FormField name="email">
         <Label>メールアドレス</Label>
         <Input {...register("email")} disabled={isLoading} />
       </FormField>
-      
+
       <FormField name="password">
         <Label>パスワード</Label>
         <Input type="password" {...register("password")} disabled={isLoading} />
       </FormField>
-      
+
       <Button type="submit" className="w-full" disabled={isLoading}>
         {isLoading && <Loader2Icon className="w-4 h-4 mr-2 animate-spin" />}
         ログイン
@@ -313,6 +325,7 @@ export function LoginForm() {
 ## 4. API エラーハンドリング
 
 ### 4.1 Server Actions エラー処理
+
 ```tsx
 // 実装: src/entities/article/api/actions.ts
 import { redirect } from "next/navigation";
@@ -364,7 +377,8 @@ export async function createArticle(prevState: any, formData: FormData) {
 
     console.error("記事作成エラー:", error);
     return {
-      error: "記事の作成に失敗しました。しばらく時間をおいてから再度お試しください。",
+      error:
+        "記事の作成に失敗しました。しばらく時間をおいてから再度お試しください。",
       success: false,
     };
   }
@@ -372,6 +386,7 @@ export async function createArticle(prevState: any, formData: FormData) {
 ```
 
 ### 4.2 API Route エラー処理
+
 ```tsx
 // 実装: app/api/articles/route.ts
 export async function POST(request: Request) {
@@ -379,8 +394,11 @@ export async function POST(request: Request) {
     const session = await getServerSession(authOptions);
     if (!session?.user) {
       return NextResponse.json(
-        { success: false, error: { code: "UNAUTHORIZED", message: "認証が必要です" } },
-        { status: 401 }
+        {
+          success: false,
+          error: { code: "UNAUTHORIZED", message: "認証が必要です" },
+        },
+        { status: 401 },
       );
     }
 
@@ -409,7 +427,7 @@ export async function POST(request: Request) {
             details: error.errors,
           },
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -422,7 +440,7 @@ export async function POST(request: Request) {
           message: "内部サーバーエラー",
         },
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -431,6 +449,7 @@ export async function POST(request: Request) {
 ## 5. 通知システム
 
 ### 5.1 Toast通知（将来実装予定）
+
 ```tsx
 // 予定: src/shared/ui/toast/Toast.tsx
 interface ToastProps {
@@ -449,7 +468,7 @@ export function useToast() {
   const toast = useCallback((props: ToastProps) => {
     const id = Math.random().toString(36);
     setToasts((prev) => [...prev, { ...props, id }]);
-    
+
     setTimeout(() => {
       setToasts((prev) => prev.filter((toast) => toast.id !== id));
     }, 5000);
@@ -464,6 +483,7 @@ export function useToast() {
 ```
 
 ### 5.2 成功・エラー通知の使用例
+
 ```tsx
 // 使用例: フォーム送信後の通知
 const { toast } = useToast();
@@ -471,7 +491,7 @@ const { toast } = useToast();
 const handleSubmit = async (data: FormData) => {
   try {
     await submitForm(data);
-    
+
     toast({
       variant: "success",
       title: "保存完了",
@@ -490,6 +510,7 @@ const handleSubmit = async (data: FormData) => {
 ## 6. ローディング状態
 
 ### 6.1 ページレベルローディング
+
 ```tsx
 // 実装: app/loading.tsx
 export default function Loading() {
@@ -518,6 +539,7 @@ export default function Loading() {
 ```
 
 ### 6.2 コンポーネントレベルローディング
+
 ```tsx
 // 実装: src/widgets/article-list/ui/ArticleListSkeleton.tsx
 export function ArticleListSkeleton() {
@@ -556,11 +578,12 @@ export function ArticleListSkeleton() {
 ## 7. オフライン対応
 
 ### 7.1 ネットワーク状態検知
+
 ```tsx
 // 実装: src/shared/lib/network-status.ts
 export function useNetworkStatus() {
   const [isOnline, setIsOnline] = useState(
-    typeof navigator !== "undefined" ? navigator.onLine : true
+    typeof navigator !== "undefined" ? navigator.onLine : true,
   );
 
   useEffect(() => {
@@ -581,6 +604,7 @@ export function useNetworkStatus() {
 ```
 
 ### 7.2 オフライン通知
+
 ```tsx
 // 実装: src/widgets/offline-banner/ui/OfflineBanner.tsx
 export function OfflineBanner() {
@@ -603,6 +627,6 @@ export function OfflineBanner() {
 
 ## 変更履歴
 
-| 日付 | バージョン | 変更者 | 変更内容 |
-|------|------------|--------|----------|
-| 2026-01-24 | 1.0 | システム | 外部設計書からエラーハンドリング・通知を分離・独立化 |
+| 日付       | バージョン | 変更者   | 変更内容                                             |
+| ---------- | ---------- | -------- | ---------------------------------------------------- |
+| 2026-01-24 | 1.0        | システム | 外部設計書からエラーハンドリング・通知を分離・独立化 |

@@ -731,18 +731,19 @@ import { HomePage } from "@/pages";
 
 ### ドキュメント一覧（サブディレクトリ構造）
 
-| カテゴリ | ディレクトリ | 内容 | 主要ファイル |
-|---------|-------------|------|-------------|
-| **要件定義書** | `requirements/` | 機能要件・非機能要件・制約事項 | functional.md, non-functional.md, constraints.md, acceptance-criteria.md |
-| **外部設計書** | `external-design/` | UI/UX設計・API仕様・画面遷移図 | ui-design.md, api-specification.md, screen-transition.md, error-handling.md |
-| **内部設計書** | `internal-design/` | アーキテクチャ・DB設計・コンポーネント設計 | architecture.md, database.md, component-design.md, performance.md |
-| **開発・運用仕様書** | `deployment/` | 環境構築・デプロイ・運用手順 | development.md, production.md, ci-cd.md, monitoring.md |
+| カテゴリ             | ディレクトリ       | 内容                                       | 主要ファイル                                                                |
+| -------------------- | ------------------ | ------------------------------------------ | --------------------------------------------------------------------------- |
+| **要件定義書**       | `requirements/`    | 機能要件・非機能要件・制約事項             | functional.md, non-functional.md, constraints.md, acceptance-criteria.md    |
+| **外部設計書**       | `external-design/` | UI/UX設計・API仕様・画面遷移図             | ui-design.md, api-specification.md, screen-transition.md, error-handling.md |
+| **内部設計書**       | `internal-design/` | アーキテクチャ・DB設計・コンポーネント設計 | architecture.md, database.md, component-design.md, performance.md           |
+| **開発・運用仕様書** | `deployment/`      | 環境構築・デプロイ・運用手順               | development.md, production.md, ci-cd.md, monitoring.md                      |
 
 各サブディレクトリには **README.md** ファイルが含まれ、ディレクトリ内のナビゲーションと概要を提供しています。
 
 ### ドキュメント更新の必要なタイミング
 
 #### 新機能追加時
+
 新機能を実装する際は、以下の順序で仕様書を更新してください：
 
 1. **要件定義書の更新** (`docs/specifications/requirements/`)
@@ -751,7 +752,7 @@ import { HomePage } from "@/pages";
    - `constraints.md`: 技術制約・ビジネス制約を確認
    - `acceptance-criteria.md`: 受け入れ基準を明確化
 
-2. **外部設計書の更新** (`docs/specifications/external-design/`)  
+2. **外部設計書の更新** (`docs/specifications/external-design/`)
    - `ui-design.md`: 新しい画面・UI要素の設計を追加
    - `api-specification.md`: API仕様の追加・変更を記載
    - `screen-transition.md`: 画面遷移図の更新
@@ -770,12 +771,14 @@ import { HomePage } from "@/pages";
    - `monitoring.md`: 監視・運用手順の更新
 
 #### 技術的変更時
+
 - ライブラリのメジャーアップデート
 - アーキテクチャの変更
 - データベーススキーマの変更
 - デプロイメント設定の変更
 
 #### バグ修正・セキュリティ対応時
+
 - セキュリティ仕様の変更
 - パフォーマンス要件の見直し
 - 運用手順の改善
@@ -840,31 +843,36 @@ docs/specifications/
 ### ドキュメント品質ガイドライン
 
 #### 記述ルール
+
 - **日本語**: すべてのドキュメントは日本語で記載
 - **Markdown形式**: .md ファイルとして管理
 - **バージョン管理**: 各ドキュメントにバージョン・更新日を記載
 - **変更履歴**: 主要な変更は文書末尾の変更履歴テーブルに記録
 
 #### 技術仕様の記載方針
+
 - **具体性**: 実装可能なレベルで詳細に記載
 - **トレーサビリティ**: 要件ID・設計IDで関連を明確化
 - **実装状況**: ✅完了、🔄部分実装、❌未実装の表示
 - **制約事項**: 技術制約・運用制約を明記
 
 #### レビューポイント
+
 - 仕様の矛盾がないか
-- 実装との乖離がないか  
+- 実装との乖離がないか
 - 必要な情報が網羅されているか
 - 将来の保守者が理解できるか
 
 ### 継続的改善
 
 #### 定期レビュー
+
 - **四半期レビュー**: 仕様書全体の見直し
 - **リリース時**: 実装との整合性確認
 - **技術変更時**: 関連仕様書の影響調査
 
 #### 品質向上
+
 - 開発者からの仕様書フィードバック収集
 - 実装時の仕様書参照状況の把握
 - ドキュメント検索性・可読性の改善

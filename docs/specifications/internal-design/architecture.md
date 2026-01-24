@@ -16,48 +16,48 @@ graph TB
         A3[shadcn/ui Design System]
         A4[Tailwind CSS]
     end
-    
+
     subgraph "FSD Architecture"
         B1[app - Application]
         B2[pages - Pages]
-        B3[widgets - Widgets] 
+        B3[widgets - Widgets]
         B4[features - Features]
         B5[entities - Entities]
         B6[shared - Shared]
     end
-    
+
     subgraph "Backend Layer"
         C1[Next.js API Routes]
         C2[Server Actions]
         C3[NextAuth.js v5]
         C4[Middleware]
     end
-    
+
     subgraph "Data Layer"
         D1[Prisma ORM]
         D2[PostgreSQL]
         D3[Redis - キャッシュ]
     end
-    
+
     subgraph "External Services"
         E1[Cloudinary - 画像]
         E2[SendGrid - メール]
         E3[Vercel - ホスティング]
     end
-    
+
     A1 --> B1
     B1 --> B2
     B2 --> B3
     B3 --> B4
     B4 --> B5
     B5 --> B6
-    
+
     A2 --> C1
     A2 --> C2
     C2 --> D1
     C3 --> C4
     D1 --> D2
-    
+
     C1 --> E1
     C2 --> E2
     A1 --> E3
@@ -65,13 +65,13 @@ graph TB
 
 ### 1.2 アーキテクチャ要素
 
-| レイヤー | 技術要素 | 責務 | 実装状況 |
-|---------|----------|------|----------|
-| **Frontend** | Next.js 15.5.9 + React 19 | ユーザーインターフェース、クライアント処理 | ✅ 完了 |
-| **FSD** | Feature-Sliced Design | コード構造、モジュール分離 | ✅ 完了 |
-| **Backend** | Next.js API Routes, Server Actions | サーバーサイド処理、認証 | ✅ 完了 |
-| **Data** | Prisma ORM + PostgreSQL | データ永続化、データベース操作 | ✅ 完了 |
-| **External** | Cloudinary, SendGrid, Vercel | 外部サービス統合 | 🔄 部分実装 |
+| レイヤー     | 技術要素                           | 責務                                       | 実装状況    |
+| ------------ | ---------------------------------- | ------------------------------------------ | ----------- |
+| **Frontend** | Next.js 15.5.9 + React 19          | ユーザーインターフェース、クライアント処理 | ✅ 完了     |
+| **FSD**      | Feature-Sliced Design              | コード構造、モジュール分離                 | ✅ 完了     |
+| **Backend**  | Next.js API Routes, Server Actions | サーバーサイド処理、認証                   | ✅ 完了     |
+| **Data**     | Prisma ORM + PostgreSQL            | データ永続化、データベース操作             | ✅ 完了     |
+| **External** | Cloudinary, SendGrid, Vercel       | 外部サービス統合                           | 🔄 部分実装 |
 
 ## 2. Feature-Sliced Design (FSD) アーキテクチャ
 
@@ -150,6 +150,7 @@ src/
 ### 2.2 公開API設計パターン
 
 #### 2.2.1 レイヤー間インポートルール
+
 ```typescript
 // ✅ 正しいインポート（公開API経由）
 import { HomePage } from "@/pages";
@@ -164,6 +165,7 @@ import { Header } from "@/widgets/header/ui/Header";
 ```
 
 #### 2.2.2 公開API実装例
+
 ```typescript
 // src/entities/index.ts
 export {
@@ -215,6 +217,7 @@ export { APP_CONFIG, API_ENDPOINTS } from "./config";
 ### 3.1 ファイルベースルーティング統合
 
 #### 3.1.1 App Router ディレクトリ構造
+
 ```
 app/               # Next.js App Router（ファイルベースルーティング）
 ├── layout.tsx     # ルートレイアウト - FSD App レイヤーを統合
@@ -256,6 +259,7 @@ app/               # Next.js App Router（ファイルベースルーティン�
 ```
 
 #### 3.1.2 統合実装例
+
 ```typescript
 // app/layout.tsx - Next.js App Router のルートレイアウト
 import { AppLayout } from "@/app";
@@ -322,13 +326,14 @@ export function HomePage() {
 
 #### 3.2.1 コンポーネント分類
 
-| 種類 | 用途 | 実装方針 | 例 |
-|------|------|----------|-----|
-| **Server Component** | データフェッチ、SEO | デフォルト選択 | ページ、記事一覧、静的ヘッダー |
-| **Client Component** | インタラクション、状態管理 | 必要な場合のみ | フォーム、ボタン、テーマ切り替え |
-| **Hybrid** | サーバー + クライアント混合 | 適切に分離 | 記事詳細（静的部分 + リアクション） |
+| 種類                 | 用途                        | 実装方針       | 例                                  |
+| -------------------- | --------------------------- | -------------- | ----------------------------------- |
+| **Server Component** | データフェッチ、SEO         | デフォルト選択 | ページ、記事一覧、静的ヘッダー      |
+| **Client Component** | インタラクション、状態管理  | 必要な場合のみ | フォーム、ボタン、テーマ切り替え    |
+| **Hybrid**           | サーバー + クライアント混合 | 適切に分離     | 記事詳細（静的部分 + リアクション） |
 
 #### 3.2.2 実装パターン
+
 ```typescript
 // Server Component - データフェッチ含むページコンポーネント
 // src/pages/article-detail-page/ui/ArticleDetailPage.tsx
@@ -368,10 +373,10 @@ interface ArticleReactionsProps {
   initialIsLiked: boolean;
 }
 
-export function ArticleReactions({ 
-  articleId, 
-  initialLikeCount, 
-  initialIsLiked 
+export function ArticleReactions({
+  articleId,
+  initialLikeCount,
+  initialIsLiked
 }: ArticleReactionsProps) {
   const [isPending, startTransition] = useTransition();
   const [likeCount, setLikeCount] = useState(initialLikeCount);
@@ -389,8 +394,8 @@ export function ArticleReactions({
   };
 
   return (
-    <Button 
-      onClick={handleLike} 
+    <Button
+      onClick={handleLike}
       disabled={isPending}
       variant={isLiked ? "default" : "outline"}
     >
@@ -405,6 +410,7 @@ export function ArticleReactions({
 ### 4.1 データフローパターン
 
 #### 4.1.1 Server Actions + Server Components
+
 ```mermaid
 sequenceDiagram
     participant User
@@ -424,6 +430,7 @@ sequenceDiagram
 ```
 
 #### 4.1.2 実装例：記事作成フロー
+
 ```typescript
 // Server Action - src/entities/article/api/actions.ts
 import { revalidatePath } from "next/cache";
@@ -456,7 +463,7 @@ export async function createArticle(prevState: any, formData: FormData) {
     // キャッシュ無効化
     revalidatePath("/dashboard/articles");
     revalidatePath("/");
-    
+
     // リダイレクト
     redirect(`/${session.user.userId}/articles/${article.id}`);
   } catch (error) {
@@ -487,14 +494,16 @@ export function ArticleEditor() {
 ### 4.2 状態管理戦略
 
 #### 4.2.1 状態分類
-| 状態種類 | 管理方法 | 実装場所 | 例 |
-|----------|----------|----------|-----|
-| **グローバル状態** | React Context | `src/app/providers/` | 認証状態、テーマ |
-| **サーバー状態** | Server Components | Prisma Query | 記事データ、ユーザー情報 |
-| **ローカル状態** | useState | Component内 | フォーム状態、UI状態 |
-| **URL状態** | Next.js Router | searchParams | 検索条件、ページネーション |
+
+| 状態種類           | 管理方法          | 実装場所             | 例                         |
+| ------------------ | ----------------- | -------------------- | -------------------------- |
+| **グローバル状態** | React Context     | `src/app/providers/` | 認証状態、テーマ           |
+| **サーバー状態**   | Server Components | Prisma Query         | 記事データ、ユーザー情報   |
+| **ローカル状態**   | useState          | Component内          | フォーム状態、UI状態       |
+| **URL状態**        | Next.js Router    | searchParams         | 検索条件、ページネーション |
 
 #### 4.2.2 グローバル状態実装
+
 ```typescript
 // src/app/providers/AuthProvider.tsx
 "use client";
@@ -539,6 +548,6 @@ export function useAuth() {
 
 ## 変更履歴
 
-| 日付 | バージョン | 変更者 | 変更内容 |
-|------|------------|--------|----------|
-| 2026-01-24 | 1.0 | システム | 内部設計書からアーキテクチャを分離・独立化 |
+| 日付       | バージョン | 変更者   | 変更内容                                   |
+| ---------- | ---------- | -------- | ------------------------------------------ |
+| 2026-01-24 | 1.0        | システム | 内部設計書からアーキテクチャを分離・独立化 |

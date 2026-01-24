@@ -10,7 +10,11 @@ async function uploadImage(file: File): Promise<string | null> {
     return await uploadImageFile(file);
   } catch (error) {
     console.error("Upload error:", error);
-    alert(error instanceof Error ? error.message : "画像のアップロードに失敗しました");
+    alert(
+      error instanceof Error
+        ? error.message
+        : "画像のアップロードに失敗しました",
+    );
     return null;
   }
 }

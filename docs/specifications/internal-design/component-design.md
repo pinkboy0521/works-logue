@@ -9,6 +9,7 @@
 ### 1.1 FSD レイヤー別コンポーネント構成
 
 #### 1.1.1 Shared レイヤー（`src/shared/`）
+
 ```
 shared/
 ├── ui/           # 再利用可能なUIコンポーネント
@@ -39,6 +40,7 @@ shared/
 ```
 
 #### 1.1.2 Entities レイヤー（`src/entities/`）
+
 ```
 entities/
 ├── user/
@@ -85,6 +87,7 @@ entities/
 ```
 
 #### 1.1.3 Features レイヤー（`src/features/`）
+
 ```
 features/
 ├── auth/
@@ -131,6 +134,7 @@ features/
 ### 1.2 shadcn/ui 統一コンポーネント戦略
 
 #### 1.2.1 基本UI統一エクスポート
+
 ```typescript
 // src/shared/ui/shadcn/index.ts
 // 全shadcn/uiコンポーネントの統一エクスポート
@@ -138,21 +142,59 @@ export { Button } from "./button";
 export { Input } from "./input";
 export { Label } from "./label";
 export { Textarea } from "./textarea";
-export { Card, CardHeader, CardContent, CardFooter, CardTitle, CardDescription } from "./card";
-export { Form, FormItem, FormField, FormLabel, FormControl, FormMessage } from "./form";
+export {
+  Card,
+  CardHeader,
+  CardContent,
+  CardFooter,
+  CardTitle,
+  CardDescription,
+} from "./card";
+export {
+  Form,
+  FormItem,
+  FormField,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from "./form";
 export { Alert, AlertDescription } from "./alert";
 export { Badge } from "./badge";
 export { Avatar, AvatarImage, AvatarFallback } from "./avatar";
 export { Skeleton } from "./skeleton";
-export { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./dropdown-menu";
-export { NavigationMenu, NavigationMenuList, NavigationMenuItem, NavigationMenuLink } from "./navigation-menu";
-export { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "./pagination";
-export { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "./sheet";
+export {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "./dropdown-menu";
+export {
+  NavigationMenu,
+  NavigationMenuList,
+  NavigationMenuItem,
+  NavigationMenuLink,
+} from "./navigation-menu";
+export {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "./pagination";
+export {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "./sheet";
 export { Toaster } from "./toaster";
 export { toast } from "./use-toast";
 ```
 
 #### 1.2.2 variants API 活用パターン
+
 ```typescript
 // variants APIを活用したカスタマイズ例
 import { Button } from "@/shared";
@@ -168,6 +210,7 @@ import { Button } from "@/shared";
 ```
 
 #### 1.2.3 shadcn/ui設定
+
 ```json
 // components.json
 {
@@ -187,6 +230,7 @@ import { Button } from "@/shared";
 ### 2.1 命名規則
 
 #### 2.1.1 ファイル・コンポーネント命名
+
 - **ファイル**: PascalCase + `.tsx` 拡張子
 - **コンポーネント**: PascalCase
 - **型定義**: PascalCase + `Props` サフィックス
@@ -207,7 +251,7 @@ export function ArticleCard({ article, showAuthor = true, size = 'md' }: Article
     <Card className={cn(
       "hover:shadow-md transition-shadow",
       size === 'sm' && "p-4",
-      size === 'md' && "p-6", 
+      size === 'md' && "p-6",
       size === 'lg' && "p-8"
     )}>
       {/* コンポーネント内容 */}
@@ -217,24 +261,27 @@ export function ArticleCard({ article, showAuthor = true, size = 'md' }: Article
 ```
 
 #### 2.1.2 CSS クラス命名（Tailwind）
+
 ```typescript
 // ✅ 推奨: 意味のあるクラス構成
 const cardClasses = cn(
   "rounded-lg border bg-card text-card-foreground shadow-sm",
-  size === 'lg' && "p-8",
-  size === 'md' && "p-6",
-  size === 'sm' && "p-4",
+  size === "lg" && "p-8",
+  size === "md" && "p-6",
+  size === "sm" && "p-4",
   isHovered && "shadow-lg",
-  className
+  className,
 );
 
 // ❌ 禁止: 意味不明なクラス羅列
-className="p-2 m-4 bg-white border-gray-200 rounded-md shadow-sm hover:shadow-md"
+className =
+  "p-2 m-4 bg-white border-gray-200 rounded-md shadow-sm hover:shadow-md";
 ```
 
 ### 2.2 Server/Client Component 分離戦略
 
 #### 2.2.1 Server Components（デフォルト）
+
 ```typescript
 // Server Component: データフェッチ、静的表示
 // src/widgets/article-list/ui/ArticleList.tsx
@@ -246,13 +293,13 @@ interface ArticleListProps {
   topicId?: string;
 }
 
-export async function ArticleList({ 
-  page = 1, 
+export async function ArticleList({
+  page = 1,
   limit = 20,
   topicId
 }: ArticleListProps) {
   const { articles, pagination } = await getArticles({ page, limit, topicId });
-  
+
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -267,6 +314,7 @@ export async function ArticleList({
 ```
 
 #### 2.2.2 Client Components（'use client'）
+
 ```typescript
 // Client Component: インタラクティブ機能
 // src/features/article-reaction/ui/LikeButton.tsx
@@ -282,20 +330,20 @@ interface LikeButtonProps {
   initialCount: number;
 }
 
-export function LikeButton({ 
-  articleId, 
-  initialLiked, 
-  initialCount 
+export function LikeButton({
+  articleId,
+  initialLiked,
+  initialCount
 }: LikeButtonProps) {
   const [isLiked, setIsLiked] = useState(initialLiked);
   const [likeCount, setLikeCount] = useState(initialCount);
   const [isPending, startTransition] = useTransition();
-  
+
   const handleLike = () => {
     // 楽観的UI更新
     setIsLiked(!isLiked);
     setLikeCount(prev => isLiked ? prev - 1 : prev + 1);
-    
+
     // Server Action実行
     startTransition(async () => {
       try {
@@ -312,7 +360,7 @@ export function LikeButton({
       }
     });
   };
-  
+
   return (
     <Button
       variant={isLiked ? "default" : "outline"}
@@ -331,6 +379,7 @@ export function LikeButton({
 ### 2.3 コンポーネント合成パターン
 
 #### 2.3.1 Compound Components
+
 ```typescript
 // src/entities/article/ui/ArticleCard.tsx
 interface ArticleCardProps {
@@ -382,6 +431,7 @@ ArticleCard.Footer = ArticleCardFooter;
 ```
 
 #### 2.3.2 Render Props パターン
+
 ```typescript
 // src/entities/article/ui/ArticleProvider.tsx
 interface ArticleProviderProps {
@@ -414,7 +464,7 @@ export function ArticleProvider({ articleId, children }: ArticleProviderProps) {
     if (isLoading) return <ArticleSkeleton />;
     if (error) return <ErrorAlert message={error} />;
     if (!article) return <NotFoundAlert />;
-    
+
     return <ArticleDetail article={article} />;
   }}
 </ArticleProvider>
@@ -425,6 +475,7 @@ export function ArticleProvider({ articleId, children }: ArticleProviderProps) {
 ### 3.1 記事コンポーネント
 
 #### 3.1.1 ArticleCard
+
 ```typescript
 // src/entities/article/ui/ArticleCard.tsx
 import { Card, CardHeader, CardContent, CardFooter, CardTitle, Badge, Avatar, AvatarImage, AvatarFallback } from "@/shared";
@@ -452,16 +503,16 @@ interface ArticleCardProps {
   showImage?: boolean;
 }
 
-export function ArticleCard({ 
-  article, 
-  size = 'md', 
-  showImage = true 
+export function ArticleCard({
+  article,
+  size = 'md',
+  showImage = true
 }: ArticleCardProps) {
   return (
     <Card className={cn(
       "hover:shadow-lg transition-all duration-200 cursor-pointer",
       size === 'sm' && "p-4",
-      size === 'md' && "p-6", 
+      size === 'md' && "p-6",
       size === 'lg' && "p-8"
     )}>
       <CardHeader className="space-y-3">
@@ -482,17 +533,17 @@ export function ArticleCard({
           {article.title}
         </CardTitle>
       </CardHeader>
-      
+
       {showImage && article.topImageUrl && (
         <div className="aspect-video overflow-hidden rounded-md mx-6 mb-4">
-          <img 
-            src={article.topImageUrl} 
+          <img
+            src={article.topImageUrl}
             alt={article.title}
             className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
           />
         </div>
       )}
-      
+
       {article.excerpt && (
         <CardContent>
           <p className="text-sm text-muted-foreground line-clamp-3">
@@ -500,7 +551,7 @@ export function ArticleCard({
           </p>
         </CardContent>
       )}
-      
+
       <CardFooter className="flex justify-between items-center">
         <div className="flex gap-4 text-sm text-muted-foreground">
           <span className="flex items-center gap-1">
@@ -535,6 +586,7 @@ export function ArticleCard({
 ```
 
 #### 3.1.2 ArticleEditor
+
 ```typescript
 // src/features/article-editor/ui/ArticleEditor.tsx
 'use client';
@@ -555,7 +607,7 @@ interface ArticleEditorProps {
 export function ArticleEditor({ article, mode }: ArticleEditorProps) {
   const [isPending, startTransition] = useTransition();
   const [content, setContent] = useState(article?.content || null);
-  
+
   const form = useForm({
     resolver: zodResolver(articleSchema),
     defaultValues: {
@@ -571,16 +623,16 @@ export function ArticleEditor({ article, mode }: ArticleEditorProps) {
     startTransition(async () => {
       try {
         const articleData = { ...data, content };
-        
+
         if (mode === 'create') {
           await createArticle(articleData);
         } else {
           await updateArticle(article!.id, articleData);
         }
-        
+
         toast.success(
-          mode === 'create' 
-            ? '記事を作成しました' 
+          mode === 'create'
+            ? '記事を作成しました'
             : '記事を更新しました'
         );
       } catch (error) {
@@ -613,7 +665,7 @@ export function ArticleEditor({ article, mode }: ArticleEditorProps) {
                   </FormItem>
                 )}
               />
-              
+
               <FormField
                 control={form.control}
                 name="excerpt"
@@ -632,28 +684,28 @@ export function ArticleEditor({ article, mode }: ArticleEditorProps) {
                 )}
               />
             </div>
-            
+
             <div className="space-y-4">
               {/* トピック・タグ選択 */}
-              <TopicSelector 
+              <TopicSelector
                 value={form.watch('topicId')}
                 onChange={(topicId) => form.setValue('topicId', topicId)}
               />
-              <TagSelector 
+              <TagSelector
                 value={form.watch('tagIds')}
                 onChange={(tagIds) => form.setValue('tagIds', tagIds)}
               />
             </div>
           </div>
-          
+
           {/* エディター */}
           <div className="border rounded-lg">
-            <BlockNoteEditor 
+            <BlockNoteEditor
               initialContent={content}
               onChange={setContent}
             />
           </div>
-          
+
           {/* 保存ボタン */}
           <div className="flex gap-4 justify-end">
             <Button
@@ -683,6 +735,7 @@ export function ArticleEditor({ article, mode }: ArticleEditorProps) {
 ### 3.2 認証コンポーネント
 
 #### 3.2.1 LoginForm
+
 ```typescript
 // src/features/auth/ui/LoginForm.tsx
 'use client';
@@ -697,7 +750,7 @@ import { loginSchema } from '../lib/validation';
 export function LoginForm() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  
+
   const form = useForm({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -756,7 +809,7 @@ export function LoginForm() {
               <FormItem>
                 <FormLabel>メールアドレス</FormLabel>
                 <FormControl>
-                  <Input 
+                  <Input
                     type="email"
                     placeholder="example@works-logue.com"
                     disabled={isLoading}
@@ -775,7 +828,7 @@ export function LoginForm() {
               <FormItem>
                 <FormLabel>パスワード</FormLabel>
                 <FormControl>
-                  <Input 
+                  <Input
                     type="password"
                     placeholder="パスワードを入力"
                     disabled={isLoading}
@@ -787,9 +840,9 @@ export function LoginForm() {
             )}
           />
 
-          <Button 
-            type="submit" 
-            className="w-full" 
+          <Button
+            type="submit"
+            className="w-full"
             disabled={isLoading}
           >
             {isLoading && <Loader2Icon className="w-4 h-4 mr-2 animate-spin" />}
@@ -815,6 +868,6 @@ export function LoginForm() {
 
 ## 変更履歴
 
-| 日付 | バージョン | 変更者 | 変更内容 |
-|------|------------|--------|----------|
-| 2026-01-24 | 1.0 | システム | 内部設計書からコンポーネント設計を分離・独立化 |
+| 日付       | バージョン | 変更者   | 変更内容                                       |
+| ---------- | ---------- | -------- | ---------------------------------------------- |
+| 2026-01-24 | 1.0        | システム | 内部設計書からコンポーネント設計を分離・独立化 |

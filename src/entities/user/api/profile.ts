@@ -184,7 +184,7 @@ export async function getUserProfile(
     console.log(
       "Database query result:",
       user ? "User found" : "User not found",
-    );    
+    );
 
     return user;
   } catch (error) {

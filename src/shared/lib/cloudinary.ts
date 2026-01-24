@@ -1,8 +1,8 @@
 import { v2 as cloudinary } from "cloudinary";
 
 // このファイルはサーバーサイドでのみ実行される
-if (typeof window !== 'undefined') {
-  throw new Error('Cloudinary functions cannot be used on the client side');
+if (typeof window !== "undefined") {
+  throw new Error("Cloudinary functions cannot be used on the client side");
 }
 
 // ビルド時には環境変数がないことを許可し、実行時にチェックする
@@ -99,7 +99,7 @@ export function generateArticleImageUploadSignature(
 
   const timestamp = Math.round(Date.now() / 1000);
   const imageId = `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-  const publicId = articleId 
+  const publicId = articleId
     ? `articles/${articleId}/images/${imageId}`
     : `articles/temp/${userId}/${imageId}`;
 

@@ -15,20 +15,20 @@ graph TD
     A --> D[新規登録画面]
     A --> E[検索結果画面]
     A --> F[ユーザープロフィール画面]
-    
+
     C --> G[メール認証画面]
     C --> H[ダッシュボード画面]
     D --> G
     D --> H
-    
+
     H --> I[記事投稿画面]
     H --> J[記事編集画面]
     H --> K[マイページ画面]
     H --> L[プロフィール設定画面]
-    
+
     B --> M[コメント投稿]
     B --> N[リアクション]
-    
+
     G --> O[プロフィール設定画面]
     O --> H
 ```
@@ -45,14 +45,14 @@ sequenceDiagram
 
     U->>L: メール・パスワード入力
     L->>A: ログイン要求
-    
+
     alt 認証成功
         A-->>L: セッション作成
         L->>D: ダッシュボードへリダイレクト
     else 認証失敗
         A-->>L: エラーメッセージ表示
     end
-    
+
     alt 新規登録
         U->>L: 新規登録リンク
         L->>E: メール認証が必要
@@ -97,26 +97,27 @@ app/
 
 ### 2.2 URLパターン
 
-| パス | 画面 | 認証 | 説明 |
-|------|------|------|------|
-| `/` | ホーム画面 | 不要 | 最新記事一覧 |
-| `/login` | ログイン画面 | 不要 | ユーザーログイン |
-| `/signup` | 新規登録画面 | 不要 | アカウント作成 |
-| `/dashboard` | ダッシュボード | 必要 | 個人管理画面 |
-| `/dashboard/articles` | 記事管理 | 必要 | 自分の記事一覧 |
-| `/dashboard/articles/new` | 記事投稿 | 必要 | 新規記事作成 |
-| `/dashboard/articles/[id]/edit` | 記事編集 | 必要 | 記事内容編集 |
-| `/mypage` | マイページ | 必要 | プロフィール表示 |
-| `/[userId]` | ユーザープロフィール | 不要 | 他ユーザーの情報 |
-| `/[userId]/articles/[articleId]` | 記事詳細 | 不要 | 記事コンテンツ表示 |
-| `/search` | 検索結果 | 不要 | 検索結果表示 |
-| `/topics/[topicId]` | トピック記事 | 不要 | トピック別記事一覧 |
+| パス                             | 画面                 | 認証 | 説明               |
+| -------------------------------- | -------------------- | ---- | ------------------ |
+| `/`                              | ホーム画面           | 不要 | 最新記事一覧       |
+| `/login`                         | ログイン画面         | 不要 | ユーザーログイン   |
+| `/signup`                        | 新規登録画面         | 不要 | アカウント作成     |
+| `/dashboard`                     | ダッシュボード       | 必要 | 個人管理画面       |
+| `/dashboard/articles`            | 記事管理             | 必要 | 自分の記事一覧     |
+| `/dashboard/articles/new`        | 記事投稿             | 必要 | 新規記事作成       |
+| `/dashboard/articles/[id]/edit`  | 記事編集             | 必要 | 記事内容編集       |
+| `/mypage`                        | マイページ           | 必要 | プロフィール表示   |
+| `/[userId]`                      | ユーザープロフィール | 不要 | 他ユーザーの情報   |
+| `/[userId]/articles/[articleId]` | 記事詳細             | 不要 | 記事コンテンツ表示 |
+| `/search`                        | 検索結果             | 不要 | 検索結果表示       |
+| `/topics/[topicId]`              | トピック記事         | 不要 | トピック別記事一覧 |
 
 ## 3. ナビゲーション設計
 
 ### 3.1 共通ナビゲーション
 
 #### 3.1.1 ヘッダーナビゲーション
+
 ```tsx
 // 実装: src/widgets/header/ui/Header.tsx
 <header className="border-b">
@@ -126,10 +127,10 @@ app/
       <Logo />
       <span className="text-xl font-bold">Works Logue</span>
     </Link>
-    
+
     {/* 検索バー */}
     <SearchForm className="flex-1 max-w-md mx-4" />
-    
+
     {/* ユーザーメニュー */}
     <div className="flex items-center gap-2">
       <ThemeToggle />
@@ -151,6 +152,7 @@ app/
 ```
 
 #### 3.1.2 ユーザーメニュー
+
 ```tsx
 // ログイン済みユーザー向けドロップダウンメニュー
 <DropdownMenu>
@@ -173,9 +175,7 @@ app/
       <Link href="/dashboard/articles/new">記事を書く</Link>
     </DropdownMenuItem>
     <DropdownMenuSeparator />
-    <DropdownMenuItem onClick={() => signOut()}>
-      ログアウト
-    </DropdownMenuItem>
+    <DropdownMenuItem onClick={() => signOut()}>ログアウト</DropdownMenuItem>
   </DropdownMenuContent>
 </DropdownMenu>
 ```
@@ -183,16 +183,17 @@ app/
 ### 3.2 サイドナビゲーション
 
 #### 3.2.1 ダッシュボードサイドバー
+
 ```tsx
 // 実装: src/widgets/sidebar/ui/DashboardSidebar.tsx
 <aside className="w-64 border-r bg-card">
   <nav className="p-4">
     <ul className="space-y-2">
       <li>
-        <Link 
-          href="/dashboard" 
+        <Link
+          href="/dashboard"
           className={cn("flex items-center gap-2 px-3 py-2 rounded-md", {
-            "bg-primary text-primary-foreground": pathname === "/dashboard"
+            "bg-primary text-primary-foreground": pathname === "/dashboard",
           })}
         >
           <HomeIcon className="w-4 h-4" />
@@ -200,10 +201,12 @@ app/
         </Link>
       </li>
       <li>
-        <Link 
+        <Link
           href="/dashboard/articles"
           className={cn("flex items-center gap-2 px-3 py-2 rounded-md", {
-            "bg-primary text-primary-foreground": pathname.startsWith("/dashboard/articles")
+            "bg-primary text-primary-foreground": pathname.startsWith(
+              "/dashboard/articles",
+            ),
           })}
         >
           <FileTextIcon className="w-4 h-4" />
@@ -224,6 +227,7 @@ app/
 ```
 
 #### 3.2.2 トピック・タグサイドバー
+
 ```tsx
 // 実装: src/widgets/sidebar/ui/TopicSidebar.tsx
 <aside className="w-64">
@@ -232,9 +236,9 @@ app/
     <div>
       <h3 className="font-semibold mb-2">トピック</h3>
       <ul className="space-y-1">
-        {topics.map(topic => (
+        {topics.map((topic) => (
           <li key={topic.id}>
-            <Link 
+            <Link
               href={`/topics/${topic.id}`}
               className="block px-2 py-1 text-sm hover:bg-accent rounded-md"
             >
@@ -244,12 +248,12 @@ app/
         ))}
       </ul>
     </div>
-    
+
     {/* 人気タグ */}
     <div>
       <h3 className="font-semibold mb-2">人気のタグ</h3>
       <div className="flex flex-wrap gap-1">
-        {popularTags.map(tag => (
+        {popularTags.map((tag) => (
           <Badge key={tag.id} variant="secondary">
             {tag.name}
           </Badge>
@@ -263,6 +267,7 @@ app/
 ## 4. リダイレクト・認証制御
 
 ### 4.1 認証ミドルウェア
+
 ```typescript
 // 実装: middleware.ts
 import { withAuth } from "next-auth/middleware";
@@ -289,21 +294,18 @@ export default withAuth(
         return true;
       },
     },
-  }
+  },
 );
 
 export const config = {
-  matcher: [
-    "/dashboard/:path*",
-    "/mypage/:path*", 
-    "/admin/:path*"
-  ]
+  matcher: ["/dashboard/:path*", "/mypage/:path*", "/admin/:path*"],
 };
 ```
 
 ### 4.2 リダイレクト設定
 
 #### 4.2.1 認証後リダイレクト
+
 ```typescript
 // 実装: src/app/auth.config.ts
 export const authConfig = {
@@ -315,18 +317,21 @@ export const authConfig = {
   callbacks: {
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
-      const isOnDashboard = nextUrl.pathname.startsWith('/dashboard');
-      
+      const isOnDashboard = nextUrl.pathname.startsWith("/dashboard");
+
       if (isOnDashboard) {
         if (isLoggedIn) return true;
         return false; // ログインページにリダイレクト
       } else if (isLoggedIn) {
         // ログイン済みの場合、認証ページからダッシュボードへ
-        if (nextUrl.pathname.startsWith('/login') || nextUrl.pathname.startsWith('/signup')) {
-          return Response.redirect(new URL('/dashboard', nextUrl));
+        if (
+          nextUrl.pathname.startsWith("/login") ||
+          nextUrl.pathname.startsWith("/signup")
+        ) {
+          return Response.redirect(new URL("/dashboard", nextUrl));
         }
       }
-      
+
       return true;
     },
   },
@@ -334,18 +339,20 @@ export const authConfig = {
 ```
 
 #### 4.2.2 新規登録後フロー
+
 ```typescript
 // 新規登録 → メール認証 → プロフィール設定 → ダッシュボード
 const signupFlow = {
-  1: "/auth/verify-email",    // メール認証待ち
-  2: "/welcome",              // プロフィール初期設定
-  3: "/dashboard",            // ダッシュボードへ
+  1: "/auth/verify-email", // メール認証待ち
+  2: "/welcome", // プロフィール初期設定
+  3: "/dashboard", // ダッシュボードへ
 };
 ```
 
 ## 5. パンくずナビゲーション
 
 ### 5.1 動的パンくず生成
+
 ```tsx
 // 実装: src/widgets/breadcrumb/ui/Breadcrumb.tsx
 interface BreadcrumbItem {
@@ -377,37 +384,37 @@ export function Breadcrumb({ items }: { items: BreadcrumbItem[] }) {
 ```
 
 ### 5.2 パンくず設定例
+
 ```typescript
 // ページ別パンくず設定
 const breadcrumbConfig = {
-  "/dashboard": [
-    { label: "ダッシュボード" }
-  ],
+  "/dashboard": [{ label: "ダッシュボード" }],
   "/dashboard/articles": [
     { label: "ダッシュボード", href: "/dashboard" },
-    { label: "記事管理" }
+    { label: "記事管理" },
   ],
   "/dashboard/articles/new": [
     { label: "ダッシュボード", href: "/dashboard" },
     { label: "記事管理", href: "/dashboard/articles" },
-    { label: "記事投稿" }
+    { label: "記事投稿" },
   ],
   "/[userId]/articles/[articleId]": [
     { label: "記事一覧", href: "/" },
     { label: user.displayName, href: `/${user.userId}` },
-    { label: article.title }
-  ]
+    { label: article.title },
+  ],
 };
 ```
 
 ## 6. モバイル対応ナビゲーション
 
 ### 6.1 ハンバーガーメニュー
+
 ```tsx
 // 実装: src/widgets/header/ui/MobileNav.tsx
 export function MobileNav() {
   const [isOpen, setIsOpen] = useState(false);
-  
+
   return (
     <>
       <Button
@@ -417,7 +424,7 @@ export function MobileNav() {
       >
         <MenuIcon className="w-6 h-6" />
       </Button>
-      
+
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
         <SheetContent side="left">
           <nav className="flex flex-col space-y-4">
@@ -458,6 +465,7 @@ export function MobileNav() {
 ```
 
 ### 6.2 タブレット対応
+
 ```css
 /* レスポンシブナビゲーション */
 @media (max-width: 1024px) {
@@ -465,7 +473,7 @@ export function MobileNav() {
     transform: translateX(-100%);
     transition: transform 0.3s ease;
   }
-  
+
   .sidebar.open {
     transform: translateX(0);
   }
@@ -475,7 +483,7 @@ export function MobileNav() {
   .header-search {
     display: none;
   }
-  
+
   .mobile-search {
     display: block;
   }
@@ -486,6 +494,6 @@ export function MobileNav() {
 
 ## 変更履歴
 
-| 日付 | バージョン | 変更者 | 変更内容 |
-|------|------------|--------|----------|
-| 2026-01-24 | 1.0 | システム | 外部設計書から画面遷移・ナビゲーションを分離・独立化 |
+| 日付       | バージョン | 変更者   | 変更内容                                             |
+| ---------- | ---------- | -------- | ---------------------------------------------------- |
+| 2026-01-24 | 1.0        | システム | 外部設計書から画面遷移・ナビゲーションを分離・独立化 |

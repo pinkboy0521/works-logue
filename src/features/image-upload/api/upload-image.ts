@@ -42,8 +42,8 @@ export async function getImageUploadSignature(): Promise<UploadSignature> {
  * Cloudinaryに画像をアップロード
  */
 export async function uploadToCloudinary(
-  file: File, 
-  signature: UploadSignature
+  file: File,
+  signature: UploadSignature,
 ): Promise<string> {
   const formData = new FormData();
   formData.append("file", file);
@@ -62,7 +62,9 @@ export async function uploadToCloudinary(
   if (!uploadResponse.ok) {
     const errorText = await uploadResponse.text();
     console.error("Cloudinary upload error:", uploadResponse.status, errorText);
-    throw new Error(`画像のアップロードに失敗しました (${uploadResponse.status}): ${errorText}`);
+    throw new Error(
+      `画像のアップロードに失敗しました (${uploadResponse.status}): ${errorText}`,
+    );
   }
 
   const result = await uploadResponse.json();

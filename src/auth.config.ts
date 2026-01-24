@@ -76,7 +76,7 @@ export const authConfig = {
                 redirecting: true,
               });
               return Response.redirect(new URL("/welcome", request.nextUrl));
-            } 
+            }
           } else {
             console.log("API response not ok:", response.status);
             // API エラーの場合はWelcomeページにリダイレクト

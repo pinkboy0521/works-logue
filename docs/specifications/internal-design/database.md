@@ -7,12 +7,14 @@
 ## 1. データベース概要
 
 ### 1.1 基本構成
+
 - **RDBMS**: PostgreSQL 14+
 - **ORM**: Prisma 6.19.1
 - **接続プール**: Prismaによる管理
 - **マイグレーション**: Prisma Migrate
 
 ### 1.2 設計原則
+
 - **正規化**: 第3正規形まで正規化
 - **パフォーマンス**: 適切なインデックス設計
 - **拡張性**: 将来の機能拡張を考慮
@@ -39,7 +41,7 @@ erDiagram
         datetime createdAt
         datetime updatedAt
     }
-    
+
     Article {
         string id PK "CUID"
         string userId FK
@@ -55,7 +57,7 @@ erDiagram
         datetime createdAt
         datetime updatedAt
     }
-    
+
     Topic {
         string id PK "CUID"
         string name
@@ -66,7 +68,7 @@ erDiagram
         datetime createdAt
         datetime updatedAt
     }
-    
+
     Tag {
         string id PK "CUID"
         string name
@@ -78,7 +80,7 @@ erDiagram
         datetime createdAt
         datetime updatedAt
     }
-    
+
     TaxonomyType {
         string id PK "CUID"
         string name
@@ -87,14 +89,14 @@ erDiagram
         datetime createdAt
         datetime updatedAt
     }
-    
+
     ArticleTag {
         string id PK "CUID"
         string articleId FK
         string tagId FK
         datetime createdAt
     }
-    
+
     Comment {
         string id PK "CUID"
         string content
@@ -107,21 +109,21 @@ erDiagram
         datetime createdAt
         datetime updatedAt
     }
-    
+
     ArticleLike {
         string id PK "CUID"
         string articleId FK
         string userId FK
         datetime createdAt
     }
-    
+
     ArticleBookmark {
         string id PK "CUID"
         string articleId FK
         string userId FK
         datetime createdAt
     }
-    
+
     Skill {
         string id PK "CUID"
         string name
@@ -129,14 +131,14 @@ erDiagram
         datetime createdAt
         datetime updatedAt
     }
-    
+
     SkillCategory {
         string id PK "CUID"
         string name
         datetime createdAt
         datetime updatedAt
     }
-    
+
     Occupation {
         string id PK "CUID"
         string name
@@ -144,28 +146,28 @@ erDiagram
         datetime createdAt
         datetime updatedAt
     }
-    
+
     OccupationCategory {
         string id PK "CUID"
         string name
         datetime createdAt
         datetime updatedAt
     }
-    
+
     UserSkill {
         string id PK "CUID"
         string userId FK
         string skillId FK
         datetime createdAt
     }
-    
+
     UserOccupation {
         string id PK "CUID"
         string userId FK
         string occupationId FK
         datetime createdAt
     }
-    
+
     EmailVerification {
         string id PK "CUID"
         string email
@@ -173,29 +175,29 @@ erDiagram
         datetime expiresAt
         datetime createdAt
     }
-    
+
     User ||--o{ Article : "writes"
     User ||--o{ Comment : "posts"
     User ||--o{ ArticleLike : "likes"
     User ||--o{ ArticleBookmark : "bookmarks"
     User ||--o{ UserSkill : "has"
     User ||--o{ UserOccupation : "has"
-    
+
     Article }o--|| Topic : "belongs_to"
     Article ||--o{ ArticleTag : "tagged_with"
     Article ||--o{ Comment : "has_comments"
     Article ||--o{ ArticleLike : "receives_likes"
     Article ||--o{ ArticleBookmark : "bookmarked_by"
-    
+
     Tag ||--o{ ArticleTag : "used_in"
     Tag }o--|| TaxonomyType : "classified_by"
     Tag ||--o{ Tag : "parent_child"
-    
+
     Comment ||--o{ Comment : "parent_child"
-    
+
     Skill }o--|| SkillCategory : "belongs_to"
     Skill ||--o{ UserSkill : "assigned_to"
-    
+
     Occupation }o--|| OccupationCategory : "belongs_to"
     Occupation ||--o{ UserOccupation : "assigned_to"
 ```
@@ -203,6 +205,7 @@ erDiagram
 ### 2.2 主要テーブル詳細設計
 
 #### 2.2.1 User（ユーザー）テーブル
+
 ```sql
 CREATE TABLE "User" (
   "id" TEXT PRIMARY KEY,              -- CUID（グローバルユニーク）
@@ -233,12 +236,14 @@ CREATE INDEX "User_role_idx" ON "User"("role");
 ```
 
 **制約・特徴**:
+
 - `id`: CUID形式（例: `clz1a2b3c000000000example`）
 - `email`: OAuth認証対応のため nullable
 - `userId`: URL用（例: `/yamada_taro`）
 - パスワードは bcryptjs でハッシュ化
 
 #### 2.2.2 Article（記事）テーブル
+
 ```sql
 CREATE TABLE "Article" (
   "id" TEXT PRIMARY KEY,              -- CUID
@@ -272,11 +277,13 @@ CREATE INDEX "Article_content_search_idx" ON "Article" USING GIN (to_tsvector('j
 ```
 
 **制約・特徴**:
+
 - `content`: BlockNote の JSON 形式で保存
 - `status`: DRAFT（下書き）、PUBLISHED（公開）、PRIVATE（非公開）
 - カウント値はパフォーマンス最適化のためキャッシュ
 
 #### 2.2.3 Comment（コメント）テーブル（階層構造）
+
 ```sql
 CREATE TABLE "Comment" (
   "id" TEXT PRIMARY KEY,              -- CUID
@@ -300,11 +307,13 @@ CREATE INDEX "Comment_article_created_idx" ON "Comment"("articleId", "createdAt"
 ```
 
 **制約・特徴**:
+
 - 階層コメント：最大3階層まで
 - 論理削除：`isDeleted` フラグで管理
 - `level` で階層深度を管理（パフォーマンス最適化）
 
 #### 2.2.4 Tag（タグ）テーブル（階層構造）
+
 ```sql
 CREATE TABLE "Tag" (
   "id" TEXT PRIMARY KEY,              -- CUID
@@ -330,6 +339,7 @@ CREATE INDEX "Tag_level_order_idx" ON "Tag"("level", "sortOrder");
 ```
 
 **階層例**:
+
 ```
 業界（level 1）
 ├── フロントエンド（level 2）
@@ -345,6 +355,7 @@ CREATE INDEX "Tag_level_order_idx" ON "Tag"("level", "sortOrder");
 ### 2.3 マスターデータ設計
 
 #### 2.3.1 TaxonomyType（タクソノミータイプ）
+
 ```sql
 CREATE TABLE "TaxonomyType" (
   "id" TEXT PRIMARY KEY,
@@ -358,13 +369,14 @@ CREATE TABLE "TaxonomyType" (
 );
 
 -- 初期データ例
-INSERT INTO "TaxonomyType" ("id", "name", "slug") VALUES 
+INSERT INTO "TaxonomyType" ("id", "name", "slug") VALUES
 ('taxonomy_tech', '技術', 'technology'),
 ('taxonomy_industry', '業界', 'industry'),
 ('taxonomy_method', '手法', 'method');
 ```
 
 #### 2.3.2 Topic（トピック）
+
 ```sql
 CREATE TABLE "Topic" (
   "id" TEXT PRIMARY KEY,
@@ -387,6 +399,7 @@ CREATE INDEX "Topic_active_order_idx" ON "Topic"("isActive", "sortOrder");
 ### 2.4 リアクション・エンゲージメント設計
 
 #### 2.4.1 ArticleLike（記事いいね）
+
 ```sql
 CREATE TABLE "ArticleLike" (
   "id" TEXT PRIMARY KEY,
@@ -402,6 +415,7 @@ CREATE INDEX "ArticleLike_articleId_idx" ON "ArticleLike"("articleId");
 ```
 
 #### 2.4.2 ArticleBookmark（記事ブックマーク）
+
 ```sql
 CREATE TABLE "ArticleBookmark" (
   "id" TEXT PRIMARY KEY,
@@ -419,6 +433,7 @@ CREATE INDEX "ArticleBookmark_userId_date_idx" ON "ArticleBookmark"("userId", "c
 ### 2.5 ユーザープロフィール拡張設計
 
 #### 2.5.1 Skill・SkillCategory
+
 ```sql
 CREATE TABLE "SkillCategory" (
   "id" TEXT PRIMARY KEY,
@@ -455,6 +470,7 @@ CREATE INDEX "Skill_category_idx" ON "Skill"("skillCategoryId");
 ```
 
 #### 2.5.2 Occupation・OccupationCategory
+
 ```sql
 CREATE TABLE "OccupationCategory" (
   "id" TEXT PRIMARY KEY,
@@ -490,6 +506,7 @@ CREATE TABLE "UserOccupation" (
 ### 2.6 認証・セキュリティ設計
 
 #### 2.6.1 EmailVerification（メール認証）
+
 ```sql
 CREATE TABLE "EmailVerification" (
   "id" TEXT PRIMARY KEY,
@@ -510,6 +527,7 @@ CREATE INDEX "EmailVerification_expires_idx" ON "EmailVerification"("expiresAt")
 ## 3. Prismaスキーマ設計
 
 ### 3.1 型定義
+
 ```prisma
 // prisma/schema.prisma
 enum UserRole {
@@ -525,6 +543,7 @@ enum ArticleStatus {
 ```
 
 ### 3.2 主要モデル定義
+
 ```prisma
 model User {
   id              String   @id @default(cuid())
@@ -536,7 +555,7 @@ model User {
   image           String?
   role            UserRole @default(USER)
   emailVerified   Boolean  @default(false)
-  
+
   // Relations
   articles        Article[]
   comments        Comment[]
@@ -544,10 +563,10 @@ model User {
   bookmarks       ArticleBookmark[]
   skills          UserSkill[]
   occupations     UserOccupation[]
-  
+
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
-  
+
   @@index([email])
   @@index([userId])
 }
@@ -565,11 +584,11 @@ model Article {
   likeCount     Int           @default(0)
   bookmarkCount Int           @default(0)
   commentCount  Int           @default(0)
-  
+
   // Foreign Keys
   userId        String
   topicId       String?
-  
+
   // Relations
   user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   topic         Topic?        @relation(fields: [topicId], references: [id])
@@ -577,10 +596,10 @@ model Article {
   comments      Comment[]
   likes         ArticleLike[]
   bookmarks     ArticleBookmark[]
-  
+
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
-  
+
   @@index([userId])
   @@index([status, publishedAt])
   @@index([topicId])
@@ -588,6 +607,7 @@ model Article {
 ```
 
 ### 3.3 階層データモデル
+
 ```prisma
 model Tag {
   id             String         @id @default(cuid())
@@ -598,18 +618,18 @@ model Tag {
   level          Int            @default(1)
   taxonomyTypeId String
   sortOrder      Int            @default(0)
-  
+
   // Self-relation for hierarchy
   parent         Tag?           @relation("TagHierarchy", fields: [parentId], references: [id])
   children       Tag[]          @relation("TagHierarchy")
-  
+
   // Other relations
   taxonomyType   TaxonomyType   @relation(fields: [taxonomyTypeId], references: [id])
   articles       ArticleTag[]
-  
+
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
-  
+
   @@unique([name, parentId])
   @@index([taxonomyTypeId])
   @@index([parentId])
@@ -622,24 +642,24 @@ model Comment {
   level       Int       @default(0)
   isDeleted   Boolean   @default(false)
   deletedAt   DateTime?
-  
+
   // Foreign Keys
   articleId   String
   userId      String
   deletedBy   String?
-  
+
   // Relations
   article     Article   @relation(fields: [articleId], references: [id], onDelete: Cascade)
   user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   deletedByUser User?   @relation("CommentDeletedBy", fields: [deletedBy], references: [id])
-  
+
   // Self-relation for hierarchy
   parent      Comment?  @relation("CommentHierarchy", fields: [parentId], references: [id])
   replies     Comment[] @relation("CommentHierarchy")
-  
+
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
-  
+
   @@index([articleId])
   @@index([userId])
   @@index([parentId])
@@ -650,6 +670,6 @@ model Comment {
 
 ## 変更履歴
 
-| 日付 | バージョン | 変更者 | 変更内容 |
-|------|------------|--------|----------|
-| 2026-01-24 | 1.0 | システム | 内部設計書からデータベース設計を分離・独立化 |
+| 日付       | バージョン | 変更者   | 変更内容                                     |
+| ---------- | ---------- | -------- | -------------------------------------------- |
+| 2026-01-24 | 1.0        | システム | 内部設計書からデータベース設計を分離・独立化 |

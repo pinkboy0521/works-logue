@@ -50,18 +50,18 @@ Works Logue プロジェクトの本番環境構成・デプロイメント手�
 
 ### AWS サービス構成
 
-| サービス | 用途 | 設定 |
-|---------|------|------|
-| **ECS Fargate** | コンテナオーケストレーション | 2タスク、Auto Scaling |
-| **RDS PostgreSQL** | データベース | Multi-AZ、Read Replica |
-| **ALB** | ロードバランサー | HTTPS、Health Check |
-| **CloudFront** | CDN | 静的コンテンツキャッシュ |
-| **Route 53** | DNS | ドメイン管理 |
-| **ECR** | コンテナレジストリ | イメージ保存 |
-| **VPC** | ネットワーク | プライベート/パブリックサブネット |
-| **S3** | オブジェクトストレージ | 静的ファイル、バックアップ |
-| **CloudWatch** | モニタリング | ログ、メトリクス |
-| **Secrets Manager** | シークレット管理 | DB認証情報、API Key |
+| サービス            | 用途                         | 設定                              |
+| ------------------- | ---------------------------- | --------------------------------- |
+| **ECS Fargate**     | コンテナオーケストレーション | 2タスク、Auto Scaling             |
+| **RDS PostgreSQL**  | データベース                 | Multi-AZ、Read Replica            |
+| **ALB**             | ロードバランサー             | HTTPS、Health Check               |
+| **CloudFront**      | CDN                          | 静的コンテンツキャッシュ          |
+| **Route 53**        | DNS                          | ドメイン管理                      |
+| **ECR**             | コンテナレジストリ           | イメージ保存                      |
+| **VPC**             | ネットワーク                 | プライベート/パブリックサブネット |
+| **S3**              | オブジェクトストレージ       | 静的ファイル、バックアップ        |
+| **CloudWatch**      | モニタリング                 | ログ、メトリクス                  |
+| **Secrets Manager** | シークレット管理             | DB認証情報、API Key               |
 
 ## 環境設定
 
@@ -159,7 +159,7 @@ Resources:
       DBInstanceIdentifier: works-logue-prod
       DBInstanceClass: db.t3.medium
       Engine: postgres
-      EngineVersion: '14.9'
+      EngineVersion: "14.9"
       AllocatedStorage: 100
       StorageType: gp2
       StorageEncrypted: true
@@ -344,7 +344,7 @@ ALBSecurityGroup:
         ToPort: 443
         CidrIp: 0.0.0.0/0
 
-# Application Security Group  
+# Application Security Group
 AppSecurityGroup:
   Type: AWS::EC2::SecurityGroup
   Properties:
@@ -365,15 +365,17 @@ AppSecurityGroup:
 // next.config.ts
 const securityHeaders = [
   {
-    key: 'Content-Security-Policy',
+    key: "Content-Security-Policy",
     value: `
       default-src 'self';
       script-src 'self' 'unsafe-eval' 'unsafe-inline';
       style-src 'self' 'unsafe-inline';
       img-src 'self' data: https:;
       font-src 'self';
-    `.replace(/\s{2,}/g, ' ').trim()
-  }
+    `
+      .replace(/\s{2,}/g, " ")
+      .trim(),
+  },
 ];
 ```
 
@@ -383,13 +385,16 @@ const securityHeaders = [
 // middleware.ts
 export function middleware(request: NextRequest) {
   const response = NextResponse.next();
-  
+
   // Security headers
-  response.headers.set('X-Frame-Options', 'DENY');
-  response.headers.set('X-Content-Type-Options', 'nosniff');
-  response.headers.set('Referrer-Policy', 'origin-when-cross-origin');
-  response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
-  
+  response.headers.set("X-Frame-Options", "DENY");
+  response.headers.set("X-Content-Type-Options", "nosniff");
+  response.headers.set("Referrer-Policy", "origin-when-cross-origin");
+  response.headers.set(
+    "Permissions-Policy",
+    "camera=(), microphone=(), geolocation=()",
+  );
+
   return response;
 }
 ```
@@ -481,9 +486,9 @@ aws s3 sync /app/public/uploads s3://works-logue-backups/uploads/ \
 
 ### RTO/RPO要件
 
-| 項目 | 目標値 | 対策 |
-|------|--------|------|
-| RTO (復旧時間目標) | 1時間以内 | Multi-AZ、Auto Scaling |
+| 項目                   | 目標値    | 対策                   |
+| ---------------------- | --------- | ---------------------- |
+| RTO (復旧時間目標)     | 1時間以内 | Multi-AZ、Auto Scaling |
 | RPO (復旧ポイント目標) | 1時間以内 | 継続的レプリケーション |
 
 ### 復旧手順
@@ -514,24 +519,24 @@ aws ecs update-service \
 ```typescript
 // next.config.ts
 const nextConfig = {
-  output: 'standalone',
+  output: "standalone",
   compress: true,
   poweredByHeader: false,
   generateEtags: true,
-  
+
   images: {
-    domains: ['example.com'],
-    formats: ['image/avif', 'image/webp'],
+    domains: ["example.com"],
+    formats: ["image/avif", "image/webp"],
   },
-  
+
   async headers() {
     return [
       {
-        source: '/:all*(svg|jpg|png)',
+        source: "/:all*(svg|jpg|png)",
         headers: [
           {
-            key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
           },
         ],
       },
@@ -544,8 +549,8 @@ const nextConfig = {
 
 ```sql
 -- インデックス最適化
-CREATE INDEX CONCURRENTLY idx_articles_published_at_desc 
-ON articles (published_at DESC) 
+CREATE INDEX CONCURRENTLY idx_articles_published_at_desc
+ON articles (published_at DESC)
 WHERE status = 'published';
 
 -- 統計更新

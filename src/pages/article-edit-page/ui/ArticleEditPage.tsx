@@ -1,5 +1,9 @@
 import { auth } from "@/auth";
-import { getArticleForEdit, getAllTopics } from "@/entities";
+import {
+  getArticleForEdit,
+  getAllTopics,
+  getTagsWithHierarchy,
+} from "@/entities";
 import { redirect } from "next/navigation";
 import { ArticleEditPageClient } from "./ArticleEditPageClient";
 
@@ -14,9 +18,10 @@ export async function ArticleEditPage({ articleId }: ArticleEditPageProps) {
     redirect("/login");
   }
 
-  const [article, topics] = await Promise.all([
+  const [article, topics, tags] = await Promise.all([
     getArticleForEdit(articleId, session.user.id),
     getAllTopics(),
+    getTagsWithHierarchy(),
   ]);
 
   if (!article) {
@@ -27,6 +32,7 @@ export async function ArticleEditPage({ articleId }: ArticleEditPageProps) {
     <ArticleEditPageClient
       article={article}
       topics={topics}
+      tags={tags}
       userId={session.user.id}
     />
   );

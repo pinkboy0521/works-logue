@@ -38,12 +38,12 @@ Works Logue プロジェクトの本番運用における監視・ログ・ア�
 
 ### 監視対象と収集データ
 
-| レイヤー | 監視対象 | メトリクス | ツール |
-|---------|----------|-----------|--------|
-| **アプリケーション** | Next.js App | レスポンス時間、エラー率、スループット | CloudWatch、X-Ray |
-| **インフラ** | ECS、RDS、ALB | CPU、メモリ、ネットワーク、ディスク | CloudWatch |
-| **ビジネス** | ユーザー行動 | PV、UU、コンバージョン | Custom Metrics |
-| **セキュリティ** | アクセスログ | 不正アクセス、認証失敗 | CloudTrail、WAF |
+| レイヤー             | 監視対象      | メトリクス                             | ツール            |
+| -------------------- | ------------- | -------------------------------------- | ----------------- |
+| **アプリケーション** | Next.js App   | レスポンス時間、エラー率、スループット | CloudWatch、X-Ray |
+| **インフラ**         | ECS、RDS、ALB | CPU、メモリ、ネットワーク、ディスク    | CloudWatch        |
+| **ビジネス**         | ユーザー行動  | PV、UU、コンバージョン                 | Custom Metrics    |
+| **セキュリティ**     | アクセスログ  | 不正アクセス、認証失敗                 | CloudTrail、WAF   |
 
 ## メトリクス監視
 
@@ -53,18 +53,18 @@ Works Logue プロジェクトの本番運用における監視・ログ・ア�
 
 ```typescript
 // src/shared/lib/metrics.ts
-import { CloudWatch } from '@aws-sdk/client-cloudwatch';
+import { CloudWatch } from "@aws-sdk/client-cloudwatch";
 
-const cloudwatch = new CloudWatch({ region: 'ap-northeast-1' });
+const cloudwatch = new CloudWatch({ region: "ap-northeast-1" });
 
 export const recordMetric = async (
   metricName: string,
   value: number,
-  unit: string = 'Count',
-  dimensions: Record<string, string> = {}
+  unit: string = "Count",
+  dimensions: Record<string, string> = {},
 ) => {
   await cloudwatch.putMetricData({
-    Namespace: 'WorksLogue/Application',
+    Namespace: "WorksLogue/Application",
     MetricData: [
       {
         MetricName: metricName,
@@ -82,14 +82,14 @@ export const recordMetric = async (
 
 // 使用例
 export const trackArticleView = (articleId: string, userId?: string) => {
-  recordMetric('ArticleViews', 1, 'Count', {
+  recordMetric("ArticleViews", 1, "Count", {
     ArticleId: articleId,
     ...(userId && { UserId: userId }),
   });
 };
 
-export const trackUserRegistration = (method: 'email' | 'oauth') => {
-  recordMetric('UserRegistrations', 1, 'Count', {
+export const trackUserRegistration = (method: "email" | "oauth") => {
+  recordMetric("UserRegistrations", 1, "Count", {
     Method: method,
   });
 };
@@ -99,11 +99,11 @@ export const trackUserRegistration = (method: 'email' | 'oauth') => {
 
 ```typescript
 // src/shared/lib/performance.ts
-import { recordMetric } from './metrics';
+import { recordMetric } from "./metrics";
 
 export const trackPerformance = (name: string, startTime: number) => {
   const duration = Date.now() - startTime;
-  recordMetric('Performance', duration, 'Milliseconds', {
+  recordMetric("Performance", duration, "Milliseconds", {
     Operation: name,
   });
 };
@@ -111,14 +111,14 @@ export const trackPerformance = (name: string, startTime: number) => {
 // API ルートでの使用
 export async function GET(request: Request) {
   const startTime = Date.now();
-  
+
   try {
     const result = await someOperation();
-    trackPerformance('ArticleList', startTime);
+    trackPerformance("ArticleList", startTime);
     return Response.json(result);
   } catch (error) {
-    recordMetric('APIErrors', 1, 'Count', {
-      Endpoint: 'ArticleList',
+    recordMetric("APIErrors", 1, "Count", {
+      Endpoint: "ArticleList",
       ErrorType: error.name,
     });
     throw error;
@@ -200,21 +200,24 @@ Resources:
 export const trackBusinessMetrics = {
   // ユーザーエンゲージメント
   userEngagement: (userId: string, action: string, value?: number) => {
-    recordMetric('UserEngagement', value || 1, 'Count', {
+    recordMetric("UserEngagement", value || 1, "Count", {
       UserId: userId,
       Action: action,
     });
   },
 
   // コンテンツパフォーマンス
-  contentPerformance: (contentType: 'article' | 'comment', metrics: {
-    views?: number;
-    likes?: number;
-    shares?: number;
-  }) => {
+  contentPerformance: (
+    contentType: "article" | "comment",
+    metrics: {
+      views?: number;
+      likes?: number;
+      shares?: number;
+    },
+  ) => {
     Object.entries(metrics).forEach(([key, value]) => {
       if (value !== undefined) {
-        recordMetric('ContentMetrics', value, 'Count', {
+        recordMetric("ContentMetrics", value, "Count", {
           ContentType: contentType,
           MetricType: key,
         });
@@ -223,8 +226,11 @@ export const trackBusinessMetrics = {
   },
 
   // システムヘルス
-  systemHealth: (component: string, status: 'healthy' | 'degraded' | 'unhealthy') => {
-    recordMetric('SystemHealth', status === 'healthy' ? 1 : 0, 'Count', {
+  systemHealth: (
+    component: string,
+    status: "healthy" | "degraded" | "unhealthy",
+  ) => {
+    recordMetric("SystemHealth", status === "healthy" ? 1 : 0, "Count", {
       Component: component,
       Status: status,
     });
@@ -236,35 +242,35 @@ export const trackBusinessMetrics = {
 
 ### ログレベルとカテゴリ
 
-| レベル | 用途 | 例 |
-|--------|------|-----|
-| **ERROR** | システムエラー、例外 | データベース接続失敗、未処理例外 |
-| **WARN** | 警告、パフォーマンス劣化 | 長時間実行クエリ、非推奨API使用 |
-| **INFO** | システム状態変更 | ユーザーログイン、記事投稿 |
-| **DEBUG** | 詳細デバッグ情報 | クエリ実行、関数呼び出し |
+| レベル    | 用途                     | 例                               |
+| --------- | ------------------------ | -------------------------------- |
+| **ERROR** | システムエラー、例外     | データベース接続失敗、未処理例外 |
+| **WARN**  | 警告、パフォーマンス劣化 | 長時間実行クエリ、非推奨API使用  |
+| **INFO**  | システム状態変更         | ユーザーログイン、記事投稿       |
+| **DEBUG** | 詳細デバッグ情報         | クエリ実行、関数呼び出し         |
 
 ### 構造化ログ設定
 
 ```typescript
 // src/shared/lib/logger.ts
-import pino from 'pino';
+import pino from "pino";
 
 const logger = pino({
-  name: 'works-logue',
-  level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
+  name: "works-logue",
+  level: process.env.NODE_ENV === "production" ? "info" : "debug",
   formatters: {
     level: (label) => ({ level: label }),
   },
   timestamp: pino.stdTimeFunctions.isoTime,
   redact: {
     paths: [
-      'password',
-      'email',
-      'token',
-      'authorization',
-      'cookie',
-      'req.headers.authorization',
-      'req.headers.cookie',
+      "password",
+      "email",
+      "token",
+      "authorization",
+      "cookie",
+      "req.headers.authorization",
+      "req.headers.cookie",
     ],
     remove: true,
   },
@@ -275,10 +281,13 @@ export const createLogger = (module: string) => {
 };
 
 // 使用例
-const log = createLogger('auth');
+const log = createLogger("auth");
 
-log.info({ userId: '123', action: 'login' }, 'User logged in successfully');
-log.error({ error: error.message, stack: error.stack }, 'Authentication failed');
+log.info({ userId: "123", action: "login" }, "User logged in successfully");
+log.error(
+  { error: error.message, stack: error.stack },
+  "Authentication failed",
+);
 ```
 
 ### ログ収集設定
@@ -318,12 +327,12 @@ containerDefinitions:
 
 ### アラート分類と対応レベル
 
-| 分類 | 緊急度 | 対応時間 | 通知先 | 例 |
-|------|--------|----------|--------|-----|
-| **Critical** | P1 | 15分以内 | 電話、SMS、Slack | サービス停止、データ損失 |
-| **High** | P2 | 1時間以内 | Slack、Email | 高エラー率、性能劣化 |
-| **Medium** | P3 | 4時間以内 | Email | 警告しきい値超過 |
-| **Low** | P4 | 24時間以内 | Email | 情報通知 |
+| 分類         | 緊急度 | 対応時間   | 通知先           | 例                       |
+| ------------ | ------ | ---------- | ---------------- | ------------------------ |
+| **Critical** | P1     | 15分以内   | 電話、SMS、Slack | サービス停止、データ損失 |
+| **High**     | P2     | 1時間以内  | Slack、Email     | 高エラー率、性能劣化     |
+| **Medium**   | P3     | 4時間以内  | Email            | 警告しきい値超過         |
+| **Low**      | P4     | 24時間以内 | Email            | 情報通知                 |
 
 ### PagerDuty設定
 
@@ -357,23 +366,23 @@ Resources:
 
 ```typescript
 // src/shared/lib/alerts.ts
-import { WebClient } from '@slack/web-api';
+import { WebClient } from "@slack/web-api";
 
 const slack = new WebClient(process.env.SLACK_BOT_TOKEN);
 
 export const sendAlert = async (
-  severity: 'critical' | 'high' | 'medium' | 'low',
+  severity: "critical" | "high" | "medium" | "low",
   message: string,
-  details?: Record<string, any>
+  details?: Record<string, any>,
 ) => {
   const colors = {
-    critical: '#FF0000',
-    high: '#FF8C00',
-    medium: '#FFD700',
-    low: '#90EE90',
+    critical: "#FF0000",
+    high: "#FF8C00",
+    medium: "#FFD700",
+    low: "#90EE90",
   };
 
-  const channel = severity === 'critical' ? '#alerts-critical' : '#alerts';
+  const channel = severity === "critical" ? "#alerts-critical" : "#alerts";
 
   await slack.chat.postMessage({
     channel,
@@ -382,11 +391,13 @@ export const sendAlert = async (
         color: colors[severity],
         title: `${severity.toUpperCase()} Alert`,
         text: message,
-        fields: details ? Object.entries(details).map(([key, value]) => ({
-          title: key,
-          value: String(value),
-          short: true,
-        })) : [],
+        fields: details
+          ? Object.entries(details).map(([key, value]) => ({
+              title: key,
+              value: String(value),
+              short: true,
+            }))
+          : [],
         ts: Math.floor(Date.now() / 1000),
       },
     ],
@@ -498,52 +509,55 @@ export const sendAlert = async (
 
 ```typescript
 // app/api/health/route.ts
-import { NextResponse } from 'next/server';
-import { prisma } from '@/shared/lib/prisma';
+import { NextResponse } from "next/server";
+import { prisma } from "@/shared/lib/prisma";
 
 export async function GET() {
-  const checks: Record<string, { status: 'ok' | 'error'; message?: string }> = {};
+  const checks: Record<string, { status: "ok" | "error"; message?: string }> =
+    {};
 
   // データベース接続チェック
   try {
     await prisma.$queryRaw`SELECT 1`;
-    checks.database = { status: 'ok' };
+    checks.database = { status: "ok" };
   } catch (error) {
-    checks.database = { 
-      status: 'error', 
-      message: error instanceof Error ? error.message : 'Unknown error'
+    checks.database = {
+      status: "error",
+      message: error instanceof Error ? error.message : "Unknown error",
     };
   }
 
   // 外部API接続チェック
   try {
-    const response = await fetch('https://api.external-service.com/health', {
+    const response = await fetch("https://api.external-service.com/health", {
       timeout: 5000,
     });
-    checks.externalApi = response.ok 
-      ? { status: 'ok' }
-      : { status: 'error', message: `HTTP ${response.status}` };
+    checks.externalApi = response.ok
+      ? { status: "ok" }
+      : { status: "error", message: `HTTP ${response.status}` };
   } catch (error) {
-    checks.externalApi = { 
-      status: 'error', 
-      message: error instanceof Error ? error.message : 'Connection failed'
+    checks.externalApi = {
+      status: "error",
+      message: error instanceof Error ? error.message : "Connection failed",
     };
   }
 
   // Redis接続チェック（セッションストア）
   try {
     // Redis ping check implementation
-    checks.redis = { status: 'ok' };
+    checks.redis = { status: "ok" };
   } catch (error) {
-    checks.redis = { 
-      status: 'error', 
-      message: error instanceof Error ? error.message : 'Redis unavailable'
+    checks.redis = {
+      status: "error",
+      message: error instanceof Error ? error.message : "Redis unavailable",
     };
   }
 
-  const overallStatus = Object.values(checks).every(check => check.status === 'ok')
-    ? 'ok'
-    : 'error';
+  const overallStatus = Object.values(checks).every(
+    (check) => check.status === "ok",
+  )
+    ? "ok"
+    : "error";
 
   return NextResponse.json(
     {
@@ -551,7 +565,7 @@ export async function GET() {
       timestamp: new Date().toISOString(),
       checks,
     },
-    { status: overallStatus === 'ok' ? 200 : 503 }
+    { status: overallStatus === "ok" ? 200 : 503 },
   );
 }
 ```
@@ -586,6 +600,7 @@ aws rds describe-db-instances \
 #### 高レスポンス時間
 
 1. **症状確認**
+
    ```bash
    # CloudWatch メトリクス確認
    aws cloudwatch get-metric-statistics \
@@ -603,6 +618,7 @@ aws rds describe-db-instances \
    - 外部API依存関係
 
 3. **対応手順**
+
    ```bash
    # スケールアップ
    aws ecs update-service \
@@ -620,18 +636,19 @@ aws rds describe-db-instances \
 // メモリ使用量監視
 const reportMemoryUsage = () => {
   const usage = process.memoryUsage();
-  
-  recordMetric('MemoryUsage', usage.heapUsed, 'Bytes', {
-    Type: 'HeapUsed',
+
+  recordMetric("MemoryUsage", usage.heapUsed, "Bytes", {
+    Type: "HeapUsed",
   });
-  
-  recordMetric('MemoryUsage', usage.heapTotal, 'Bytes', {
-    Type: 'HeapTotal',
+
+  recordMetric("MemoryUsage", usage.heapTotal, "Bytes", {
+    Type: "HeapTotal",
   });
 
   // 閾値超過時の警告
-  if (usage.heapUsed > 500 * 1024 * 1024) { // 500MB
-    log.warn({ usage }, 'High memory usage detected');
+  if (usage.heapUsed > 500 * 1024 * 1024) {
+    // 500MB
+    log.warn({ usage }, "High memory usage detected");
   }
 };
 
@@ -732,23 +749,23 @@ Resources:
 ```typescript
 // セキュリティインシデント自動対応
 export const handleSecurityIncident = async (incident: {
-  type: 'brute_force' | 'sql_injection' | 'xss' | 'suspicious_access';
+  type: "brute_force" | "sql_injection" | "xss" | "suspicious_access";
   sourceIp: string;
-  severity: 'low' | 'medium' | 'high' | 'critical';
+  severity: "low" | "medium" | "high" | "critical";
 }) => {
   // ログ記録
-  log.error({ incident }, 'Security incident detected');
+  log.error({ incident }, "Security incident detected");
 
   // 自動ブロック（高重要度の場合）
-  if (incident.severity === 'critical' || incident.severity === 'high') {
+  if (incident.severity === "critical" || incident.severity === "high") {
     await blockIpAddress(incident.sourceIp);
   }
 
   // アラート送信
   await sendAlert(
-    incident.severity === 'critical' ? 'critical' : 'high',
+    incident.severity === "critical" ? "critical" : "high",
     `Security incident: ${incident.type} from ${incident.sourceIp}`,
-    incident
+    incident,
   );
 
   // インシデント記録

@@ -3,7 +3,8 @@ import { auth } from "@/auth";
 
 // プロフィール画像アップロード関数を動的にインポート
 async function generateProfileUploadSignature(userId: string) {
-  const { generateProfileUploadSignature: profileFunction } = await import("@/features/profile");
+  const { generateProfileUploadSignature: profileFunction } =
+    await import("@/features/profile");
   return profileFunction(userId);
 }
 

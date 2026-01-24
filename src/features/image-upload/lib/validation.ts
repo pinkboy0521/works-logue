@@ -15,7 +15,9 @@ export class ImageValidationError extends Error {
 export function validateFileSize(file: File, maxSizeMB: number = 5): void {
   const maxBytes = maxSizeMB * 1024 * 1024;
   if (file.size > maxBytes) {
-    throw new ImageValidationError(`ファイルサイズは${maxSizeMB}MB以下にしてください`);
+    throw new ImageValidationError(
+      `ファイルサイズは${maxSizeMB}MB以下にしてください`,
+    );
   }
 }
 
@@ -41,5 +43,5 @@ export function validateImageFile(file: File): void {
  */
 export function filterImageFiles(files: FileList | File[]): File[] {
   const fileArray = Array.from(files);
-  return fileArray.filter(file => file.type.startsWith('image/'));
+  return fileArray.filter((file) => file.type.startsWith("image/"));
 }

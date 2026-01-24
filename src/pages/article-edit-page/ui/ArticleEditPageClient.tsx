@@ -3,7 +3,7 @@
 import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
-import { Button, Input, Card } from "@/shared";
+import { Button, Input, Card, type TagNode } from "@/shared";
 import { updateArticle, getAllTopics, DraftArticle } from "@/entities";
 import { Block } from "@blocknote/core";
 import {
@@ -11,6 +11,7 @@ import {
   validatePublishArticle,
   extractValidationErrors,
   type ValidationErrors,
+  ArticleTagSelector,
 } from "@/features";
 
 // BlockNoteEditorを動的インポートでSSRを無効化
@@ -36,16 +37,19 @@ const BlockNoteEditor = dynamic(
 interface ArticleEditPageClientProps {
   article: DraftArticle;
   topics: Awaited<ReturnType<typeof getAllTopics>>;
+  tags: TagNode[];
   userId: string;
 }
 
 export function ArticleEditPageClient({
   article,
   topics,
+  tags,
   userId,
 }: ArticleEditPageClientProps) {
   const router = useRouter();
   const [errors, setErrors] = useState<ValidationErrors>({});
+  const [isTagSelectorCollapsed, setIsTagSelectorCollapsed] = useState(false);
   const [formData, setFormData] = useState({
     title: article.title || "",
     content:
@@ -58,6 +62,7 @@ export function ArticleEditPageClient({
             } as Block,
           ],
     topicId: article.topicId || "",
+    tagIds: article.tags?.map((articleTag) => articleTag.tag.id) || [],
     status: article.status,
   });
 
@@ -70,6 +75,15 @@ export function ArticleEditPageClient({
   };
 
   const clearErrors = () => setErrors({});
+
+  // タグ選択の変更処理
+  const handleTagSelectionChange = useCallback(
+    (tagIds: string[]) => {
+      setFormData((prev) => ({ ...prev, tagIds }));
+      if (errors.tagIds) clearFieldError("tagIds");
+    },
+    [errors.tagIds],
+  );
 
   // BlockNoteエディターの内容変更処理
   const handleContentChange = useCallback(
@@ -177,65 +191,93 @@ export function ArticleEditPageClient({
           </div>
         )}
 
-        {/* Title Input */}
-        <div>
-          <Input
-            placeholder="記事のタイトル"
-            value={formData.title}
-            onChange={(e) => {
-              setFormData((prev) => ({ ...prev, title: e.target.value }));
-              if (errors.title) clearFieldError("title");
-            }}
-            className={`text-2xl font-bold border-none p-0 focus:ring-0 ${
-              errors.title ? "border-destructive focus:border-destructive" : ""
-            }`}
-          />
-          {errors.title && (
-            <p className="text-destructive text-sm mt-1">{errors.title}</p>
-          )}
-        </div>
+        {/* 2カラムレイアウト: 左側タグ選択、右側エディタ */}
+        <div className="flex gap-6 min-h-screen">
+          {/* 左サイドバー: タグ選択 */}
+          <div className="flex-shrink-0">
+            <ArticleTagSelector
+              tags={tags}
+              selectedTagIds={formData.tagIds}
+              onTagSelectionChange={handleTagSelectionChange}
+              isCollapsed={isTagSelectorCollapsed}
+              onToggleCollapse={() =>
+                setIsTagSelectorCollapsed(!isTagSelectorCollapsed)
+              }
+              className="sticky top-6"
+            />
+          </div>
 
-        {/* Topic Selection */}
-        <div>
-          <label className="text-sm font-medium text-muted-foreground mb-2 block">
-            トピック
-          </label>
-          <select
-            value={formData.topicId}
-            onChange={(e) => {
-              setFormData((prev) => ({ ...prev, topicId: e.target.value }));
-              if (errors.topicId) clearFieldError("topicId");
-            }}
-            className={`w-full p-2 border border-input bg-background text-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-ring ${
-              errors.topicId ? "border-destructive focus:ring-destructive" : ""
-            }`}
-          >
-            <option value="">トピックを選択してください</option>
-            {topics.map((topic) => (
-              <option key={topic.id} value={topic.id}>
-                {topic.name}
-              </option>
-            ))}
-          </select>
-          {errors.topicId && (
-            <p className="text-destructive text-sm mt-1">{errors.topicId}</p>
-          )}
-        </div>
-
-        {/* BlockNote Editor */}
-        <div className="space-y-2">
-          <Card >            
-            <div className="min-h-[400px]">
-              <BlockNoteEditor
-                initialContent={formData.content}
-                onChange={handleContentChange}
-                className="w-full"
+          {/* 右メインコンテンツ: エディタ */}
+          <div className="flex-1 min-w-0 space-y-6">
+            {/* Title Input */}
+            <div>
+              <Input
+                placeholder="記事のタイトル"
+                value={formData.title}
+                onChange={(e) => {
+                  setFormData((prev) => ({ ...prev, title: e.target.value }));
+                  if (errors.title) clearFieldError("title");
+                }}
+                className={`text-2xl font-bold border-none p-0 focus:ring-0 ${
+                  errors.title
+                    ? "border-destructive focus:border-destructive"
+                    : ""
+                }`}
               />
+              {errors.title && (
+                <p className="text-destructive text-sm mt-1">{errors.title}</p>
+              )}
             </div>
-          </Card>
-          {errors.content && (
-            <p className="text-destructive text-sm mt-1">{errors.content}</p>
-          )}
+
+            {/* Topic Selection */}
+            <div>
+              <label className="text-sm font-medium text-muted-foreground mb-2 block">
+                トピック
+              </label>
+              <select
+                value={formData.topicId}
+                onChange={(e) => {
+                  setFormData((prev) => ({ ...prev, topicId: e.target.value }));
+                  if (errors.topicId) clearFieldError("topicId");
+                }}
+                className={`w-full p-2 border border-input bg-background text-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-ring ${
+                  errors.topicId
+                    ? "border-destructive focus:ring-destructive"
+                    : ""
+                }`}
+              >
+                <option value="">トピックを選択してください</option>
+                {topics.map((topic) => (
+                  <option key={topic.id} value={topic.id}>
+                    {topic.name}
+                  </option>
+                ))}
+              </select>
+              {errors.topicId && (
+                <p className="text-destructive text-sm mt-1">
+                  {errors.topicId}
+                </p>
+              )}
+            </div>
+
+            {/* BlockNote Editor */}
+            <div className="space-y-2">
+              <Card>
+                <div className="min-h-[400px]">
+                  <BlockNoteEditor
+                    initialContent={formData.content}
+                    onChange={handleContentChange}
+                    className="w-full"
+                  />
+                </div>
+              </Card>
+              {errors.content && (
+                <p className="text-destructive text-sm mt-1">
+                  {errors.content}
+                </p>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -6,7 +6,10 @@ import { BlockNoteView } from "@blocknote/shadcn";
 import { Block } from "@blocknote/core";
 import { useTheme } from "@/shared";
 import { ja } from "@blocknote/core/locales";
-import { articleSchema, uploadImageSlashMenuItem } from "../lib/blocknoteSchema";
+import {
+  articleSchema,
+  uploadImageSlashMenuItem,
+} from "../lib/blocknoteSchema";
 import { useImageUpload } from "@/features/image-upload";
 import type { CustomPartialBlock } from "@/entities";
 
@@ -76,9 +79,7 @@ export function BlockNoteEditor({
   }
 
   return (
-    <div 
-      className={`blocknote-editor-container w-full ${className || ""}`}
-    >
+    <div className={`blocknote-editor-container w-full ${className || ""}`}>
       <BlockNoteView
         editor={editor}
         theme={blockNoteTheme}

@@ -17,20 +17,24 @@ export function useImageUpload(): UseImageUploadResult {
     try {
       // バリデーション
       validateImageFile(file);
-      
+
       // アップロード実行
       const imageUrl = await uploadImageFile(file);
       return imageUrl;
     } catch (error) {
       console.error("Upload error:", error);
-      
+
       // ユーザーフレンドリーなエラーメッセージ
       if (error instanceof ImageValidationError) {
         alert(error.message);
       } else {
-        alert(error instanceof Error ? error.message : "画像のアップロードに失敗しました");
+        alert(
+          error instanceof Error
+            ? error.message
+            : "画像のアップロードに失敗しました",
+        );
       }
-      
+
       return ""; // 空文字列を返す
     }
   }, []);

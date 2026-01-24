@@ -7,6 +7,7 @@
 ## 1. API概要
 
 ### 1.1 基本情報
+
 - **ベースURL**: `/api`
 - **認証方式**: NextAuth.js Session + JWT
 - **データ形式**: JSON
@@ -15,6 +16,7 @@
 ### 1.2 共通レスポンス形式
 
 #### 成功レスポンス
+
 ```json
 {
   "success": true,
@@ -24,6 +26,7 @@
 ```
 
 #### エラーレスポンス
+
 ```json
 {
   "success": false,
@@ -36,6 +39,7 @@
 ```
 
 ### 1.3 認証ヘッダー
+
 ```http
 Authorization: Bearer <JWT_TOKEN>
 Content-Type: application/json
@@ -44,9 +48,11 @@ Content-Type: application/json
 ## 2. 認証API
 
 ### 2.1 ログイン
+
 **POST** `/api/auth/signin`
 
 #### リクエスト
+
 ```json
 {
   "email": "user@example.com",
@@ -55,6 +61,7 @@ Content-Type: application/json
 ```
 
 #### レスポンス
+
 ```json
 {
   "success": true,
@@ -74,9 +81,11 @@ Content-Type: application/json
 ```
 
 ### 2.2 新規登録
+
 **POST** `/api/auth/signup`
 
 #### リクエスト
+
 ```json
 {
   "email": "newuser@example.com",
@@ -86,6 +95,7 @@ Content-Type: application/json
 ```
 
 #### レスポンス
+
 ```json
 {
   "success": true,
@@ -102,9 +112,11 @@ Content-Type: application/json
 ```
 
 ### 2.3 ログアウト
+
 **POST** `/api/auth/signout`
 
 #### レスポンス
+
 ```json
 {
   "success": true,
@@ -115,9 +127,11 @@ Content-Type: application/json
 ## 3. ユーザーAPI
 
 ### 3.1 ユーザー詳細取得
+
 **GET** `/api/user/[userId]`
 
 #### レスポンス
+
 ```json
 {
   "success": true,
@@ -156,9 +170,11 @@ Content-Type: application/json
 ```
 
 ### 3.2 プロフィール更新
+
 **PUT** `/api/user/profile`
 
 #### リクエスト
+
 ```json
 {
   "displayName": "山田太郎",
@@ -171,6 +187,7 @@ Content-Type: application/json
 ```
 
 #### レスポンス
+
 ```json
 {
   "success": true,
@@ -186,9 +203,11 @@ Content-Type: application/json
 ## 4. 記事API
 
 ### 4.1 記事一覧取得
+
 **GET** `/api/articles`
 
 #### クエリパラメータ
+
 ```
 page: 1              # ページ番号（デフォルト: 1）
 limit: 10            # 1ページあたりの件数（デフォルト: 10）
@@ -200,6 +219,7 @@ status: PUBLISHED    # ステータスで絞り込み
 ```
 
 #### レスポンス
+
 ```json
 {
   "success": true,
@@ -250,9 +270,11 @@ status: PUBLISHED    # ステータスで絞り込み
 ```
 
 ### 4.2 記事詳細取得
+
 **GET** `/api/articles/[articleId]`
 
 #### レスポンス
+
 ```json
 {
   "success": true,
@@ -303,9 +325,11 @@ status: PUBLISHED    # ステータスで絞り込み
 ```
 
 ### 4.3 記事作成
+
 **POST** `/api/articles`
 
 #### リクエスト
+
 ```json
 {
   "title": "新しい記事のタイトル",
@@ -321,6 +345,7 @@ status: PUBLISHED    # ステータスで絞り込み
 ```
 
 #### レスポンス
+
 ```json
 {
   "success": true,
@@ -336,9 +361,11 @@ status: PUBLISHED    # ステータスで絞り込み
 ```
 
 ### 4.4 記事更新
+
 **PUT** `/api/articles/[articleId]`
 
 #### リクエスト
+
 ```json
 {
   "title": "更新されたタイトル",
@@ -354,6 +381,7 @@ status: PUBLISHED    # ステータスで絞り込み
 ```
 
 #### レスポンス
+
 ```json
 {
   "success": true,
@@ -367,9 +395,11 @@ status: PUBLISHED    # ステータスで絞り込み
 ```
 
 ### 4.5 記事削除
+
 **DELETE** `/api/articles/[articleId]`
 
 #### レスポンス
+
 ```json
 {
   "success": true,
@@ -380,9 +410,11 @@ status: PUBLISHED    # ステータスで絞り込み
 ## 5. リアクションAPI
 
 ### 5.1 いいね追加/削除
+
 **POST** `/api/articles/[articleId]/like`
 
 #### レスポンス
+
 ```json
 {
   "success": true,
@@ -395,9 +427,11 @@ status: PUBLISHED    # ステータスで絞り込み
 ```
 
 ### 5.2 ブックマーク追加/削除
+
 **POST** `/api/articles/[articleId]/bookmark`
 
 #### レスポンス
+
 ```json
 {
   "success": true,
@@ -412,9 +446,11 @@ status: PUBLISHED    # ステータスで絞り込み
 ## 6. コメントAPI
 
 ### 6.1 コメント一覧取得
+
 **GET** `/api/articles/[articleId]/comments`
 
 #### レスポンス
+
 ```json
 {
   "success": true,
@@ -449,17 +485,20 @@ status: PUBLISHED    # ステータスで絞り込み
 ```
 
 ### 6.2 コメント投稿
+
 **POST** `/api/articles/[articleId]/comments`
 
 #### リクエスト
+
 ```json
 {
   "content": "素晴らしい記事でした！",
-  "parentId": null  // 返信の場合は親コメントのID
+  "parentId": null // 返信の場合は親コメントのID
 }
 ```
 
 #### レスポンス
+
 ```json
 {
   "success": true,
@@ -480,9 +519,11 @@ status: PUBLISHED    # ステータスで絞り込み
 ## 7. 検索API
 
 ### 7.1 統合検索
+
 **GET** `/api/search`
 
 #### クエリパラメータ
+
 ```
 q: 検索キーワード        # 必須
 type: all               # 検索対象 (all, articles, users)
@@ -491,6 +532,7 @@ limit: 10               # 1ページあたりの件数
 ```
 
 #### レスポンス
+
 ```json
 {
   "success": true,
@@ -526,9 +568,11 @@ limit: 10               # 1ページあたりの件数
 ## 8. ファイルアップロードAPI
 
 ### 8.1 画像アップロード
+
 **POST** `/api/upload/image`
 
 #### リクエスト
+
 ```
 Content-Type: multipart/form-data
 file: [画像ファイル]
@@ -536,6 +580,7 @@ type: avatar|cover|article  # 画像の用途
 ```
 
 #### レスポンス
+
 ```json
 {
   "success": true,
@@ -551,20 +596,20 @@ type: avatar|cover|article  # 画像の用途
 
 ## 9. エラーコード
 
-| コード | HTTPステータス | 説明 |
-|--------|----------------|------|
-| `UNAUTHORIZED` | 401 | 認証が必要です |
-| `FORBIDDEN` | 403 | アクセス権限がありません |
-| `NOT_FOUND` | 404 | リソースが見つかりません |
-| `VALIDATION_ERROR` | 400 | 入力データが不正です |
-| `DUPLICATE_ERROR` | 409 | 重複するデータが存在します |
-| `RATE_LIMIT_EXCEEDED` | 429 | レート制限に達しました |
-| `INTERNAL_ERROR` | 500 | 内部サーバーエラー |
+| コード                | HTTPステータス | 説明                       |
+| --------------------- | -------------- | -------------------------- |
+| `UNAUTHORIZED`        | 401            | 認証が必要です             |
+| `FORBIDDEN`           | 403            | アクセス権限がありません   |
+| `NOT_FOUND`           | 404            | リソースが見つかりません   |
+| `VALIDATION_ERROR`    | 400            | 入力データが不正です       |
+| `DUPLICATE_ERROR`     | 409            | 重複するデータが存在します |
+| `RATE_LIMIT_EXCEEDED` | 429            | レート制限に達しました     |
+| `INTERNAL_ERROR`      | 500            | 内部サーバーエラー         |
 
 ---
 
 ## 変更履歴
 
-| 日付 | バージョン | 変更者 | 変更内容 |
-|------|------------|--------|----------|
-| 2026-01-24 | 1.0 | システム | 外部設計書からAPI仕様を分離・独立化 |
+| 日付       | バージョン | 変更者   | 変更内容                            |
+| ---------- | ---------- | -------- | ----------------------------------- |
+| 2026-01-24 | 1.0        | システム | 外部設計書からAPI仕様を分離・独立化 |

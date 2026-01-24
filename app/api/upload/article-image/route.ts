@@ -3,7 +3,8 @@ import { auth } from "@/auth";
 
 // Cloudinary関数を動的にインポート（サーバーサイドでのみ）
 async function generateArticleImageUploadSignature(userId: string) {
-  const { generateArticleImageUploadSignature: cloudinaryFunction } = await import("@/shared/lib/cloudinary");
+  const { generateArticleImageUploadSignature: cloudinaryFunction } =
+    await import("@/shared/lib/cloudinary");
   return cloudinaryFunction(userId);
 }
 
@@ -15,8 +16,13 @@ export async function POST() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    console.log("Generating article image upload signature for user:", session.user.id);
-    const signature = await generateArticleImageUploadSignature(session.user.id);
+    console.log(
+      "Generating article image upload signature for user:",
+      session.user.id,
+    );
+    const signature = await generateArticleImageUploadSignature(
+      session.user.id,
+    );
 
     console.log("Generated signature response:", {
       hasSignature: !!signature.signature,

@@ -61,8 +61,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
-          cache: 'npm'
+          node-version: "18"
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
@@ -102,8 +102,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
-          cache: 'npm'
+          node-version: "18"
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
@@ -141,8 +141,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
-          cache: 'npm'
+          node-version: "18"
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
@@ -193,7 +193,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [lint-and-format, test]
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -230,7 +230,7 @@ jobs:
     needs: [build, security-scan]
     if: github.ref == 'refs/heads/develop'
     environment: staging
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -262,7 +262,7 @@ jobs:
     needs: [build, security-scan]
     if: github.ref == 'refs/heads/main'
     environment: production
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -310,7 +310,7 @@ jobs:
         uses: 8398a7/action-slack@v3
         with:
           status: ${{ job.status }}
-          channel: '#deployments'
+          channel: "#deployments"
           webhook_url: ${{ secrets.SLACK_WEBHOOK }}
 ```
 
@@ -335,30 +335,33 @@ main ─────────────────●───────
 
 ### ブランチ運用ルール
 
-| ブランチ | 役割 | デプロイ先 | マージルール |
-|---------|------|-----------|-------------|
-| `main` | 本番リリース | Production | PR + レビュー必須 |
-| `develop` | 開発統合 | Staging | PR + テスト通過 |
-| `feature/*` | 機能開発 | なし | PR作成時にCI実行 |
-| `hotfix/*` | 緊急修正 | Production | PR + 緊急承認 |
-| `release/*` | リリース準備 | Staging | テスト完了後 |
+| ブランチ    | 役割         | デプロイ先 | マージルール      |
+| ----------- | ------------ | ---------- | ----------------- |
+| `main`      | 本番リリース | Production | PR + レビュー必須 |
+| `develop`   | 開発統合     | Staging    | PR + テスト通過   |
+| `feature/*` | 機能開発     | なし       | PR作成時にCI実行  |
+| `hotfix/*`  | 緊急修正     | Production | PR + 緊急承認     |
+| `release/*` | リリース準備 | Staging    | テスト完了後      |
 
 ## 品質ゲート
 
 ### 必須チェック項目
 
 #### コード品質
+
 - **ESLint**: エラー0件
 - **Prettier**: フォーマットチェック通過
 - **TypeScript**: 型エラー0件
 - **テストカバレッジ**: 80%以上
 
 #### セキュリティ
+
 - **Snyk**: 高危険度脆弱性なし
 - **SonarQube**: セキュリティホットスポットなし
 - **依存関係**: 既知脆弱性なし
 
 #### パフォーマンス
+
 - **Bundle size**: 前回比+10%以内
 - **Lighthouse**: Performance 90以上
 - **Core Web Vitals**: 基準内
@@ -394,7 +397,7 @@ jobs:
       - name: Performance audit
         uses: treosh/lighthouse-ci-action@v10
         with:
-          configPath: './.lighthouserc.js'
+          configPath: "./.lighthouserc.js"
           uploadArtifacts: true
 ```
 
@@ -402,11 +405,11 @@ jobs:
 
 ### 環境設定
 
-| 環境 | ブランチ | URL | 用途 |
-|------|---------|-----|------|
-| **Development** | feature/* | localhost:3000 | 開発・デバッグ |
-| **Staging** | develop | staging.works-logue.com | 統合テスト・受入テスト |
-| **Production** | main | works-logue.com | 本番運用 |
+| 環境            | ブランチ   | URL                     | 用途                   |
+| --------------- | ---------- | ----------------------- | ---------------------- |
+| **Development** | feature/\* | localhost:3000          | 開発・デバッグ         |
+| **Staging**     | develop    | staging.works-logue.com | 統合テスト・受入テスト |
+| **Production**  | main       | works-logue.com         | 本番運用               |
 
 ### 環境変数管理
 
@@ -535,11 +538,11 @@ rollback_triggers:
   - error_rate_threshold: 5%
     duration_minutes: 5
     action: immediate_rollback
-    
+
   - response_time_p95_threshold: 2000ms
     duration_minutes: 10
     action: immediate_rollback
-    
+
   - health_check_failures: 3
     duration_minutes: 2
     action: immediate_rollback
@@ -620,7 +623,7 @@ notify_slack:
       uses: 8398a7/action-slack@v3
       with:
         status: ${{ needs.deploy-production.result }}
-        channel: '#deployments'
+        channel: "#deployments"
         webhook_url: ${{ secrets.SLACK_WEBHOOK }}
         custom_payload: |
           {

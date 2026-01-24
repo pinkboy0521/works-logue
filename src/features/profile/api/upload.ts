@@ -1,6 +1,7 @@
 // Cloudinary関数を動的にインポート（サーバーサイドでのみ）
 async function generateProfileImageUploadSignature(userId: string) {
-  const { generateProfileImageUploadSignature: cloudinaryFunction } = await import("@/shared/lib/cloudinary");
+  const { generateProfileImageUploadSignature: cloudinaryFunction } =
+    await import("@/shared/lib/cloudinary");
   return cloudinaryFunction(userId);
 }
 
