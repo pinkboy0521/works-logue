@@ -1,4 +1,5 @@
 import { Skeleton, Card, CardContent, CardHeader } from "@/shared";
+import { Eye, Heart, Bookmark } from "lucide-react";
 
 export function ArticleListSkeleton() {
   return (
@@ -30,12 +31,18 @@ export function ArticleListSkeleton() {
 
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-1">
-                  <span className="text-gray-300">👀</span>
+                  <Eye className="h-4 w-4 text-muted-foreground" />
                   <Skeleton className="h-4 w-8" />
                 </div>
-                <div className="flex items-center gap-1">
-                  <span className="text-gray-300">❤️</span>
-                  <Skeleton className="h-4 w-8" />
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1">
+                    <Heart className="h-4 w-4 text-muted-foreground" />
+                    <Skeleton className="h-4 w-6" />
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Bookmark className="h-4 w-4 text-muted-foreground" />
+                    <Skeleton className="h-4 w-6" />
+                  </div>
                 </div>
               </div>
             </div>

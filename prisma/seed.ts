@@ -48,7 +48,7 @@ async function main() {
       },
       {
         id: "taxonomy_job_category",
-        code: "JOB_CATEGORY", 
+        code: "JOB_CATEGORY",
         displayName: "職種",
         description: "職種・役割分類",
         sortOrder: 2,
@@ -449,7 +449,7 @@ async function main() {
   // タクソノミータイプのcodeからIDをマッピング
   const taxonomyMapping = {
     INDUSTRY: "taxonomy_industry",
-    JOB_CATEGORY: "taxonomy_job_category", 
+    JOB_CATEGORY: "taxonomy_job_category",
     POSITION: "taxonomy_position",
     SITUATION: "taxonomy_situation",
     SKILL_METHOD: "taxonomy_skill_method",
@@ -457,13 +457,14 @@ async function main() {
   };
 
   await prisma.tag.createMany({
-    data: tagSeedData.map(tag => ({
+    data: tagSeedData.map((tag) => ({
       id: tag.id,
       name: tag.name,
       description: tag.description,
       parentId: tag.parentId,
       level: tag.level,
-      taxonomyTypeId: taxonomyMapping[tag.taxonomyTypeCode as keyof typeof taxonomyMapping],
+      taxonomyTypeId:
+        taxonomyMapping[tag.taxonomyTypeCode as keyof typeof taxonomyMapping],
       sortOrder: tag.sortOrder,
     })),
   });
@@ -565,7 +566,7 @@ async function main() {
       console.log(`✓ 記事作成成功: ${article.id}`);
     } catch (error) {
       console.error(`❌ 記事作成失敗: ${article.id}`);
-      console.error('エラー:', error);
+      console.error("エラー:", error);
       throw error;
     }
   }

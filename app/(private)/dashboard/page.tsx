@@ -1,5 +1,6 @@
-import { DashboardPage } from "@/pages";
+import { redirect } from "next/navigation";
 
 export default function Dashboard() {
-  return <DashboardPage />;
+  // 新しいマイページ構造にリダイレクト
+  redirect("/mypage/articles");
 }

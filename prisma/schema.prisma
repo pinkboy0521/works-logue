@@ -28,6 +28,8 @@ model User {
   userOccupations            UserOccupation[]
   userSkills                 UserSkill[]
   comments                   Comment[]
+  articleLikes               ArticleLike[]
+  articleBookmarks           ArticleBookmark[]
 
   @@map("users")
 }
@@ -54,6 +56,7 @@ model Article {
   publishedAt DateTime?
   viewCount   Int           @default(0)
   likeCount   Int           @default(0)
+  bookmarkCount Int         @default(0)
   topicId     String?
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
@@ -62,6 +65,8 @@ model Article {
   user        User          @relation(fields: [userId], references: [id])
   tags        ArticleTag[]
   comments    Comment[]
+  likes       ArticleLike[]
+  bookmarks   ArticleBookmark[]
 
   @@index([userId])
   @@index([status, publishedAt])
@@ -215,6 +220,34 @@ model ArticleTag {
 
   @@id([articleId, tagId])
   @@index([tagId, articleId]) // タグ→記事方向の検索最適化
+}
+
+model ArticleLike {
+  id        String   @id @default(cuid())
+  userId    String
+  articleId String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  article   Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, articleId])
+  @@index([articleId])
+  @@index([userId])
+  @@map("article_likes")
+}
+
+model ArticleBookmark {
+  id        String   @id @default(cuid())
+  userId    String
+  articleId String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  article   Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, articleId])
+  @@index([articleId])
+  @@index([userId])
+  @@map("article_bookmarks")
 }
 
 enum ArticleStatus {

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Eye } from "lucide-react";
 import {
   Avatar,
   AvatarImage,
@@ -17,8 +18,12 @@ import {
   getArticlesPaginated,
   AuthorCard,
   type UserWithStats,
-  type PublishedArticleListItem,
 } from "@/entities";
+import {
+  enrichArticlesWithReactions,
+  type ArticleWithReactions,
+  ArticleReactions,
+} from "@/features";
 import Image from "next/image";
 
 interface AuthorProfilePageProps {
@@ -46,6 +51,11 @@ export async function AuthorProfilePage({
     userId: userWithStats.id,
   });
 
+  // 記事にリアクション情報を追加
+  const enrichedArticles = await enrichArticlesWithReactions(
+    articlesData.articles,
+  );
+
   return (
     <div className="max-w-6xl mx-auto p-6">
       <div className="space-y-8">
@@ -60,7 +70,7 @@ export async function AuthorProfilePage({
 
         {/* 記事一覧セクション */}
         <AuthorArticlesSection
-          articles={articlesData.articles}
+          articles={enrichedArticles}
           pagination={articlesData.pagination}
           userId={userId}
         />
@@ -177,7 +187,7 @@ function AuthorArticlesSection({
   pagination,
   userId,
 }: {
-  articles: PublishedArticleListItem[];
+  articles: ArticleWithReactions[];
   pagination: { page: number; totalPages: number; total: number };
   userId: string;
 }) {
@@ -231,7 +241,7 @@ function AuthorArticlesSection({
 /**
  * 記事カードコンポーネント
  */
-function ArticleCard({ article }: { article: PublishedArticleListItem }) {
+function ArticleCard({ article }: { article: ArticleWithReactions }) {
   return (
     <Card className="h-full">
       {article.topImageUrl && (
@@ -277,8 +287,23 @@ function ArticleCard({ article }: { article: PublishedArticleListItem }) {
             clickable={false}
           />
           <div className="flex items-center gap-4 text-xs text-muted-foreground">
-            <span>👀 {article.viewCount}</span>
-            <span>❤️ {article.likeCount}</span>
+            <div className="flex items-center gap-1">
+              <Eye className="h-4 w-4" />
+              <span>{article.viewCount}</span>
+            </div>
+            <ArticleReactions
+              articleId={article.id}
+              likeCount={article.likeCount}
+              bookmarkCount={article.bookmarkCount || 0}
+              isLikedByUser={article.reactions?.isLikedByUser || false}
+              isBookmarkedByUser={
+                article.reactions?.isBookmarkedByUser || false
+              }
+              isLoggedIn={article.reactions?.isLoggedIn || false}
+              size="sm"
+              layout="horizontal"
+              showCounts={true}
+            />
           </div>
         </div>
       </CardFooter>

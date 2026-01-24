@@ -12,7 +12,10 @@ interface ArticleViewerProps {
   className?: string;
 }
 
-export function ArticleViewerClient({ content, className = "" }: ArticleViewerProps) {
+export function ArticleViewerClient({
+  content,
+  className = "",
+}: ArticleViewerProps) {
   const { theme } = useTheme();
 
   // 記事表示用のBlockNoteエディター（読み取り専用）
@@ -24,7 +27,9 @@ export function ArticleViewerClient({ content, className = "" }: ArticleViewerPr
         : [
             {
               type: "paragraph",
-              content: [{ type: "text", text: "記事の内容がありません", styles: {} }],
+              content: [
+                { type: "text", text: "記事の内容がありません", styles: {} },
+              ],
             },
           ],
     editable: false,

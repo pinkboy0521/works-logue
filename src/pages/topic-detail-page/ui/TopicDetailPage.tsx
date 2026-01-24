@@ -1,13 +1,14 @@
 "use client";
 
 import { Topic, ArticlesWithPagination } from "@/entities";
+import { type ArticleWithReactions } from "@/features";
 import { ArticleList, TagSidebar } from "@/widgets";
 import { Badge, type TagNode } from "@/shared";
 import { BookOpen, Users } from "lucide-react";
 
 interface TopicDetailPageProps {
   topic: Topic;
-  articlesData: ArticlesWithPagination;
+  articlesData: ArticlesWithPagination & { articles: ArticleWithReactions[] };
   selectedTagIds?: string[];
   tagGroups?: Record<string, unknown[]>;
 }
@@ -68,9 +69,7 @@ export function TopicDetailPage({
         {Object.keys(typedTagGroups).length > 0 && (
           <div className="hidden lg:block flex-shrink-0">
             <div className="sticky top-4">
-              <TagSidebar
-                tags={Object.values(typedTagGroups).flat()}
-              />
+              <TagSidebar tags={Object.values(typedTagGroups).flat()} />
             </div>
           </div>
         )}

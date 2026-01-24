@@ -1,14 +1,14 @@
 import { ArticleDetail } from "@/widgets";
 import {
   getArticleById,
-  incrementArticleViews,
   getRelatedArticles,
   calculateArticleMeta,
 } from "@/entities";
-import { CommentSectionWrapper } from "@/features";
+import { CommentSectionWrapper, getArticleReactionStats } from "@/features";
 import { auth } from "@/auth";
 import { prisma } from "@/shared";
 import { notFound } from "next/navigation";
+import { ViewCountTracker } from "./ViewCountTracker";
 
 // Helper function to check admin role
 async function checkUserRole(userId: string): Promise<boolean> {
@@ -65,20 +65,26 @@ export async function ArticleDetailPage({ params }: ArticleDetailPageProps) {
     return "";
   };
 
-  const [relatedArticles, meta] = await Promise.all([
+  const [relatedArticles, meta, reactionStats] = await Promise.all([
     getRelatedArticles(article.id, article.topicId, 3),
     Promise.resolve(calculateArticleMeta(getContentText(article.content))),
+    getArticleReactionStats(article.id),
   ]);
-
-  // 閲覧数を非同期で増加（エラーでもページ表示は継続）
-  incrementArticleViews(article.id).catch(console.error);
 
   return (
     <div className="space-y-8">
+      {/* 閲覧数の増加を初回のみ実行するClient Component */}
+      <ViewCountTracker articleId={article.id} />
+
       <ArticleDetail
         article={article}
         relatedArticles={relatedArticles}
         meta={meta}
+        reactions={{
+          isLoggedIn: reactionStats.isLoggedIn,
+          isLikedByUser: reactionStats.like.isLikedByUser,
+          isBookmarkedByUser: reactionStats.bookmark.isBookmarkedByUser,
+        }}
       />
 
       {/* Comment Section */}

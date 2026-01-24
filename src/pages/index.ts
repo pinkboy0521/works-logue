@@ -8,6 +8,8 @@ export { ArticleDetailPage } from "./article-detail-page";
 export { DashboardPage } from "./dashboard-page";
 export { ArticleEditPage } from "./article-edit-page";
 export { AdminMastersPage } from "./admin-masters-page";
+export { BookmarkListPage } from "./bookmark-list-page";
+export { LikedArticlesPage } from "./liked-articles-page";
 export { AuthorProfilePage } from "./author-profile-page";
 export { SearchPage } from "./search-page";
 export { TopicDetailPage } from "./topic-detail-page";

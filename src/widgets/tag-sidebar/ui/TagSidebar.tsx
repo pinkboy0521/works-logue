@@ -3,13 +3,15 @@
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { Button } from "@/shared";
+import { ChevronDown, ChevronRight, Filter, X } from "lucide-react";
 import {
-  ChevronDown,
-  ChevronRight,
-  Filter,
-  X,
-} from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle, Badge, type TagNode } from "@/shared";
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  Badge,
+  type TagNode,
+} from "@/shared";
 
 interface TagSidebarProps {
   tags: TagNode[];
@@ -21,28 +23,35 @@ export function TagSidebar({ tags, className = "" }: TagSidebarProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
-  
-  const selectedTagIds = searchParams?.get("tags")?.split(",").filter(Boolean) || [];
-  
+
+  const selectedTagIds =
+    searchParams?.get("tags")?.split(",").filter(Boolean) || [];
+
   // タグを分類ごとにグループ化
-  const tagGroups = tags.reduce((acc, tag) => {
-    const taxonomyCode = tag.taxonomyType.code;
-    if (!acc[taxonomyCode]) {
-      acc[taxonomyCode] = [];
-    }
-    acc[taxonomyCode].push(tag);
-    return acc;
-  }, {} as Record<string, TagNode[]>);
+  const tagGroups = tags.reduce(
+    (acc, tag) => {
+      const taxonomyCode = tag.taxonomyType.code;
+      if (!acc[taxonomyCode]) {
+        acc[taxonomyCode] = [];
+      }
+      acc[taxonomyCode].push(tag);
+      return acc;
+    },
+    {} as Record<string, TagNode[]>,
+  );
 
   // タクソノミータイプの表示名を取得するためのマップを作成
-  const taxonomyDisplayNames = tags.reduce((acc, tag) => {
-    acc[tag.taxonomyType.code] = tag.taxonomyType.displayName;
-    return acc;
-  }, {} as Record<string, string>);
+  const taxonomyDisplayNames = tags.reduce(
+    (acc, tag) => {
+      acc[tag.taxonomyType.code] = tag.taxonomyType.displayName;
+      return acc;
+    },
+    {} as Record<string, string>,
+  );
 
   // 展開状態を管理（初期状態は折りたたみ）
   const [expandedTaxonomies, setExpandedTaxonomies] = useState<Set<string>>(
-    new Set()
+    new Set(),
   );
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
 
@@ -69,12 +78,18 @@ export function TagSidebar({ tags, className = "" }: TagSidebarProps) {
   };
 
   // タグのチェック状態を取得（階層レベルを考慮）
-  const getTagCheckState = (tagId: string, tagLevel?: number): 'checked' | 'unchecked' | 'indeterminate' => {
+  const getTagCheckState = (
+    tagId: string,
+    tagLevel?: number,
+  ): "checked" | "unchecked" | "indeterminate" => {
     const isDirectlySelected = selectedTagIds.includes(tagId);
-    if (isDirectlySelected) return 'checked';
+    if (isDirectlySelected) return "checked";
 
     // 子タグの状態をチェック
-    const findTag = (targetId: string, tags: TagNode[]): TagNode | undefined => {
+    const findTag = (
+      targetId: string,
+      tags: TagNode[],
+    ): TagNode | undefined => {
       for (const tag of tags) {
         if (tag.id === targetId) return tag;
         if (tag.children) {
@@ -86,7 +101,7 @@ export function TagSidebar({ tags, className = "" }: TagSidebarProps) {
     };
 
     const tag = findTag(tagId, Object.values(tagGroups).flat());
-    if (!tag?.children) return 'unchecked';
+    if (!tag?.children) return "unchecked";
 
     const getAllDescendantIds = (children: TagNode[]): string[] => {
       const ids: string[] = [];
@@ -100,23 +115,28 @@ export function TagSidebar({ tags, className = "" }: TagSidebarProps) {
     };
 
     const descendantIds = getAllDescendantIds(tag.children);
-    const selectedDescendants = descendantIds.filter(id => selectedTagIds.includes(id));
+    const selectedDescendants = descendantIds.filter((id) =>
+      selectedTagIds.includes(id),
+    );
 
-    if (selectedDescendants.length === 0) return 'unchecked';
-    if (selectedDescendants.length === descendantIds.length) return 'checked';
-    
+    if (selectedDescendants.length === 0) return "unchecked";
+    if (selectedDescendants.length === descendantIds.length) return "checked";
+
     // 第二階層以降(level >= 2)では、部分選択時は常にindeterminateを返す
     const currentLevel = tagLevel || tag.level;
     if (currentLevel >= 2) {
-      return 'indeterminate';
+      return "indeterminate";
     }
-    
-    return 'indeterminate';
+
+    return "indeterminate";
   };
 
   // 選択されたタグの名前を取得（最適化表示ロジック付き）
   const getOptimizedSelectedTagNames = () => {
-    const findTagName = (targetId: string, tags: TagNode[]): string | undefined => {
+    const findTagName = (
+      targetId: string,
+      tags: TagNode[],
+    ): string | undefined => {
       for (const tag of tags) {
         if (tag.id === targetId) return tag.name;
         if (tag.children) {
@@ -127,7 +147,10 @@ export function TagSidebar({ tags, className = "" }: TagSidebarProps) {
       return undefined;
     };
 
-    const findTagById = (targetId: string, tags: TagNode[]): TagNode | undefined => {
+    const findTagById = (
+      targetId: string,
+      tags: TagNode[],
+    ): TagNode | undefined => {
       for (const tag of tags) {
         if (tag.id === targetId) return tag;
         if (tag.children) {
@@ -159,10 +182,13 @@ export function TagSidebar({ tags, className = "" }: TagSidebarProps) {
       if (!tag) continue;
 
       // 親タグを探す
-      const findParent = (targetChildId: string, tags: TagNode[]): TagNode | undefined => {
+      const findParent = (
+        targetChildId: string,
+        tags: TagNode[],
+      ): TagNode | undefined => {
         for (const tag of tags) {
           if (tag.children) {
-            if (tag.children.some(child => child.id === targetChildId)) {
+            if (tag.children.some((child) => child.id === targetChildId)) {
               return tag;
             }
             const found = findParent(targetChildId, tag.children);
@@ -175,11 +201,13 @@ export function TagSidebar({ tags, className = "" }: TagSidebarProps) {
       const parentTag = findParent(tagId, allTags);
       if (parentTag) {
         const parentChildIds = getAllChildIds(parentTag.children!);
-        const selectedParentChildIds = parentChildIds.filter(id => selectedTagIds.includes(id));
-        
+        const selectedParentChildIds = parentChildIds.filter((id) =>
+          selectedTagIds.includes(id),
+        );
+
         // 親タグの子タグがすべて選択されている場合、子タグを表示対象から除外
         if (selectedParentChildIds.length === parentChildIds.length) {
-          parentChildIds.forEach(childId => tagsToShow.delete(childId));
+          parentChildIds.forEach((childId) => tagsToShow.delete(childId));
           tagsToShow.add(parentTag.id);
         }
       }
@@ -187,18 +215,23 @@ export function TagSidebar({ tags, className = "" }: TagSidebarProps) {
       // 自分が親タグの場合、部分選択なら自分を表示対象から除外
       if (tag.children) {
         const childIds = getAllChildIds(tag.children);
-        const selectedChildIds = childIds.filter(id => selectedTagIds.includes(id));
-        
+        const selectedChildIds = childIds.filter((id) =>
+          selectedTagIds.includes(id),
+        );
+
         // 部分選択の場合（全ての子が選択されていない場合）、親タグを非表示
-        if (selectedChildIds.length > 0 && selectedChildIds.length < childIds.length) {
+        if (
+          selectedChildIds.length > 0 &&
+          selectedChildIds.length < childIds.length
+        ) {
           tagsToShow.delete(tagId);
         }
       }
     }
 
-    return Array.from(tagsToShow).map(id => ({
+    return Array.from(tagsToShow).map((id) => ({
       id,
-      name: findTagName(id, allTags) || id
+      name: findTagName(id, allTags) || id,
     }));
   };
 
@@ -208,7 +241,10 @@ export function TagSidebar({ tags, className = "" }: TagSidebarProps) {
     let newTags: string[];
 
     // タグが親かどうかを判定
-    const findTag = (targetId: string, tags: TagNode[]): TagNode | undefined => {
+    const findTag = (
+      targetId: string,
+      tags: TagNode[],
+    ): TagNode | undefined => {
       for (const tag of tags) {
         if (tag.id === targetId) return tag;
         if (tag.children) {
@@ -236,10 +272,12 @@ export function TagSidebar({ tags, className = "" }: TagSidebarProps) {
           return ids;
         };
         const childIds = getAllChildIds(tag.children!);
-        newTags = currentTags.filter(id => id !== tagId && !childIds.includes(id));
+        newTags = currentTags.filter(
+          (id) => id !== tagId && !childIds.includes(id),
+        );
       } else {
         // 子タグを削除（単純に削除）
-        newTags = currentTags.filter(id => id !== tagId);
+        newTags = currentTags.filter((id) => id !== tagId);
       }
     } else {
       if (hasChildren) {
@@ -255,7 +293,9 @@ export function TagSidebar({ tags, className = "" }: TagSidebarProps) {
           return ids;
         };
         const childIds = getAllChildIds(tag.children!);
-        const tagsToAdd = [tagId, ...childIds].filter(id => !currentTags.includes(id));
+        const tagsToAdd = [tagId, ...childIds].filter(
+          (id) => !currentTags.includes(id),
+        );
         newTags = [...currentTags, ...tagsToAdd];
       } else {
         // 子タグを追加（子タグのみ）
@@ -286,8 +326,8 @@ export function TagSidebar({ tags, className = "" }: TagSidebarProps) {
 
   const renderTagNode = (tag: TagNode, depth = 0) => {
     const checkState = getTagCheckState(tag.id, tag.level);
-    const isSelected = checkState === 'checked';
-    const isIndeterminate = checkState === 'indeterminate';
+    const isSelected = checkState === "checked";
+    const isIndeterminate = checkState === "indeterminate";
     const hasChildren = tag.children && tag.children.length > 0;
     const isExpanded = expandedNodes.has(tag.id);
     const indent = depth * 16;

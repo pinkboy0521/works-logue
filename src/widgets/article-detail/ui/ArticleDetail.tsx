@@ -1,7 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { Eye } from "lucide-react";
 import { ArticleViewer } from "@/features";
+import { ArticleReactions } from "@/features";
 import {
   Avatar,
   AvatarFallback,
@@ -24,12 +26,19 @@ interface ArticleDetailProps {
   article: ArticleWithDetails;
   relatedArticles?: RelatedArticle[];
   meta?: ArticleMeta;
+  // リアクション情報
+  reactions?: {
+    isLoggedIn: boolean;
+    isLikedByUser: boolean;
+    isBookmarkedByUser: boolean;
+  };
 }
 
 export function ArticleDetail({
   article,
   relatedArticles = [],
   meta,
+  reactions,
 }: ArticleDetailProps) {
   const publishedDate = article.publishedAt
     ? format(new Date(article.publishedAt), "yyyy年M月d日", {
@@ -75,15 +84,25 @@ export function ArticleDetail({
             </div>
           </div>
 
-          {/* 統計情報 */}
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-1">
-              <span className="text-muted-foreground">👀</span>
-              <span>{article.viewCount.toLocaleString()}</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <span className="text-muted-foreground">❤️</span>
-              <span>{article.likeCount.toLocaleString()}</span>
+          {/* 統計情報とリアクション */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1">
+                <Eye className="h-4 w-4 text-muted-foreground" />
+                <span>{article.viewCount.toLocaleString()}</span>
+              </div>
+
+              <ArticleReactions
+                articleId={article.id}
+                likeCount={article.likeCount}
+                bookmarkCount={article.bookmarkCount || 0}
+                isLikedByUser={reactions?.isLikedByUser || false}
+                isBookmarkedByUser={reactions?.isBookmarkedByUser || false}
+                isLoggedIn={reactions?.isLoggedIn || false}
+                size="md"
+                layout="horizontal"
+                showCounts={true}
+              />
             </div>
           </div>
         </div>

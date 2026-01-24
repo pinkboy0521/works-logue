@@ -5,7 +5,9 @@ import type { TagNode } from "@/shared";
  * 階層構造を持つタグを取得し、TagNode形式で返す
  * @param _topicId トピックでフィルタリングする場合のトピックID（将来の機能拡張用、現在は未実装）
  */
-export async function getTagsWithHierarchy(_topicId?: string): Promise<TagNode[]> {
+export async function getTagsWithHierarchy(
+  _topicId?: string,
+): Promise<TagNode[]> {
   const tags = await prisma.tag.findMany({
     include: {
       taxonomyType: {

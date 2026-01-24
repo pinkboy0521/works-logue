@@ -297,7 +297,12 @@
   /* BlockNote統一スタイル（編集・表示共通） */
   .blocknote-editor-container,
   .blocknote-article-display {
-    font-family: var(--font-family-base, "Noto Sans", "Noto Sans JP", sans-serif);
+    font-family: var(
+      --font-family-base,
+      "Noto Sans",
+      "Noto Sans JP",
+      sans-serif
+    );
   }
 
   .blocknote-editor-container .ProseMirror,

@@ -1,6 +1,7 @@
 "use client";
 
 import { ArticleSearchResult, Topic } from "@/entities";
+import { type ArticleWithReactions } from "@/features";
 import { ArticleList, TagSidebar } from "@/widgets";
 import { Alert, AlertDescription, type TagNode, Button } from "@/shared";
 import { AlertTriangle, Search } from "lucide-react";
@@ -8,7 +9,7 @@ import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useTransition } from "react";
 
 interface SearchPageProps {
-  searchResult: ArticleSearchResult;
+  searchResult: ArticleSearchResult & { articles: ArticleWithReactions[] };
   tagGroups?: { tags: TagNode[] };
   allTopics?: Topic[];
   selectedTopicId?: string;
@@ -48,25 +49,24 @@ export function SearchPage({
 
   return (
     <div>
-      {/* 記事数表示バー（スティッキー） */}      
+      {/* 記事数表示バー（スティッキー） */}
       <div className="sticky z-40 border-b shadow-sm top-16 bg-background">
-        <div className="container mx-auto px-12">          
-            {/* 検索クエリ表示 */}            
-            
-              <div className="flex items-centertext-sm text-muted-foreground">                
-                <span>{totalFound} 件の記事が見つかりました。</span>
-                {query && (
-                  <span>
-                    （ 検索ワード：
-                    <span className="font-semibold text-foreground">
-                      &ldquo;{query}&rdquo;
-                    </span>
-                    {" "}）
-                  </span>
-                )}
-              </div>
-            
-          </div>        
+        <div className="container mx-auto px-12">
+          {/* 検索クエリ表示 */}
+
+          <div className="flex items-centertext-sm text-muted-foreground">
+            <span>{totalFound} 件の記事が見つかりました。</span>
+            {query && (
+              <span>
+                （ 検索ワード：
+                <span className="font-semibold text-foreground">
+                  &ldquo;{query}&rdquo;
+                </span>{" "}
+                ）
+              </span>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* トピック選択バー */}
@@ -120,9 +120,7 @@ export function SearchPage({
           {tags.length > 0 && (
             <div className="hidden lg:block flex-shrink-0">
               <div className="sticky top-4">
-                <TagSidebar
-                  tags={tags}
-                />
+                <TagSidebar tags={tags} />
               </div>
             </div>
           )}

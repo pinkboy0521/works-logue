@@ -1,8 +1,6 @@
 import { ArticleList } from "@/widgets";
-import {
-  getLatestArticles,
-  getPopularArticles,
-} from "@/entities";
+import { getLatestArticles, getPopularArticles } from "@/entities";
+import { enrichArticlesWithReactions } from "@/features";
 import type { PublishedArticleListItem } from "@/entities";
 
 export async function HomePage() {
@@ -21,6 +19,12 @@ export async function HomePage() {
     popularArticles = [];
   }
 
+  // リアクション情報を追加
+  const [enrichedLatestArticles, enrichedPopularArticles] = await Promise.all([
+    enrichArticlesWithReactions(latestArticles),
+    enrichArticlesWithReactions(popularArticles),
+  ]);
+
   return (
     <div className="container mx-auto px-xxxl py-l">
       {/* 最新記事セクション */}
@@ -29,8 +33,8 @@ export async function HomePage() {
           <h2 className="heading-2">最新記事</h2>
         </div>
 
-        {latestArticles.length > 0 ? (
-          <ArticleList articles={latestArticles} />
+        {enrichedLatestArticles.length > 0 ? (
+          <ArticleList articles={enrichedLatestArticles} />
         ) : (
           <div className="text-center py-8">
             <p className="text-gray-500">最新記事がありません</p>
@@ -44,8 +48,8 @@ export async function HomePage() {
           <h2 className="heading-2">人気記事</h2>
         </div>
 
-        {popularArticles.length > 0 ? (
-          <ArticleList articles={popularArticles} />
+        {enrichedPopularArticles.length > 0 ? (
+          <ArticleList articles={enrichedPopularArticles} />
         ) : (
           <div className="text-center py-8">
             <p className="text-gray-500">人気記事がありません</p>

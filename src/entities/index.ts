@@ -105,3 +105,43 @@ export {
   type CreateCommentForm,
   type DeleteCommentForm,
 } from "./comment";
+
+// Article Like エンティティ
+export {
+  getArticleLikeCount,
+  isArticleLikedByUser,
+  createArticleLike,
+  deleteArticleLike,
+  getUserArticleLikes,
+  getUserArticleLikeCount,
+  getArticleLikeStats,
+  isLikeOperationValid,
+  formatLikeCount,
+  createArticleLikeSchema,
+  deleteArticleLikeSchema,
+  type ArticleLike,
+  type CreateArticleLikeData,
+  type DeleteArticleLikeData,
+  type ArticleLikeStats,
+  type ArticleLikeWithRelations,
+} from "./article-like";
+
+// Article Bookmark エンティティ
+export {
+  getArticleBookmarkCount,
+  isArticleBookmarkedByUser,
+  createArticleBookmark,
+  deleteArticleBookmark,
+  getUserArticleBookmarks,
+  getUserArticleBookmarkCount,
+  getArticleBookmarkStats,
+  isBookmarkOperationValid,
+  formatBookmarkCount,
+  createArticleBookmarkSchema,
+  deleteArticleBookmarkSchema,
+  type ArticleBookmark,
+  type CreateArticleBookmarkData,
+  type DeleteArticleBookmarkData,
+  type ArticleBookmarkStats,
+  type ArticleBookmarkWithRelations,
+} from "./article-bookmark";

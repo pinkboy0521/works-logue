@@ -1,6 +1,13 @@
 "use client";
 
-import { useState, useTransition, useRef, useEffect, useMemo, useCallback } from "react";
+import {
+  useState,
+  useTransition,
+  useRef,
+  useEffect,
+  useMemo,
+  useCallback,
+} from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Input, Button } from "@/shared";
 import { Search, ArrowUpRight, Tag, Users, Hash } from "lucide-react";
@@ -35,7 +42,7 @@ interface SearchResponse {
 }
 
 interface SearchSuggestion {
-  type: 'explore' | 'topic' | 'tag' | 'user';
+  type: "explore" | "topic" | "tag" | "user";
   id?: string;
   title: string;
   subtitle?: string;
@@ -50,78 +57,86 @@ export function SearchBar() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const searchRef = useRef<HTMLDivElement>(null);
-  
+
   // 検索クエリのデバウンス（300ms）
   const debouncedQuery = useDebounce(query, 300);
 
   // デフォルト候補
-  const defaultSuggestions: SearchSuggestion[] = useMemo(() => [
-    {
-      type: 'explore',
-      title: '記事を探索する',
-      subtitle: '全ての記事を参照',
-      icon: <ArrowUpRight className="w-4 h-4" />
-    }
-  ], []);
+  const defaultSuggestions: SearchSuggestion[] = useMemo(
+    () => [
+      {
+        type: "explore",
+        title: "記事を探索する",
+        subtitle: "全ての記事を参照",
+        icon: <ArrowUpRight className="w-4 h-4" />,
+      },
+    ],
+    [],
+  );
 
   // 候補を取得する関数
-  const fetchSuggestions = useCallback(async (searchQuery: string) => {
-    if (!searchQuery.trim()) {
-      setSuggestions(defaultSuggestions);
-      return;
-    }
+  const fetchSuggestions = useCallback(
+    async (searchQuery: string) => {
+      if (!searchQuery.trim()) {
+        setSuggestions(defaultSuggestions);
+        return;
+      }
 
-    try {
-      const response = await fetch(`/api/search/suggestions?q=${encodeURIComponent(searchQuery)}`);
-      if (response.ok) {
-        const data: SearchResponse = await response.json();
-        const newSuggestions: SearchSuggestion[] = [];
+      try {
+        const response = await fetch(
+          `/api/search/suggestions?q=${encodeURIComponent(searchQuery)}`,
+        );
+        if (response.ok) {
+          const data: SearchResponse = await response.json();
+          const newSuggestions: SearchSuggestion[] = [];
 
-        // トピック候補
-        data.topics?.forEach((topic: SearchResponseTopic) => {
-          newSuggestions.push({
-            type: 'topic',
-            id: topic.id,
-            title: topic.name,
-            subtitle: `${topic._count?.articles || 0}件の記事`,
-            icon: <Hash className="w-4 h-4" />
+          // トピック候補
+          data.topics?.forEach((topic: SearchResponseTopic) => {
+            newSuggestions.push({
+              type: "topic",
+              id: topic.id,
+              title: topic.name,
+              subtitle: `${topic._count?.articles || 0}件の記事`,
+              icon: <Hash className="w-4 h-4" />,
+            });
           });
-        });
 
-        // タグ候補（1階層のみ）
-        data.tags?.forEach((tag: SearchResponseTag) => {
-          newSuggestions.push({
-            type: 'tag',
-            id: tag.id,
-            title: tag.name,
-            subtitle: `${tag._count?.articles || 0}件の記事`,
-            icon: <Tag className="w-4 h-4" />
+          // タグ候補（1階層のみ）
+          data.tags?.forEach((tag: SearchResponseTag) => {
+            newSuggestions.push({
+              type: "tag",
+              id: tag.id,
+              title: tag.name,
+              subtitle: `${tag._count?.articles || 0}件の記事`,
+              icon: <Tag className="w-4 h-4" />,
+            });
           });
-        });
 
-        // ユーザー候補
-        data.users?.forEach((user: SearchResponseUser) => {
-          newSuggestions.push({
-            type: 'user',
-            id: user.userId,
-            title: user.displayName || user.userId,
-            subtitle: `@${user.userId}`,
-            icon: <Users className="w-4 h-4" />
+          // ユーザー候補
+          data.users?.forEach((user: SearchResponseUser) => {
+            newSuggestions.push({
+              type: "user",
+              id: user.userId,
+              title: user.displayName || user.userId,
+              subtitle: `@${user.userId}`,
+              icon: <Users className="w-4 h-4" />,
+            });
           });
-        });
 
-        // 「記事を探索する」を最後に追加
-        newSuggestions.push(...defaultSuggestions);
+          // 「記事を探索する」を最後に追加
+          newSuggestions.push(...defaultSuggestions);
 
-        setSuggestions(newSuggestions);
-      } else {
+          setSuggestions(newSuggestions);
+        } else {
+          setSuggestions(defaultSuggestions);
+        }
+      } catch (error) {
+        console.error("Failed to fetch suggestions:", error);
         setSuggestions(defaultSuggestions);
       }
-    } catch (error) {
-      console.error('Failed to fetch suggestions:', error);
-      setSuggestions(defaultSuggestions);
-    }
-  }, [defaultSuggestions]);
+    },
+    [defaultSuggestions],
+  );
 
   // デバウンスされたクエリでの候補取得
   useEffect(() => {
@@ -133,18 +148,21 @@ export function SearchBar() {
   // 外部クリック時の候補非表示
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+      if (
+        searchRef.current &&
+        !searchRef.current.contains(event.target as Node)
+      ) {
         setShowSuggestions(false);
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   // キーボードナビゲーション（Escapeのみ）
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Escape') {
+    if (e.key === "Escape") {
       setShowSuggestions(false);
     }
   };
@@ -160,10 +178,10 @@ export function SearchBar() {
     startTransition(() => {
       // 既存のパラメータを引き継ぐ
       const params = new URLSearchParams(searchParams?.toString() || "");
-      
+
       // 検索クエリを更新
       params.set("q", query.trim());
-      
+
       router.push(`/search?${params.toString()}`);
       setShowSuggestions(false);
     });
@@ -173,21 +191,21 @@ export function SearchBar() {
   const handleSuggestionSelect = (suggestion: SearchSuggestion) => {
     startTransition(() => {
       switch (suggestion.type) {
-        case 'explore':
-          router.push('/search');
+        case "explore":
+          router.push("/search");
           break;
-        case 'topic':
+        case "topic":
           router.push(`/search?topicId=${suggestion.id}`);
           break;
-        case 'tag':
+        case "tag":
           router.push(`/search?tags=${suggestion.id}`);
           break;
-        case 'user':
+        case "user":
           router.push(`/${suggestion.id}`);
           break;
       }
       setShowSuggestions(false);
-      setQuery('');
+      setQuery("");
     });
   };
 
@@ -232,9 +250,7 @@ export function SearchBar() {
                   {suggestion.icon}
                 </div>
                 <div className="flex-1 text-left">
-                  <div className="font-medium text-sm">
-                    {suggestion.title}
-                  </div>
+                  <div className="font-medium text-sm">{suggestion.title}</div>
                   {suggestion.subtitle && (
                     <div className="text-xs text-muted-foreground">
                       {suggestion.subtitle}

@@ -58,6 +58,7 @@ export type PublishedArticleListItem = {
   publishedAt: Date | null;
   viewCount: number;
   likeCount: number;
+  bookmarkCount: number; // ブックマーク数を追加
   user: {
     id: string;
     displayName: string | null;

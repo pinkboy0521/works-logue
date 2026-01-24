@@ -1,4 +1,5 @@
 import { searchArticles, getTagsWithHierarchy, getAllTopics } from "@/entities";
+import { enrichArticlesWithReactions } from "@/features";
 import { SearchPage } from "@/pages";
 import { Metadata } from "next";
 
@@ -11,13 +12,15 @@ interface SearchPageProps {
   }>;
 }
 
-export async function generateMetadata({ searchParams }: SearchPageProps): Promise<Metadata> {
+export async function generateMetadata({
+  searchParams,
+}: SearchPageProps): Promise<Metadata> {
   const params = await searchParams;
   const { q = "", topic } = params;
-  
+
   let title = "記事探索 - Works Logue";
   let description = "興味のある記事を検索・探索して見つけよう";
-  
+
   if (q.trim()) {
     title = `「${q}」の検索結果 - Works Logue`;
     description = `「${q}」に関連する記事を探す`;
@@ -26,7 +29,7 @@ export async function generateMetadata({ searchParams }: SearchPageProps): Promi
     title = "トピック別記事探索 - Works Logue";
     description = "選択されたトピックに関する記事を探索する";
   }
-    
+
   return {
     title,
     description,
@@ -45,7 +48,6 @@ interface SearchPageProps {
 export default async function Page({ searchParams }: SearchPageProps) {
   const params = await searchParams;
   const { q = "", topic, tags, page = "1" } = params;
-  
 
   // URLパラメータから検索条件を構築
   const searchQuery = q.trim();
@@ -67,9 +69,17 @@ export default async function Page({ searchParams }: SearchPageProps) {
       getAllTopics(),
     ]);
 
+    // 記事にリアクション情報を追加
+    const enrichedArticles = await enrichArticlesWithReactions(
+      searchResult.articles,
+    );
+
     return (
       <SearchPage
-        searchResult={searchResult}
+        searchResult={{
+          ...searchResult,
+          articles: enrichedArticles,
+        }}
         tagGroups={{ tags: allTags }}
         allTopics={allTopics}
         selectedTopicId={topicId}
@@ -77,13 +87,13 @@ export default async function Page({ searchParams }: SearchPageProps) {
     );
   } catch (error) {
     console.error("検索エラー:", error);
-    
+
     // エラー時は空の結果を返す
     const [allTags, allTopics] = await Promise.all([
       getTagsWithHierarchy(topicId).catch(() => []), // トピックでフィルタリング
       getAllTopics().catch(() => []),
     ]);
-    
+
     return (
       <SearchPage
         searchResult={{

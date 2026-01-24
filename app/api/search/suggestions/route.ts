@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({
         topics: [],
         tags: [],
-        users: []
+        users: [],
       });
     }
 
@@ -21,26 +21,26 @@ export async function GET(request: NextRequest) {
         where: {
           name: {
             contains: query,
-            mode: 'insensitive'
-          }
+            mode: "insensitive",
+          },
         },
         include: {
           _count: {
             select: {
               articles: {
                 where: {
-                  status: 'PUBLISHED'
-                }
-              }
-            }
-          }
+                  status: "PUBLISHED",
+                },
+              },
+            },
+          },
         },
         orderBy: {
           articles: {
-            _count: 'desc' // 記事数の多い順
-          }
+            _count: "desc", // 記事数の多い順
+          },
         },
-        take: 3
+        take: 3,
       }),
 
       // タグ検索（1階層のみ、部分一致、3件まで）
@@ -50,32 +50,32 @@ export async function GET(request: NextRequest) {
             {
               name: {
                 contains: query,
-                mode: 'insensitive'
-              }
+                mode: "insensitive",
+              },
             },
             {
-              level: 1 // 1階層のみ
-            }
-          ]
+              level: 1, // 1階層のみ
+            },
+          ],
         },
         include: {
           _count: {
             select: {
-              articles: true
-            }
+              articles: true,
+            },
           },
           taxonomyType: {
             select: {
-              displayName: true
-            }
-          }
+              displayName: true,
+            },
+          },
         },
         orderBy: {
           articles: {
-            _count: 'desc' // 記事数の多い順
-          }
+            _count: "desc", // 記事数の多い順
+          },
         },
-        take: 3
+        take: 3,
       }),
 
       // ユーザー検索（ユーザーID、表示名で検索、3件まで）
@@ -85,16 +85,16 @@ export async function GET(request: NextRequest) {
             {
               userId: {
                 contains: query,
-                mode: 'insensitive'
-              }
+                mode: "insensitive",
+              },
             },
             {
               displayName: {
                 contains: query,
-                mode: 'insensitive'
-              }
-            }
-          ]
+                mode: "insensitive",
+              },
+            },
+          ],
         },
         select: {
           userId: true,
@@ -104,48 +104,47 @@ export async function GET(request: NextRequest) {
             select: {
               articles: {
                 where: {
-                  status: 'PUBLISHED'
-                }
-              }
-            }
-          }
+                  status: "PUBLISHED",
+                },
+              },
+            },
+          },
         },
         orderBy: {
           articles: {
-            _count: 'desc' // 記事数の多い順
-          }
+            _count: "desc", // 記事数の多い順
+          },
         },
-        take: 3
-      })
+        take: 3,
+      }),
     ]);
 
     return NextResponse.json({
-      topics: topics.map(topic => ({
+      topics: topics.map((topic) => ({
         id: topic.id,
         name: topic.name,
         description: topic.description,
-        _count: topic._count
+        _count: topic._count,
       })),
-      tags: tags.map(tag => ({
+      tags: tags.map((tag) => ({
         id: tag.id,
         name: tag.name,
         level: tag.level,
         taxonomyType: tag.taxonomyType.displayName,
-        _count: tag._count
+        _count: tag._count,
       })),
-      users: users.map(user => ({
+      users: users.map((user) => ({
         userId: user.userId,
         displayName: user.displayName,
         profileImageUrl: user.image,
-        _count: user._count
-      }))
+        _count: user._count,
+      })),
     });
-
   } catch (error) {
     console.error("検索候補取得エラー:", error);
     return NextResponse.json(
       { error: "検索候補の取得に失敗しました" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
