@@ -25,8 +25,8 @@ export async function HomePage() {
     enrichArticlesWithReactions(popularArticles),
   ]);
 
-  return (
-    <div className="container mx-auto px-xxxl py-l">
+  return (    
+  <div className="mx-auto w-full max-w-screen-2xl px-[clamp(16px,11vw,160px)] py-l">
       {/* 最新記事セクション */}
       <section className="mb-12">
         <div className="flex items-center justify-between mb-6">

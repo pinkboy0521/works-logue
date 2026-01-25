@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+// import Image from "next/image";
 import Link from "next/link";
 import { Eye } from "lucide-react";
 import { Badge, Card, CardContent, CardTitle } from "@/shared";
@@ -77,108 +77,115 @@ export function ArticleCard({ article }: ArticleCardProps) {
   };
 
   return (
-    <Link
-      href={`/${article.user.userId}/articles/${article.id}`}
-      className="block"
-    >
-      <Card className="hover:bg-muted transition-all duration-300 cursor-pointer">
-        <div className="flex">
-          {/* コンテンツ部分（左側） */}
-          <CardContent className="flex-1 p-6">
-            <div className="mb-3">
-              <Badge variant="secondary" className="text-primary bg-primary/10">
-                {article.topic.name}
+    <Link href={`/${article.user.userId}/articles/${article.id}`} className="block">
+  <Card className="group overflow-hidden transition-colors hover:bg-muted/60 focus-within:ring-2 focus-within:ring-primary/30">
+    <CardContent className="p-5">
+        <div className="mb-3 flex items-center gap-2">
+          <Badge variant="secondary" className="bg-primary/10 text-primary">
+            {article.topic.name}
+          </Badge>
+        </div>
+
+        <CardTitle className="mb-2 text-2xl line-clamp-2 leading-snug">
+          {article.title}
+        </CardTitle>
+
+        <p className="mb-4 line-clamp-2 text-sm leading-relaxed text-muted-foreground">
+          {getContentPreview(article.content)}
+        </p>
+
+        {article.tags.length > 0 && (
+          <div className="mb-4 flex flex-wrap gap-1">
+            {article.tags.slice(0, 3).map(({ tag }) => (
+              <Badge key={tag.id} variant="secondary" className="text-xs">
+                {tag.name}
               </Badge>
-            </div>
-
-            <CardTitle className="mb-2 line-clamp-2 leading-snug">
-              {article.title}
-            </CardTitle>
-
-            <p className="text-muted-foreground text-sm mb-4 line-clamp-2 leading-relaxed">
-              {getContentPreview(article.content)}
-            </p>
-
-            {article.tags.length > 0 && (
-              <div className="flex flex-wrap gap-1 mb-4">
-                {article.tags.slice(0, 3).map(({ tag }) => (
-                  <Badge key={tag.id} variant="secondary" className="text-xs">
-                    {tag.name}
-                  </Badge>
-                ))}
-                {article.tags.length > 3 && (
-                  <Badge variant="secondary" className="text-xs">
-                    +{article.tags.length - 3}
-                  </Badge>
-                )}
-              </div>
+            ))}
+            {article.tags.length > 3 && (
+              <Badge variant="secondary" className="text-xs">
+                +{article.tags.length - 3}
+              </Badge>
             )}
+          </div>
+        )}
 
-            <div className="flex items-center justify-between">
-              <AuthorCard
-                user={{
-                  id: article.user.id,
-                  displayName: article.user.displayName,
-                  image: article.user.image,
-                  userId: article.user.userId || "",
-                }}
-                size="small"
-                clickable={false}
-              />
+        <div className="flex items-center justify-between gap-3">
+          <AuthorCard
+            user={{
+              id: article.user.id,
+              displayName: article.user.displayName,
+              image: article.user.image,
+              userId: article.user.userId || "",
+            }}
+            size="small"
+            clickable={false}
+          />
 
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <span className="whitespace-nowrap">
-                  {formatDate(article.publishedAt)}
-                </span>
+          <div className="flex items-center gap-3 text-sm text-muted-foreground">
+            <span className="whitespace-nowrap">
+              {formatDate(article.publishedAt)}
+            </span>
 
-                {/* 閲覧数 */}
-                <div className="flex items-center gap-1">
-                  <Eye className="h-4 w-4 text-muted-foreground" />
-                  <span>{article.viewCount}</span>
-                </div>
-
-                {/* リアクションボタン */}
-                <div
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                  }}
-                >
-                  <ArticleReactions
-                    articleId={article.id}
-                    likeCount={article.likeCount}
-                    bookmarkCount={article.bookmarkCount || 0}
-                    isLikedByUser={article.reactions?.isLikedByUser || false}
-                    isBookmarkedByUser={
-                      article.reactions?.isBookmarkedByUser || false
-                    }
-                    isLoggedIn={article.reactions?.isLoggedIn || false}
-                    size="sm"
-                    layout="horizontal"
-                    showCounts={true}
-                  />
-                </div>
-              </div>
+            <div className="flex items-center gap-1">
+              <Eye className="h-4 w-4" />
+              <span>{article.viewCount}</span>
             </div>
-          </CardContent>
 
-          {/* サムネイル画像（右側） */}
+            {/* リアクションボタン：カード遷移と分離 */}
+            <div
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+              }}
+              className="shrink-0"
+            >
+              <ArticleReactions
+                articleId={article.id}
+                likeCount={article.likeCount}
+                bookmarkCount={article.bookmarkCount || 0}
+                isLikedByUser={article.reactions?.isLikedByUser || false}
+                isBookmarkedByUser={article.reactions?.isBookmarkedByUser || false}
+                isLoggedIn={article.reactions?.isLoggedIn || false}
+                size="sm"
+                layout="horizontal"
+                showCounts
+              />
+            </div>
+          </div>
+        </div>
+      </CardContent>
+
+      {/* サムネイル表示（コメントアウト） */}
+      {/* <div
+        className={[
+          "hidden sm:flex items-center justify-end pr-5", // 右寄せ＆縦中央
+          "h-full min-h-[160px] shrink-0",               // カードの高さに追従
+          article.topImageUrl ? "" : "",                 // 見た目は後で制御
+        ].join(" ")}
+        aria-hidden={!article.topImageUrl}
+      >
+        <div
+          className={[
+            "relative w-[220px] aspect-video",           // ← 横長（16:9）
+            article.topImageUrl
+              ? "overflow-hidden rounded-md bg-muted"
+              : "invisible", // 枠は確保するけど表示しない（スペースは維持）
+          ].join(" ")}
+        >
           {article.topImageUrl && (
-            <div className="relative w-48 h-40 flex-shrink-0">
-              <Image
-                src={article.topImageUrl}
-                alt={article.title}
-                fill
-                className="object-cover rounded-r-lg"
-                sizes="192px"
-                quality={90}
-                placeholder="blur"
-                blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R/mhz8="
-              />
-            </div>
+            <Image
+              src={article.topImageUrl}
+              alt={article.title}
+              fill
+              className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+              sizes="220px"
+              quality={85}
+            />
           )}
         </div>
-      </Card>
-    </Link>
+      </div> */}
+  </Card>
+</Link>
+
   );
 }
