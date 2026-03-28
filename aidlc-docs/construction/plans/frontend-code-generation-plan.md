@@ -58,20 +58,22 @@
 - [ ] `frontend/src/types/index.ts` — 全エンティティ TypeScript 型（User, Profile, Seed, Log, Louge, Notification, Tag, Badge, Score）
 
 ### Step 3: インフラレイヤー実装
-- [ ] `frontend/src/lib/supabase/browser-client.ts` — Client Component 用 Supabase クライアント（LC-FE-01）
-- [ ] `frontend/src/lib/supabase/server-client.ts` — Server Component 用 Supabase クライアント（LC-FE-01）
-- [ ] `frontend/src/lib/api/types.ts` — API レスポンス型・ApiError クラス
-- [ ] `frontend/src/lib/api/server.ts` — Server Components 用 API クライアント（LC-FE-02）
-- [ ] `frontend/src/lib/api/client.ts` — Client Components / React Query 用 API クライアント（LC-FE-02）
-- [ ] `frontend/src/lib/query-client.ts` — TanStack Query QueryClient 設定（LC-FE-03）
-- [ ] `frontend/src/store/atoms.ts` — Jotai atoms 集約（LC-FE-04）
-- [ ] `frontend/src/middleware.ts` — 認証ガード Middleware（LC-FE-06, P-FE-05）
+- [x] `frontend/src/lib/supabase/browser-client.ts` — Client Component 用 Supabase クライアント（LC-FE-01）
+- [x] `frontend/src/lib/supabase/server-client.ts` — Server Component 用 Supabase クライアント（LC-FE-01）
+- [x] `frontend/src/lib/api/types.ts` — API レスポンス型・ApiError クラス
+- [x] `frontend/src/lib/api/server.ts` — Server Components 用 API クライアント（LC-FE-02）
+- [x] `frontend/src/lib/api/client.ts` — Client Components / React Query 用 API クライアント（LC-FE-02）
+- [x] `frontend/src/lib/query-client.ts` — TanStack Query QueryClient 設定（LC-FE-03）
+- [x] `frontend/src/store/atoms.ts` — Jotai atoms 集約（LC-FE-04）
+- [x] `frontend/src/middleware.ts` — 認証ガード Middleware（LC-FE-06, P-FE-05）
 
 ### Step 4: ルートレイアウト・プロバイダー
-- [ ] `frontend/src/app/providers.tsx` — QueryClient + Jotai + AuthProvider ラッパー（LC-FE-03）
-- [ ] `frontend/src/app/layout.tsx` — ルートレイアウト（HTML meta, Providers, Header, Analytics/SpeedInsights）
-- [ ] `frontend/src/app/page.tsx` — ルート `/` → `/seeds` リダイレクト
-- [ ] `frontend/src/app/error.tsx` — グローバル Error Boundary（LC-FE-10）
+- [x] `frontend/src/lib/query-client.ts` — TanStack Query v5 QueryClient singleton（Step 3 欠損分）
+- [x] `frontend/src/app/providers.tsx` — QueryClient + Jotai + AuthProvider ラッパー（LC-FE-03）
+- [x] `frontend/src/app/layout.tsx` — ルートレイアウト（HTML meta, Providers, Header, Analytics/SpeedInsights）
+- [x] `frontend/src/app/page.tsx` — ルート `/` → `/seeds` リダイレクト
+- [x] `frontend/src/app/error.tsx` — セグメント Error Boundary（LC-FE-10）
+- [x] `frontend/src/app/global-error.tsx` — グローバル Error Boundary（ルートレイアウトエラー対応）
 
 ### Step 5: 共通 UI コンポーネント
 - [ ] `frontend/src/components/ui/button.tsx` — shadcn/ui Button（variants: default/outline/ghost/destructive）
