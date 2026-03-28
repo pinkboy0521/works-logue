@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find /c/Users/pinkb/Workspace/10_Projects/works-logue/.claude/worktrees/agent-ae40f54a/frontend -name *.ts -o -name *.tsx)"
+    ]
+  }
+}
