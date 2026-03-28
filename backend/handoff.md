@@ -1,18 +1,32 @@
-# Handoff
+# Writer Handoff
 
 ## タスク
-CR-03・ME-05 のルート順序修正（FastAPI profiles.py の GET /me、seeds.py の POST /cleanse をパラメータルートより前に移動する）
+Works Logue フロントエンド Step 1 — プロジェクト構造セットアップ（11ファイル生成）
 
 ## 変更ファイル
-- backend/app/routers/profiles.py: GET /me、PATCH /me、PUT /me/tags を GET /{username} より前に移動
-- backend/app/routers/seeds.py: POST /cleanse を GET /{seed_id} より前（GET "" の直後）に移動
+- `frontend/tailwind.config.ts` — Botanical Laboratory デザインシステム全定義（カラートークン・フォント・spacing・borderRadius・keyframes 7種・animation・boxShadow・backgroundImage）
+- `frontend/src/app/globals.css` — CSS変数定義（全トークン hsl値）・Google Fonts import・ノイズテクスチャ pseudo-element・カスタムユーティリティ・スクロールバースタイル
+- `frontend/package.json` — Next.js 15 / React 19 依存関係定義
+- `frontend/tsconfig.json` — TypeScript strict モード・パスエイリアス設定
+- `frontend/next.config.ts` — セキュリティヘッダー・Supabase 画像リモートパターン設定
+- `frontend/postcss.config.mjs` — tailwindcss / autoprefixer プラグイン設定
+- `frontend/.env.local.example` — 環境変数テンプレート
+- `frontend/.eslintrc.json` — ESLint Next.js ルール設定
+- `frontend/.prettierrc` — Prettier フォーマット設定（prettier-plugin-tailwindcss 含む）
+- `frontend/.gitignore` — Next.js 標準 gitignore
+- `frontend/vercel.json` — Vercel デプロイ設定（nrt1 リージョン）
 
-## 変更内容
-- profiles.py: ルート定義順序を変更。旧順序は GET /{username} → PATCH /me → GET /me → PUT /me/tags。新順序は GET /me → PATCH /me → PUT /me/tags → GET /{username}
-- seeds.py: ルート定義順序を変更。旧順序は GET "" → GET /{seed_id} → POST "" → PATCH /{seed_id} → POST /cleanse。新順序は GET "" → POST /cleanse → GET /{seed_id} → POST "" → PATCH /{seed_id}
-- 動作ロジック・コメント・型・依存関係は一切変更していない
+## 修正した指摘
+- なし
 
-## 注意事項
-- profiles.py: GET /me が GET /{username} より前に定義されていることを確認すること（username="me" でパラメータルートにマッチするバグの修正）
-- seeds.py: POST /cleanse が GET /{seed_id} より前に定義されていることを確認すること（seed_id="cleanse" でパラメータルートにマッチするバグの修正）
-- PATCH /me は元のファイルで既に GET /{username} の後・GET /me の前に定義されていたが、今回の修正で GET /me・PATCH /me・PUT /me/tags の 3 ルートをまとめてパラメータルートより前に移動している
+## 未対応項目
+- なし
+
+## 構文チェック結果
+- `tailwind.config.ts`: TypeScript 構文 OK
+- `globals.css`: CSS 構文 OK
+- `next.config.ts`: TypeScript 構文 OK
+- `postcss.config.mjs`: ESM 構文 OK
+
+## テスト結果
+- 該当なし（フロントエンド設定ファイル群のため `npm install` 後に `npm run type-check` で検証可能）

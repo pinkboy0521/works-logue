@@ -42,15 +42,17 @@
 ## 実行ステップ
 
 ### Step 1: プロジェクト構造セットアップ
-- [ ] `frontend/package.json` — 依存パッケージ定義
-- [ ] `frontend/tsconfig.json` — TypeScript 設定（strict: true, path aliases）
-- [ ] `frontend/next.config.ts` — セキュリティヘッダー + 設定
-- [ ] `frontend/tailwind.config.ts` — デザインシステム設定
-- [ ] `frontend/postcss.config.mjs` — PostCSS 設定
-- [ ] `frontend/.env.local.example` — 環境変数テンプレート
-- [ ] `frontend/.eslintrc.json` — ESLint 設定
-- [ ] `frontend/.prettierrc` — Prettier 設定
-- [ ] `frontend/.gitignore` — Git 除外設定
+- [x] `frontend/package.json` — 依存パッケージ定義
+- [x] `frontend/tsconfig.json` — TypeScript 設定（strict: true, path aliases）
+- [x] `frontend/next.config.ts` — セキュリティヘッダー + 設定
+- [x] `frontend/tailwind.config.ts` — デザインシステム設定（Botanical Laboratory テーマ）
+- [x] `frontend/postcss.config.mjs` — PostCSS 設定
+- [x] `frontend/.env.local.example` — 環境変数テンプレート
+- [x] `frontend/.eslintrc.json` — ESLint 設定
+- [x] `frontend/.prettierrc` — Prettier 設定
+- [x] `frontend/.gitignore` — Git 除外設定
+- [x] `frontend/src/app/globals.css` — CSS変数定義・Botanical Laboratory テーマ
+- [x] `frontend/vercel.json` — Vercel デプロイ設定
 
 ### Step 2: 共通型定義
 - [ ] `frontend/src/types/index.ts` — 全エンティティ TypeScript 型（User, Profile, Seed, Log, Louge, Notification, Tag, Badge, Score）

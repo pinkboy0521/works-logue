@@ -530,3 +530,72 @@ The Operations stage will eventually include:
 - Application code: Workspace root (NEVER in aidlc-docs/)
 - Documentation: aidlc-docs/ only
 - Project structure: See code-generation.md for patterns by project type
+
+---
+
+## MANDATORY: Frontend Design System Enforcement
+
+**CRITICAL**: This rule applies to ALL frontend code generation. Any violation is a **blocking finding**.
+
+### Single Source of Truth
+
+`frontend/tailwind.config.ts` is the ONLY place where raw color values, spacing scales, font families, and animation tokens are defined. All other files MUST reference these tokens by name.
+
+### Prohibited Patterns
+
+The following are **strictly forbidden** in any `.tsx`, `.ts`, or `.css` file outside of `tailwind.config.ts`:
+
+```
+// ❌ NEVER hardcode color values
+className="bg-[#0E1712]"
+className="text-[#EDE8DC]"
+style={{ color: '#C9A84C' }}
+style={{ backgroundColor: 'rgb(8, 13, 10)' }}
+
+// ❌ NEVER hardcode arbitrary widths/sizes (use scale tokens instead)
+className="w-[372px]"
+className="h-[48px]"
+className="px-[18px]"
+```
+
+### Required Patterns
+
+Always use semantic tokens defined in `tailwind.config.ts`:
+
+```
+// ✅ Semantic color tokens
+className="bg-surface"           // surface layer color
+className="bg-background"        // base background
+className="text-foreground"      // primary text
+className="text-muted-foreground" // secondary text
+className="border-border"        // default border
+className="text-accent"          // accent (amber/gold)
+className="text-growth"          // growth accent (spring green)
+
+// ✅ Design system spacing scale (Tailwind defaults + custom)
+className="px-4"    // 16px from scale
+className="w-full"  // semantic
+className="max-w-content"  // custom content width token
+```
+
+### Token Naming Convention (defined in tailwind.config.ts)
+
+| Token | Purpose | Raw Value |
+|---|---|---|
+| `background` | Base page background | `#080D0A` |
+| `surface` | Card / panel background | `#0E1712` |
+| `surface-raised` | Elevated surface | `#162019` |
+| `foreground` | Primary text | `#EDE8DC` |
+| `muted-foreground` | Secondary / placeholder text | `#8A9E8E` |
+| `border` | Default border | `#1C2B20` |
+| `accent` | Bloom / CTA (amber gold) | `#C9A84C` |
+| `accent-foreground` | Text on accent bg | `#080D0A` |
+| `growth` | Active / growing state (spring green) | `#4ADE80` |
+| `destructive` | Error / danger | `#EF4444` |
+
+### Enforcement Checkpoint
+
+Before completing any Code Generation step that writes frontend files, verify:
+- [ ] Zero occurrences of `bg-[#`, `text-[#`, `border-[#`, `style={{ color`, `style={{ background` in generated code
+- [ ] Zero occurrences of arbitrary pixel widths `w-[Npx]`, `h-[Npx]`, `p-[Npx]` (use scale values)
+- [ ] All colors reference tokens from the table above or standard Tailwind semantic names
