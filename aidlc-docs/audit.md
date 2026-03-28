@@ -1,5 +1,94 @@
 # AI-DLC Audit Log
 
+## CONSTRUCTION PHASE - Unit 2: frontend - Infrastructure Design 承認
+**Timestamp**: 2026-03-29T13:30:00Z
+**User Input**: "Continue to Next Stage - Approve infrastructure design and proceed to Code Generation"
+**AI Response**: Infrastructure Design 承認を記録。Code Generation Part 1（Planning）を実行。frontend-code-generation-plan.md（13ステップ、68ファイル）を生成。ユーザー承認待ち。
+**Context**: CONSTRUCTION PHASE - Unit 2: frontend - Code Generation Part 1 Planning 完了
+
+---
+
+## CONSTRUCTION PHASE - Unit 2: frontend - Code Generation Plan 承認待ち
+**Timestamp**: 2026-03-29T13:31:00Z
+**AI Response**: "frontend-code-generation-plan.md を生成。ユーザーの承認を待つ。"
+**Context**: CONSTRUCTION PHASE - Unit 2: frontend - Code Generation Step 6（承認待ち）
+
+---
+
+
+
+## CONSTRUCTION PHASE - Unit 2: frontend - NFR Requirements 変更（shadcn/ui 追加）
+**Timestamp**: 2026-03-29T11:50:00Z
+**User Input**: "shadcn使うといいかなと思ったんだ。デザインの統一性を重視したい。"
+**AI Response**: shadcn/ui をUIコンポーネントライブラリとして追加。NFR-FE-06（デザインシステム）セクションを新設。tech-stack-decisions.md に Radix UI 関連依存を追加。
+**Context**: CONSTRUCTION PHASE - Unit 2: frontend - NFR Requirements 内容修正
+
+---
+
+## CONSTRUCTION PHASE - Unit 2: frontend - NFR Requirements 変更（i18n 撤回）
+**Timestamp**: 2026-03-29T11:45:00Z
+**User Input**: "今どういう状況？やっぱり英語対応不要としたんだけど。"
+**AI Response**: Q8 の回答を B（日英2言語）→ A（日本語のみ）に変更。nfr-requirements.md / tech-stack-decisions.md を更新（next-intl 削除、[locale]/ ルーティング削除）。
+**Context**: CONSTRUCTION PHASE - Unit 2: frontend - NFR Requirements 内容修正
+
+---
+
+## CONSTRUCTION PHASE - Unit 2: frontend - NFR Design 完了
+**Timestamp**: 2026-03-29T12:30:00Z
+**User Input**: "Q1. C, Q2. C"
+**AI Response**: 回答に曖昧さなし。nfr-design-patterns.md（P-FE-01〜07）/ logical-components.md（LC-FE-01〜11）を生成。
+**Context**: CONSTRUCTION PHASE - Unit 2: frontend - NFR Design Step 5〜6 完了
+
+---
+
+## CONSTRUCTION PHASE - Unit 2: frontend - Infrastructure Design 質問回答
+**Timestamp**: 2026-03-29T13:05:00Z
+**User Input**: "1. A, 2. A, 3. A, 4. B(workslogue.comですでに取得済み)"
+**AI Response**: 回答に曖昧さなし。infrastructure-design.md / deployment-architecture.md を生成。カスタムドメイン workslogue.com の Vercel 設定・CORS 更新を反映。
+**Context**: CONSTRUCTION PHASE - Unit 2: frontend - Infrastructure Design Step 3〜4 実行
+
+---
+
+## CONSTRUCTION PHASE - Unit 2: frontend - NFR Design 承認
+**Timestamp**: 2026-03-29T13:00:00Z
+**User Input**: "✅ Continue to Next Stage — NFR Design を承認して Infrastructure Design へ進む"
+**AI Response**: NFR Design 承認を記録。Infrastructure Design へ進む。
+**Context**: CONSTRUCTION PHASE - Unit 2: frontend - Infrastructure Design 開始
+
+---
+
+## CONSTRUCTION PHASE - Unit 2: frontend - NFR Requirements 承認
+**Timestamp**: 2026-03-29T12:20:00Z
+**User Input**: "Continue to Next Stage — NFR Requirements を承認して NFR Design へ進む"
+**AI Response**: NFR Requirements 承認を記録。NFR Design Plan を作成し、2点の設計質問を提示。
+**Context**: CONSTRUCTION PHASE - Unit 2: frontend - NFR Design Step 1〜4 実行
+
+---
+
+## CONSTRUCTION PHASE - Unit 2: frontend - NFR Requirements 完了・承認待ち
+**Timestamp**: 2026-03-29T11:30:00Z
+**User Input**: "y"
+**AI Response**: Q1〜Q10 の全回答を確認。曖昧さなし。nfr-requirements.md / tech-stack-decisions.md を生成。
+**Context**: CONSTRUCTION PHASE - Unit 2: frontend - NFR Requirements Step 5〜6 完了
+
+---
+
+## CONSTRUCTION PHASE - Unit 2: frontend - Functional Design 承認 / NFR Requirements 開始
+**Timestamp**: 2026-03-29T11:00:00Z
+**User Input**: "✅ Continue to Next Stage - Functional Design を承認して NFR Requirements へ進む"
+**AI Response**: Functional Design 承認を記録。NFR Requirements Plan の作成を開始。
+**Context**: CONSTRUCTION PHASE - Unit 2: frontend - NFR Requirements Step 1〜4 実行中
+
+---
+
+## CONSTRUCTION PHASE - Unit 2: frontend - Functional Design 開始
+**Timestamp**: 2026-03-29T10:00:00Z
+**User Input**: "そうしよう"
+**AI Response**: Unit 2: frontend の Functional Design を開始。プランを作成し質問を提示する。
+**Context**: CONSTRUCTION PHASE - Unit 2: frontend - Functional Design Step 1〜4 実行中
+
+---
+
 ## Workspace Detection
 **Timestamp**: 2026-03-28T00:00:00Z
 **User Input**: "business-plan.mdからアプリを作成したい。"

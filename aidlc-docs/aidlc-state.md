@@ -39,11 +39,11 @@
   - [x] Infrastructure Design — 2026-03-28 — 完了（承認済み）
   - [x] Code Generation — 2026-03-28 — 完了（全22ステップ生成済み）
 - [ ] Per-Unit Loop — Unit 2: frontend
-  - [ ] Functional Design
-  - [ ] NFR Requirements
-  - [ ] NFR Design
-  - [ ] Infrastructure Design
-  - [ ] Code Generation
+  - [x] Functional Design — 2026-03-29 — 完了（承認済み）
+  - [x] NFR Requirements — 2026-03-29 — 完了（承認済み）
+  - [x] NFR Design — 2026-03-29 — 完了（承認済み）
+  - [x] Infrastructure Design — 2026-03-29 — 完了（承認済み）
+  - [ ] Code Generation — Planning 実行中
 - [ ] Build and Test
 
 ### OPERATIONS PHASE
