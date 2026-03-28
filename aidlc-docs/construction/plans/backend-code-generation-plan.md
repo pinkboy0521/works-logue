@@ -36,42 +36,42 @@
 ### Part 1: Planning
 - [x] Step 1: ユニットコンテキスト分析
 - [x] Step 2: コード生成プラン作成（本ファイル）
-- [ ] Step 3: ユーザー承認取得
+- [x] Step 3: ユーザー承認取得
 
 ### Part 2: Generation
 
 #### 基盤セットアップ
-- [ ] **Step 4**: プロジェクト構造セットアップ
-- [ ] **Step 5**: 設定・依存関係（config.py / requirements.txt / dependencies.py）
-- [ ] **Step 6**: Pydantic スキーマ定義（models/）
+- [x] **Step 4**: プロジェクト構造セットアップ
+- [x] **Step 5**: 設定・依存関係（config.py / requirements.txt / dependencies.py）
+- [x] **Step 6**: Pydantic スキーマ定義（models/）
 
 #### Repository Layer
-- [ ] **Step 7**: Repository Layer（repositories/）
+- [x] **Step 7**: Repository Layer（repositories/）
 
 #### Business Logic
-- [ ] **Step 8**: AIService（services/ai_service.py）
-- [ ] **Step 9**: GrowthEngine（services/growth_engine.py）
-- [ ] **Step 10**: ScoreEngine（services/score_engine.py）
-- [ ] **Step 11**: NotificationService（services/notification_service.py）
-- [ ] **Step 12**: ForkService（services/fork_service.py）
+- [x] **Step 8**: AIService（services/ai_service.py）
+- [x] **Step 9**: GrowthEngine（services/growth_engine.py）
+- [x] **Step 10**: ScoreEngine（services/score_engine.py）
+- [x] **Step 11**: NotificationService（services/notification_service.py）
+- [x] **Step 12**: ForkService（services/fork_service.py）
 
 #### API Layer
-- [ ] **Step 13**: Routers — seeds / logs / louges（routers/seeds.py, logs.py, louges.py）
-- [ ] **Step 14**: Routers — profiles / notifications / tags / follows（routers/profiles.py, notifications.py, tags.py, follows.py）
-- [ ] **Step 15**: main.py（FastAPI アプリ組み立て）
+- [x] **Step 13**: Routers — seeds / logs / louges（routers/seeds.py, logs.py, louges.py）
+- [x] **Step 14**: Routers — profiles / notifications / tags / follows（routers/profiles.py, notifications.py, tags.py, follows.py）
+- [x] **Step 15**: main.py（FastAPI アプリ組み立て）
 
 #### Tests
-- [ ] **Step 16**: 単体テスト — GrowthEngine（tests/unit/test_growth_engine.py）
-- [ ] **Step 17**: 単体テスト — AIService（tests/unit/test_ai_service.py）
-- [ ] **Step 18**: 単体テスト — ScoreEngine（tests/unit/test_score_engine.py）
-- [ ] **Step 19**: 統合テスト — API ルーター（tests/integration/）
+- [x] **Step 16**: 単体テスト — GrowthEngine（tests/unit/test_growth_engine.py）
+- [x] **Step 17**: 単体テスト — AIService（tests/unit/test_ai_service.py）
+- [x] **Step 18**: 単体テスト — ScoreEngine（tests/unit/test_score_engine.py）
+- [x] **Step 19**: 統合テスト — API ルーター（tests/integration/）
 
 #### DB & Deployment
-- [ ] **Step 20**: DB マイグレーションスクリプト（backend/migrations/）
-- [ ] **Step 21**: デプロイ成果物（Dockerfile / cloudbuild.yaml / .env.example）
+- [x] **Step 20**: DB マイグレーションスクリプト（backend/migrations/）
+- [x] **Step 21**: デプロイ成果物（Dockerfile / cloudbuild.yaml / .env.example）
 
 #### Documentation
-- [ ] **Step 22**: コードサマリー（aidlc-docs/construction/backend/code/）
+- [x] **Step 22**: コードサマリー（aidlc-docs/construction/backend/code/）
 
 ---
 

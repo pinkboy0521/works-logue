@@ -1,0 +1,47 @@
+steps:
+  # Build the container image
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'asia-northeast1-docker.pkg.dev/works-logue-prod/works-logue/api:$COMMIT_SHA'
+      - '-t'
+      - 'asia-northeast1-docker.pkg.dev/works-logue-prod/works-logue/api:latest'
+      - '.'
+    dir: 'backend'
+
+  # Push the container image to Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'asia-northeast1-docker.pkg.dev/works-logue-prod/works-logue/api:$COMMIT_SHA'
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'asia-northeast1-docker.pkg.dev/works-logue-prod/works-logue/api:latest'
+
+  # Deploy to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'works-logue-api'
+      - '--image=asia-northeast1-docker.pkg.dev/works-logue-prod/works-logue/api:$COMMIT_SHA'
+      - '--region=asia-northeast1'
+      - '--platform=managed'
+      - '--memory=512Mi'
+      - '--cpu=1'
+      - '--min-instances=0'
+      - '--max-instances=2'
+      - '--concurrency=80'
+      - '--timeout=300s'
+      - '--allow-unauthenticated'
+      - '--service-account=works-logue-api@works-logue-prod.iam.gserviceaccount.com'
+      - '--set-env-vars=VERTEX_AI_PROJECT_ID=works-logue-prod,VERTEX_AI_LOCATION=asia-northeast1,BLOOM_STRUCTURAL_THRESHOLD=0.8,BLOOM_LOG_COUNT=10,BLOOM_PARTICIPANT_COUNT=5,BLOOM_QUALITY_SCORE=0.7,VERTEX_AI_MAX_CONCURRENT=5'
+      - '--set-secrets=SUPABASE_URL=supabase-url:latest,SUPABASE_SERVICE_ROLE_KEY=supabase-service-role-key:latest,SUPABASE_JWT_SECRET=supabase-jwt-secret:latest,SYSTEM_USER_ID=system-user-id:latest'
+
+images:
+  - 'asia-northeast1-docker.pkg.dev/works-logue-prod/works-logue/api:$COMMIT_SHA'
+  - 'asia-northeast1-docker.pkg.dev/works-logue-prod/works-logue/api:latest'

@@ -37,7 +37,7 @@
   - [x] NFR Requirements — 2026-03-28 — 完了（承認済み）
   - [x] NFR Design — 2026-03-28 — 完了（承認済み）
   - [x] Infrastructure Design — 2026-03-28 — 完了（承認済み）
-  - [ ] Code Generation
+  - [x] Code Generation — 2026-03-28 — 完了（全22ステップ生成済み）
 - [ ] Per-Unit Loop — Unit 2: frontend
   - [ ] Functional Design
   - [ ] NFR Requirements

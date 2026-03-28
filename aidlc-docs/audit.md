@@ -178,6 +178,14 @@
 
 ---
 
+## CONSTRUCTION — Code Generation Approved (Unit 1: backend)
+**Timestamp**: 2026-03-28T11:00:00Z
+**User Input**: "Approve & Start Generation - 承認してコード生成を開始"
+**AI Response**: Code Generation Part 2（Generation）を開始。Step 4〜22 を順次実行。
+**Context**: CONSTRUCTION - Per-Unit Loop Unit 1: backend — Code Generation Part 2 Generation 開始
+
+---
+
 ## CONSTRUCTION — Infrastructure Design (Unit 1: backend) 完了
 **Timestamp**: 2026-03-28T10:40:00Z
 **User Input**: "Q1. A, Q2. B"（Supabase Tokyo / Cloud Build）→ "continue to next stage"
