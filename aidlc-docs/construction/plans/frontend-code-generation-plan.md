@@ -120,24 +120,24 @@
 - [x] `frontend/src/features/log/components/LogThread.tsx` — Log スレッド表示（FC-05: LogItem, ReactionBar, ReplyForm）
 
 ### Step 10: Louge フィーチャー（US-001, US-402〜406, US-501）
-- [ ] `frontend/src/features/louge/components/LougeListPage.tsx` — 検索 + 無限スクロール（FC-06）+ `app/louges/page.tsx`
-- [ ] `frontend/src/features/louge/components/LougeDetailPage.tsx` — Louge 詳細 + Fork ボタン（FC-07）+ `app/louges/[id]/page.tsx`
-- [ ] `frontend/src/app/louges/loading.tsx` — LougeList ローディング
-- [ ] `frontend/src/app/louges/[id]/loading.tsx` — LougeDetail ローディング
-- [ ] `frontend/src/app/louges/[id]/error.tsx` — LougeDetail エラーバウンダリー
+- [x] `frontend/src/features/louge/components/LougeListPage.tsx` — 検索 + 無限スクロール（FC-06）+ `app/louges/page.tsx`
+- [x] `frontend/src/features/louge/components/LougeDetailPage.tsx` — Louge 詳細 + Fork ボタン（FC-07）+ `app/louges/[id]/page.tsx`
+- [x] `frontend/src/app/louges/loading.tsx` — LougeList ローディング
+- [x] `frontend/src/app/louges/[id]/loading.tsx` — LougeDetail ローディング
+- [x] `frontend/src/app/louges/[id]/error.tsx` — LougeDetail エラーバウンダリー
 
 ### Step 11: Profile フィーチャー（US-103, US-601〜604）
-- [ ] `frontend/src/features/profile/components/ProfilePage.tsx` — プロフィール + スコア + バッジ（FC-08）+ `app/profile/[userId]/page.tsx`
-- [ ] `frontend/src/app/profile/[userId]/loading.tsx` — Profile ローディング
-- [ ] `frontend/src/app/profile/[userId]/error.tsx` — Profile エラーバウンダリー
+- [x] `frontend/src/features/profile/components/ProfilePage.tsx` — プロフィール + スコア + バッジ（FC-08）+ `app/profile/[userId]/page.tsx`
+- [x] `frontend/src/app/profile/[userId]/loading.tsx` — Profile ローディング
+- [x] `frontend/src/app/profile/[userId]/error.tsx` — Profile エラーバウンダリー
 
 ### Step 12: Notification フィーチャー（US-305, US-701, US-702）
-- [ ] `frontend/src/features/notification/components/NotificationDropdown.tsx` — ベルアイコン + ドロップダウン（FC-10）
+- [x] `frontend/src/features/notification/components/NotificationDropdown.tsx` — ベルアイコン + ドロップダウン（FC-10）
 
 ### Step 13: デプロイメント成果物
-- [ ] `frontend/vercel.json` — Vercel プロジェクト設定（Node 20、ビルドコマンド）
-- [ ] `frontend/src/app/robots.txt` — SEO robots（Phase 1: index all）
-- [ ] ドキュメント: `aidlc-docs/construction/frontend/code/code-summary.md`
+- [x] `frontend/vercel.json` — Vercel プロジェクト設定（Node 20、ビルドコマンド）
+- [x] `frontend/src/app/robots.txt` — SEO robots（Phase 1: index all）
+- [x] ドキュメント: `aidlc-docs/construction/frontend/code/code-summary.md`
 
 ---
 
