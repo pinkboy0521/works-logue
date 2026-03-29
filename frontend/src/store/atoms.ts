@@ -1,8 +1,10 @@
 import { atom } from "jotai";
+import type { Session } from '@supabase/supabase-js'
 import type { User, Notification, SeedFormInput } from "@/types";
 
 // Auth
 export const userAtom = atom<User | null>(null);
+export const sessionAtom = atom<Session | null>(null);
 
 // Notifications
 export const notificationsAtom = atom<Notification[]>([]);

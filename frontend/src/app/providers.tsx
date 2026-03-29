@@ -5,9 +5,7 @@ import { QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { Provider } from 'jotai'
 import { makeQueryClient } from '@/lib/query-client'
-
-// TODO: Step 7 で実装
-const AuthProvider = ({ children }: { children: React.ReactNode }) => <>{children}</>
+import { AuthProvider } from '@/features/auth/components/AuthProvider'
 
 interface ProvidersProps {
   children: React.ReactNode

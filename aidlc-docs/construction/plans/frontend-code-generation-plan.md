@@ -99,10 +99,10 @@
 - [x] `frontend/src/components/ui/skeletons/ScoreBreakdownSkeleton.tsx`
 
 ### Step 7: 認証フィーチャー（US-101, US-102, US-103）
-- [ ] `frontend/src/features/auth/components/AuthProvider.tsx` — セッション管理 + Realtime 通知チャネル（LC-FE-05, P-FE-03）
-- [ ] `frontend/src/app/(auth)/login/page.tsx` — ログインページ（メール + Google）
-- [ ] `frontend/src/app/(auth)/register/page.tsx` — 登録ページ
-- [ ] `frontend/src/app/(auth)/layout.tsx` — 認証レイアウト（未認証ユーザー専用）
+- [x] `frontend/src/features/auth/components/AuthProvider.tsx` — セッション管理 + Realtime 通知チャネル（LC-FE-05, P-FE-03）
+- [x] `frontend/src/app/(auth)/login/page.tsx` — ログインページ（メール + Google）
+- [x] `frontend/src/app/(auth)/register/page.tsx` — 登録ページ
+- [x] `frontend/src/app/(auth)/layout.tsx` — 認証レイアウト（未認証ユーザー専用）
 
 ### Step 8: Seed フィーチャー（US-000, US-201〜US-204, US-304, US-501〜503）
 - [ ] `frontend/src/features/seed/components/GrowthIndicator.tsx` — SVG アニメーション成長ビジュアライザー（FC-09, Framer Motion）
