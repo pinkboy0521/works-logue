@@ -55,7 +55,7 @@
 - [x] `frontend/vercel.json` — Vercel デプロイ設定
 
 ### Step 2: 共通型定義
-- [ ] `frontend/src/types/index.ts` — 全エンティティ TypeScript 型（User, Profile, Seed, Log, Louge, Notification, Tag, Badge, Score）
+- [x] `frontend/src/types/index.ts` — 全エンティティ TypeScript 型（User, Profile, Seed, Log, Louge, Notification, Tag, Badge, Score）
 
 ### Step 3: インフラレイヤー実装
 - [x] `frontend/src/lib/supabase/browser-client.ts` — Client Component 用 Supabase クライアント（LC-FE-01）
@@ -76,26 +76,27 @@
 - [x] `frontend/src/app/global-error.tsx` — グローバル Error Boundary（ルートレイアウトエラー対応）
 
 ### Step 5: 共通 UI コンポーネント
-- [ ] `frontend/src/components/ui/button.tsx` — shadcn/ui Button（variants: default/outline/ghost/destructive）
-- [ ] `frontend/src/components/ui/card.tsx` — shadcn/ui Card
-- [ ] `frontend/src/components/ui/avatar.tsx` — shadcn/ui Avatar
-- [ ] `frontend/src/components/ui/badge.tsx` — shadcn/ui Badge
-- [ ] `frontend/src/components/ui/toast.tsx` + `toaster.tsx` — shadcn/ui Toast
-- [ ] `frontend/src/components/ui/skeleton.tsx` — shadcn/ui Skeleton
-- [ ] `frontend/src/components/ui/modal.tsx` — shadcn/ui Dialog ラッパー
-- [ ] `frontend/src/components/ui/tooltip.tsx` — shadcn/ui Tooltip
-- [ ] `frontend/src/components/ui/progress.tsx` — shadcn/ui Progress
-- [ ] `frontend/src/components/ui/infinite-scroll-trigger.tsx` — IntersectionObserver ラッパー（data-testid付）
-- [ ] `frontend/src/lib/utils.ts` — cn() ユーティリティ（clsx + tailwind-merge）
+- [x] `frontend/src/components/ui/button.tsx` — shadcn/ui Button（variants: default/outline/ghost/destructive）
+- [x] `frontend/src/components/ui/card.tsx` — shadcn/ui Card
+- [x] `frontend/src/components/ui/avatar.tsx` — shadcn/ui Avatar
+- [x] `frontend/src/components/ui/badge.tsx` — shadcn/ui Badge
+- [x] `frontend/src/components/ui/toast.tsx` + `toaster.tsx` — shadcn/ui Toast
+- [x] `frontend/src/components/ui/skeleton.tsx` — shadcn/ui Skeleton
+- [x] `frontend/src/components/ui/modal.tsx` — shadcn/ui Dialog ラッパー
+- [x] `frontend/src/components/ui/tooltip.tsx` — shadcn/ui Tooltip
+- [x] `frontend/src/components/ui/progress.tsx` — shadcn/ui Progress
+- [x] `frontend/src/components/ui/infinite-scroll-trigger.tsx` — IntersectionObserver ラッパー（data-testid付）
+- [x] `frontend/src/lib/utils.ts` — cn() ユーティリティ（clsx + tailwind-merge）
+- [x] `frontend/src/hooks/use-toast.ts` — Toast フック
 
 ### Step 6: Skeleton コンポーネント群（LC-FE-09）
-- [ ] `frontend/src/components/ui/skeletons/SeedCardSkeleton.tsx`
-- [ ] `frontend/src/components/ui/skeletons/SeedDetailSkeleton.tsx`
-- [ ] `frontend/src/components/ui/skeletons/LogItemSkeleton.tsx`
-- [ ] `frontend/src/components/ui/skeletons/LougeCardSkeleton.tsx`
-- [ ] `frontend/src/components/ui/skeletons/LougeDetailSkeleton.tsx`
-- [ ] `frontend/src/components/ui/skeletons/ProfileHeaderSkeleton.tsx`
-- [ ] `frontend/src/components/ui/skeletons/ScoreBreakdownSkeleton.tsx`
+- [x] `frontend/src/components/ui/skeletons/SeedCardSkeleton.tsx`
+- [x] `frontend/src/components/ui/skeletons/SeedDetailSkeleton.tsx`
+- [x] `frontend/src/components/ui/skeletons/LogItemSkeleton.tsx`
+- [x] `frontend/src/components/ui/skeletons/LougeCardSkeleton.tsx`
+- [x] `frontend/src/components/ui/skeletons/LougeDetailSkeleton.tsx`
+- [x] `frontend/src/components/ui/skeletons/ProfileHeaderSkeleton.tsx`
+- [x] `frontend/src/components/ui/skeletons/ScoreBreakdownSkeleton.tsx`
 
 ### Step 7: 認証フィーチャー（US-101, US-102, US-103）
 - [ ] `frontend/src/features/auth/components/AuthProvider.tsx` — セッション管理 + Realtime 通知チャネル（LC-FE-05, P-FE-03）
