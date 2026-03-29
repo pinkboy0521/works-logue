@@ -115,9 +115,9 @@
 - [x] `frontend/src/app/seeds/[id]/error.tsx` — SeedDetail エラーバウンダリー（LC-FE-10）
 
 ### Step 9: Log フィーチャー（US-301〜US-303, US-306）
-- [ ] `frontend/src/features/log/hooks/useReactionMutation.ts` — リアクション楽観的更新（LC-FE-08, P-FE-04）
-- [ ] `frontend/src/features/log/hooks/useReplyMutation.ts` — 返信楽観的更新（LC-FE-08, P-FE-04）
-- [ ] `frontend/src/features/log/components/LogThread.tsx` — Log スレッド表示（FC-05: LogItem, ReactionBar, ReplyForm）
+- [x] `frontend/src/features/log/hooks/useReactionMutation.ts` — リアクション楽観的更新（LC-FE-08, P-FE-04）
+- [x] `frontend/src/features/log/hooks/useReplyMutation.ts` — 返信楽観的更新（LC-FE-08, P-FE-04）
+- [x] `frontend/src/features/log/components/LogThread.tsx` — Log スレッド表示（FC-05: LogItem, ReactionBar, ReplyForm）
 
 ### Step 10: Louge フィーチャー（US-001, US-402〜406, US-501）
 - [ ] `frontend/src/features/louge/components/LougeListPage.tsx` — 検索 + 無限スクロール（FC-06）+ `app/louges/page.tsx`
