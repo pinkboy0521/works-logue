@@ -105,14 +105,14 @@
 - [x] `frontend/src/app/(auth)/layout.tsx` — 認証レイアウト（未認証ユーザー専用）
 
 ### Step 8: Seed フィーチャー（US-000, US-201〜US-204, US-304, US-501〜503）
-- [ ] `frontend/src/features/seed/components/GrowthIndicator.tsx` — SVG アニメーション成長ビジュアライザー（FC-09, Framer Motion）
-- [ ] `frontend/src/features/seed/hooks/useSeedRealtime.ts` — Seed + Louge Realtime 購読フック（LC-FE-07, P-FE-03）
-- [ ] `frontend/src/features/seed/components/SeedFeedPage.tsx` — 無限スクロール Seed フィード（FC-02）+ `app/seeds/page.tsx`（Server Component wrapper）
-- [ ] `frontend/src/features/seed/components/SeedDetailPage.tsx` — Seed 詳細 + LogThread + Realtime（FC-03）+ `app/seeds/[id]/page.tsx`
-- [ ] `frontend/src/features/seed/components/SeedFormPage.tsx` — 4ステップ Seed 投稿フォーム（FC-04, React Hook Form + Zod）+ `app/seeds/new/page.tsx`
-- [ ] `frontend/src/app/seeds/loading.tsx` — SeedFeed ローディング（LC-FE-11）
-- [ ] `frontend/src/app/seeds/[id]/loading.tsx` — SeedDetail ローディング
-- [ ] `frontend/src/app/seeds/[id]/error.tsx` — SeedDetail エラーバウンダリー（LC-FE-10）
+- [x] `frontend/src/features/seed/components/GrowthIndicator.tsx` — SVG アニメーション成長ビジュアライザー（FC-09）
+- [x] `frontend/src/features/seed/hooks/useSeedRealtime.ts` — Seed + Louge Realtime 購読フック（LC-FE-07, P-FE-03）
+- [x] `frontend/src/features/seed/components/SeedFeedPage.tsx` — 無限スクロール Seed フィード（FC-02）+ `app/seeds/page.tsx`（Server Component wrapper）
+- [x] `frontend/src/features/seed/components/SeedDetailPage.tsx` — Seed 詳細 + LogThread + Realtime（FC-03）+ `app/seeds/[id]/page.tsx`
+- [x] `frontend/src/features/seed/components/SeedFormPage.tsx` — 4ステップ Seed 投稿フォーム（FC-04, React Hook Form + Zod）+ `app/seeds/new/page.tsx`
+- [x] `frontend/src/app/seeds/loading.tsx` — SeedFeed ローディング（LC-FE-11）
+- [x] `frontend/src/app/seeds/[id]/loading.tsx` — SeedDetail ローディング
+- [x] `frontend/src/app/seeds/[id]/error.tsx` — SeedDetail エラーバウンダリー（LC-FE-10）
 
 ### Step 9: Log フィーチャー（US-301〜US-303, US-306）
 - [ ] `frontend/src/features/log/hooks/useReactionMutation.ts` — リアクション楽観的更新（LC-FE-08, P-FE-04）
