@@ -1,5 +1,6 @@
 import { LougeDetailPage } from '@/features/louge/components/LougeDetailPage'
 
-export default function LougeDetailRoute({ params }: { params: { id: string } }) {
-  return <LougeDetailPage params={params} />
+export default async function LougeDetailRoute({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
+  return <LougeDetailPage id={id} />
 }

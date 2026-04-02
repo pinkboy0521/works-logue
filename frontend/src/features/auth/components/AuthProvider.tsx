@@ -6,7 +6,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { getBrowserClient } from '@/lib/supabase/browser-client'
 import { userAtom, sessionAtom, notificationUnreadCountAtom } from '@/store/atoms'
 import type { User } from '@/types'
-import type { Session } from '@supabase/supabase-js'
+import type { AuthChangeEvent, Session } from '@supabase/supabase-js'
 
 function mapSessionUser(supabaseUser: { id: string; email?: string; user_metadata?: Record<string, unknown> }): User {
   return {
@@ -30,12 +30,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // 1. 初期セッション取得 + onAuthStateChange 購読
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(({ data: { session } }: { data: { session: Session | null } }) => {
       setUser(session?.user ? mapSessionUser(session.user) : null)
       setSession(session ?? null)
     })
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session: Session | null) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event: AuthChangeEvent, session: Session | null) => {
       if (event === 'SIGNED_OUT') {
         setUser(null)
         setSession(null)
@@ -53,7 +53,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     let channel: ReturnType<typeof supabase.channel> | null = null
 
-    const unsubAuth = supabase.auth.onAuthStateChange((_event, session) => {
+    const unsubAuth = supabase.auth.onAuthStateChange((_event: AuthChangeEvent, session: Session | null) => {
       if (channel) {
         supabase.removeChannel(channel)
         channel = null

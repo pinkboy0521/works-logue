@@ -1,5 +1,6 @@
 import { ProfilePage } from '@/features/profile/components/ProfilePage'
 
-export default function ProfileRoute({ params }: { params: { userId: string } }) {
-  return <ProfilePage params={params} />
+export default async function ProfileRoute({ params }: { params: Promise<{ userId: string }> }) {
+  const { userId } = await params
+  return <ProfilePage userId={userId} />
 }

@@ -15,7 +15,7 @@ import { userAtom } from '@/store/atoms'
 import type { LougeWithDetails } from '@/types'
 
 interface LougeDetailPageProps {
-  params: { id: string }
+  id: string
 }
 
 function PatternSection({
@@ -44,7 +44,7 @@ function PatternSection({
   )
 }
 
-export function LougeDetailPage({ params }: LougeDetailPageProps) {
+export function LougeDetailPage({ id }: LougeDetailPageProps) {
   const router = useRouter()
   const currentUser = useAtomValue(userAtom)
   const [isForkLoading, setIsForkLoading] = useState(false)
@@ -55,16 +55,16 @@ export function LougeDetailPage({ params }: LougeDetailPageProps) {
     isError,
     refetch,
   } = useQuery({
-    queryKey: ['louge', params.id],
-    queryFn: () => apiClient.get<LougeWithDetails>(`/api/v1/louges/${params.id}`),
+    queryKey: ['louge', id],
+    queryFn: () => apiClient.get<LougeWithDetails>(`/api/v1/louges/${id}`),
   })
 
   const forkMutation = useMutation({
     mutationFn: () =>
-      apiClient.post<{ seed_id: string }>(`/api/v1/louges/${params.id}/fork`, {}),
+      apiClient.post<{ seed_id: string }>(`/api/v1/louges/${id}/fork`, {}),
     onMutate: () => setIsForkLoading(true),
     onSuccess: (data) => {
-      router.push(`/seeds/new?from_louge=${params.id}&seed_id=${data.seed_id}`)
+      router.push(`/seeds/new?from_louge=${id}&seed_id=${data.seed_id}`)
     },
     onError: () => setIsForkLoading(false),
   })

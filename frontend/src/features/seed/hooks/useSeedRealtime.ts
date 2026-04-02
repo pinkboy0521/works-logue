@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
+import type { RealtimePostgresChangesPayload } from '@supabase/supabase-js'
 import { getBrowserClient } from '@/lib/supabase/browser-client'
 import type { SeedWithDetails } from '@/types'
 
@@ -23,7 +24,7 @@ export function useSeedRealtime(seedId: string | undefined): void {
           table: 'seeds',
           filter: `id=eq.${seedId}`,
         },
-        (payload) => {
+        (payload: RealtimePostgresChangesPayload<Record<string, unknown>>) => {
           queryClient.setQueryData<SeedWithDetails>(
             ['seed', seedId],
             (old) => (old ? { ...old, ...(payload.new as Partial<SeedWithDetails>) } : old)
@@ -38,7 +39,7 @@ export function useSeedRealtime(seedId: string | undefined): void {
           table: 'louges',
           filter: `seed_id=eq.${seedId}`,
         },
-        (payload) => {
+        (payload: RealtimePostgresChangesPayload<Record<string, unknown>>) => {
           if ((payload.new as { status?: string }).status === 'published') {
             queryClient.invalidateQueries({ queryKey: ['louges'] })
           }

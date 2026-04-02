@@ -30,7 +30,7 @@ import { userAtom } from '@/store/atoms'
 import type { UserProfile } from '@/types'
 
 interface ProfilePageProps {
-  params: { userId: string }
+  userId: string
 }
 
 interface ScoreHistory {
@@ -42,7 +42,7 @@ interface ScoreHistory {
   updated_at: string
 }
 
-export function ProfilePage({ params }: ProfilePageProps) {
+export function ProfilePage({ userId }: ProfilePageProps) {
   const router = useRouter()
   const queryClient = useQueryClient()
   const currentUser = useAtomValue(userAtom)
@@ -51,7 +51,7 @@ export function ProfilePage({ params }: ProfilePageProps) {
   const [editDisplayName, setEditDisplayName] = useState('')
   const [editBio, setEditBio] = useState('')
 
-  const isOwnProfile = currentUser?.id === params.userId
+  const isOwnProfile = currentUser?.id === userId
 
   const {
     data: profile,
@@ -59,8 +59,8 @@ export function ProfilePage({ params }: ProfilePageProps) {
     isError,
     refetch,
   } = useQuery({
-    queryKey: ['profile', params.userId],
-    queryFn: () => apiClient.get<UserProfile>(`/api/v1/users/${params.userId}/profile`),
+    queryKey: ['profile', userId],
+    queryFn: () => apiClient.get<UserProfile>(`/api/v1/users/${userId}/profile`),
   })
 
   // Sync edit fields when profile loads
@@ -72,8 +72,8 @@ export function ProfilePage({ params }: ProfilePageProps) {
   }, [profile])
 
   const { data: scoreHistory, isLoading: isScoreLoading } = useQuery({
-    queryKey: ['scoreHistory', params.userId],
-    queryFn: () => apiClient.get<ScoreHistory>(`/api/v1/users/${params.userId}/score-history`),
+    queryKey: ['scoreHistory', userId],
+    queryFn: () => apiClient.get<ScoreHistory>(`/api/v1/users/${userId}/score-history`),
     enabled: isScoreExpanded,
   })
 
@@ -84,7 +84,7 @@ export function ProfilePage({ params }: ProfilePageProps) {
         bio: editBio,
       }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['profile', params.userId] })
+      queryClient.invalidateQueries({ queryKey: ['profile', userId] })
       setIsEditOpen(false)
     },
   })

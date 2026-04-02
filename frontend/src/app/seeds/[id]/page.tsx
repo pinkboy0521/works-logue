@@ -5,6 +5,7 @@ export const metadata: Metadata = {
   title: 'Seed — Works Logue',
 }
 
-export default function SeedDetailRoute({ params }: { params: { id: string } }) {
-  return <SeedDetailPage id={params.id} />
+export default async function SeedDetailRoute({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
+  return <SeedDetailPage id={id} />
 }
