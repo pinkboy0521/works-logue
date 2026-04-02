@@ -34,6 +34,15 @@ class TagRepository:
         res = query.order("sort_order").execute()
         return res.data or []
 
+    def get_all_tags(self) -> List[Dict[str, Any]]:
+        res = (
+            self._db.table("tags")
+            .select("*")
+            .order("sort_order")
+            .execute()
+        )
+        return res.data or []
+
     def get_by_id(self, tag_id: UUID) -> Optional[Dict[str, Any]]:
         res = (
             self._db.table("tags")

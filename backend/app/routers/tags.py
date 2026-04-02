@@ -24,10 +24,13 @@ async def list_taxonomy_types(
 # ---- GET /tags ----
 @router.get("", response_model=List[TagResponse])
 async def list_tags(
-    taxonomy: str = Query(..., description="taxonomy_type code: seed_topic | industry | role"),
+    taxonomy: Optional[str] = Query(None, description="taxonomy_type code: seed_topic | industry | role"),
     parent_id: Optional[UUID] = Query(None),
     supabase: Client = Depends(get_supabase_client),
 ):
     repo = TagRepository(supabase)
-    items = repo.get_tags_by_taxonomy(taxonomy, parent_id)
+    if taxonomy:
+        items = repo.get_tags_by_taxonomy(taxonomy, parent_id)
+    else:
+        items = repo.get_all_tags()
     return [TagResponse(**t) for t in items]

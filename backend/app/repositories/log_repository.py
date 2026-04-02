@@ -27,7 +27,7 @@ class LogRepository:
     ) -> tuple[List[Dict[str, Any]], int]:
         query = (
             self._db.table("logs")
-            .select("*, profiles(id, username, display_name, avatar_url)", count="exact")
+            .select("*, profiles!logs_user_id_fkey(id, username, display_name, avatar_url)", count="exact")
             .eq("seed_id", str(seed_id))
         )
         if not include_ai:

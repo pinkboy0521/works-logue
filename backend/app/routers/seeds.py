@@ -71,7 +71,7 @@ async def get_seed(
     supabase: Client = Depends(get_supabase_client),
 ):
     repo = SeedRepository(supabase)
-    seed = repo.get_by_id(seed_id)
+    seed = repo.get_seed_with_details(seed_id)
     if seed is None:
         raise HTTPException(status_code=404, detail="Seed not found")
     return SeedResponse(**seed)

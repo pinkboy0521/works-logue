@@ -7,6 +7,46 @@ from pydantic import BaseModel, Field, field_validator
 from app.models.enums import GrowthStage, SeedStatus, SeedType
 
 
+class AuthorResponse(BaseModel):
+    id: UUID
+    username: str
+    display_name: str
+    avatar_url: Optional[str] = None
+    bio: Optional[str] = None
+    total_score: int = 0
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
+
+    class Config:
+        from_attributes = True
+
+
+class TagResponse(BaseModel):
+    id: UUID
+    name: str
+    taxonomy_type_id: Optional[UUID] = None
+    parent_id: Optional[UUID] = None
+    level: int = 0
+    sort_order: int = 0
+
+    class Config:
+        from_attributes = True
+
+
+class LogInSeedResponse(BaseModel):
+    id: UUID
+    seed_id: UUID
+    user_id: UUID
+    parent_log_id: Optional[UUID] = None
+    content: str
+    is_ai_facilitation: bool
+    facilitation_type: Optional[str] = None
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
 class SeedCreate(BaseModel):
     type: SeedType
     title: str = Field(..., min_length=1, max_length=200)
@@ -35,11 +75,15 @@ class SeedResponse(BaseModel):
     stage: GrowthStage
     status: SeedStatus
     structural_completeness: float
-    quality_score: Optional[float]
-    pattern_analysis: Optional[Dict[str, Any]]
-    parent_louge_id: Optional[UUID]
+    quality_score: Optional[float] = None
+    pattern_analysis: Optional[Dict[str, Any]] = None
+    parent_louge_id: Optional[UUID] = None
     created_at: datetime
     updated_at: datetime
+    # Optional embedded fields (present when fetched via get_seed_with_details)
+    logs: Optional[List[LogInSeedResponse]] = None
+    author: Optional[AuthorResponse] = None
+    tags: Optional[List[TagResponse]] = None
 
     class Config:
         from_attributes = True

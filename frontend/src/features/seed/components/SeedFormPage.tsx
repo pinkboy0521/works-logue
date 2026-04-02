@@ -117,7 +117,7 @@ export function SeedFormPage() {
     setCleanseLoading(true)
     setCleanseSuggestion(null)
     try {
-      const result = await apiClient.post<CleanseSuggestion>('/api/v1/ai/cleanse', {
+      const result = await apiClient.post<CleanseSuggestion>('/api/v1/seeds/cleanse', {
         content,
       })
       setCleanseSuggestion(result)

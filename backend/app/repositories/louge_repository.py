@@ -51,7 +51,7 @@ class LougeRepository:
     def get_contributors(self, louge_id: UUID) -> List[Dict[str, Any]]:
         res = (
             self._db.table("louge_contributors")
-            .select("*, profiles(id, username, display_name)")
+            .select("*, profiles!louge_contributors_user_id_fkey(id, username, display_name)")
             .eq("louge_id", str(louge_id))
             .execute()
         )

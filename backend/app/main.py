@@ -36,14 +36,14 @@ app.add_middleware(
 )
 
 # Routers
-app.include_router(seeds.router)
-app.include_router(logs.router)
-app.include_router(logs.reactions_router)
-app.include_router(louges.router)
-app.include_router(profiles.router)
-app.include_router(notifications.router)
-app.include_router(tags.router)
-app.include_router(follows.router)
+app.include_router(seeds.router, prefix="/api/v1")
+app.include_router(logs.router, prefix="/api/v1")
+app.include_router(logs.reactions_router, prefix="/api/v1")
+app.include_router(louges.router, prefix="/api/v1")
+app.include_router(profiles.router, prefix="/api/v1")
+app.include_router(notifications.router, prefix="/api/v1")
+app.include_router(tags.router, prefix="/api/v1")
+app.include_router(follows.router, prefix="/api/v1")
 
 
 @app.get("/health")

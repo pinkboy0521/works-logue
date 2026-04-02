@@ -1,7 +1,6 @@
 from typing import Optional
 from uuid import UUID
 
-import jwt
 from fastapi import Depends, Header, HTTPException
 from supabase import Client, create_client
 
@@ -37,23 +36,34 @@ class AuthUser:
 
 async def get_current_user(
     authorization: str = Header(...),
+    supabase: Client = Depends(get_supabase_client),
 ) -> AuthUser:
-    """Verify Supabase JWT offline and return the authenticated user."""
+    """Verify Supabase JWT via Supabase Auth API and return the authenticated user."""
     if not authorization.startswith("Bearer "):
         raise HTTPException(status_code=401, detail="Invalid authorization header")
     token = authorization.removeprefix("Bearer ").strip()
     try:
-        payload = jwt.decode(
-            token,
-            settings.SUPABASE_JWT_SECRET,
-            algorithms=["HS256"],
-            audience="authenticated",
-        )
-        user_id = UUID(payload["sub"])
-    except jwt.ExpiredSignatureError:
-        raise HTTPException(status_code=401, detail="Token expired")
-    except (jwt.InvalidTokenError, KeyError, ValueError):
+        response = supabase.auth.get_user(token)
+        if not response.user:
+            raise HTTPException(status_code=401, detail="Invalid token")
+        user_id = UUID(response.user.id)
+        auth_user = response.user
+    except HTTPException:
+        raise
+    except Exception:
         raise HTTPException(status_code=401, detail="Invalid token")
+
+    # プロファイルが存在しない場合は自動作成（初回ログイン時）
+    existing = supabase.table("profiles").select("id").eq("id", str(user_id)).execute()
+    if not existing.data:
+        email = auth_user.email or ""
+        username = email.split("@")[0]
+        supabase.table("profiles").insert({
+            "id": str(user_id),
+            "username": username,
+            "display_name": username,
+        }).execute()
+
     return AuthUser(id=user_id)
 
 

@@ -20,19 +20,40 @@ class SeedRepository:
         )
         return res.data
 
-    def get_seed_with_logs(self, seed_id: UUID) -> Optional[Dict[str, Any]]:
+    def get_seed_with_details(self, seed_id: UUID) -> Optional[Dict[str, Any]]:
         seed = self.get_by_id(seed_id)
         if seed is None:
             return None
+
+        # Fetch logs
         logs_res = (
             self._db.table("logs")
-            .select("*, profiles(id, display_name)")
+            .select("*, profiles!logs_user_id_fkey(id, username, display_name, avatar_url)")
             .eq("seed_id", str(seed_id))
-            .eq("is_ai_facilitation", False)
             .order("created_at")
             .execute()
         )
-        seed["user_logs"] = logs_res.data or []
+        seed["logs"] = logs_res.data or []
+
+        # Fetch author
+        author_res = (
+            self._db.table("profiles")
+            .select("id, username, display_name, avatar_url, bio, total_score, created_at, updated_at")
+            .eq("id", str(seed["user_id"]))
+            .single()
+            .execute()
+        )
+        seed["author"] = author_res.data
+
+        # Fetch tags
+        tags_res = (
+            self._db.table("seed_tags")
+            .select("tag_id, tags(id, name, taxonomy_type_id, parent_id, level, sort_order)")
+            .eq("seed_id", str(seed_id))
+            .execute()
+        )
+        seed["tags"] = [row["tags"] for row in (tags_res.data or []) if row.get("tags")]
+
         return seed
 
     def list_seeds(
@@ -42,7 +63,7 @@ class SeedRepository:
         user_id: Optional[UUID] = None,
         tag_id: Optional[UUID] = None,
     ) -> tuple[List[Dict[str, Any]], int]:
-        query = self._db.table("seeds").select("*, profiles(id, username, display_name)", count="exact")
+        query = self._db.table("seeds").select("*, profiles!seeds_user_id_fkey(id, username, display_name)", count="exact")
         if user_id:
             query = query.eq("user_id", str(user_id))
         if tag_id:
