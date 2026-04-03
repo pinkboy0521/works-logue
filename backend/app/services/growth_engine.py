@@ -266,14 +266,16 @@ class GrowthEngine:
             user_log_counts[uid] = user_log_counts.get(uid, 0) + 1
 
         seed_author_id = seed["user_id"]
+        total_contribution = sum(user_contributions.values()) or 1.0
         contributor_rows = []
         for uid, contrib in user_contributions.items():
             role = "seed_author" if uid == seed_author_id else "log_contributor"
+            normalized = min(1.0, max(0.0, round(contrib / total_contribution, 4)))
             contributor_rows.append({
                 "louge_id": str(louge_id),
                 "user_id": uid,
                 "role": role,
-                "contribution_score": round(contrib, 4),
+                "contribution_score": normalized,
                 "log_count": user_log_counts.get(uid, 0),
             })
         if seed_author_id not in user_contributions:
