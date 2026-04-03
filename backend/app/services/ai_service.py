@@ -177,7 +177,7 @@ JSON形式で回答してください:
 
         try:
             text = await self._call_vertex_ai(
-                prompt, "gemini-1.5-flash", settings.VERTEX_AI_TIMEOUT_FLASH
+                prompt, "gemini-2.0-flash-lite-001", settings.VERTEX_AI_TIMEOUT_FLASH
             )
             parsed = self._parse_json(text)
             return PatternAnalysis(
@@ -233,7 +233,7 @@ JSON形式で回答してください:
 - specificity: 明日から実行できるアクションが具体的に抽出可能か"""
 
         text = await self._call_vertex_ai(
-            prompt, "gemini-1.5-pro", settings.VERTEX_AI_TIMEOUT_SCORING
+            prompt, "gemini-2.0-flash-001", settings.VERTEX_AI_TIMEOUT_SCORING
         )
         parsed = self._parse_json(text)
         return QualityBreakdown(
@@ -290,7 +290,7 @@ content フィールドには以下のセクションを必ず含めてくださ
 ## 明日から使えるアクション"""
 
         text = await self._call_vertex_ai(
-            prompt, "gemini-1.5-pro", settings.VERTEX_AI_TIMEOUT_LOUGE
+            prompt, "gemini-2.0-flash-001", settings.VERTEX_AI_TIMEOUT_LOUGE
         )
         parsed = self._parse_json(text)
         return LougeData(
@@ -330,7 +330,7 @@ JSON形式で回答してください:
 
         try:
             raw = await self._call_vertex_ai(
-                prompt, "gemini-1.5-pro", settings.VERTEX_AI_TIMEOUT_CLEANSE
+                prompt, "gemini-2.0-flash-001", settings.VERTEX_AI_TIMEOUT_CLEANSE
             )
             parsed = self._parse_json(raw)
             terms = [DetectedTerm(**t) for t in parsed.get("detected_terms", [])]
@@ -371,7 +371,7 @@ JSON配列で回答してください:
 
         try:
             text = await self._call_vertex_ai(
-                prompt, "gemini-1.5-pro", settings.VERTEX_AI_TIMEOUT_SCORING
+                prompt, "gemini-2.0-flash-001", settings.VERTEX_AI_TIMEOUT_SCORING
             )
             parsed = json.loads(self._extract_json(text))
             return [
