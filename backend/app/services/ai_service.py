@@ -177,7 +177,7 @@ JSON形式で回答してください:
 
         try:
             text = await self._call_vertex_ai(
-                prompt, "gemini-2.0-flash-lite-001", settings.VERTEX_AI_TIMEOUT_FLASH
+                prompt, "gemini-1.5-flash-002", settings.VERTEX_AI_TIMEOUT_FLASH
             )
             parsed = self._parse_json(text)
             return PatternAnalysis(
