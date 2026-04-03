@@ -39,7 +39,7 @@ steps:
       - '--timeout=300s'
       - '--allow-unauthenticated'
       - '--service-account=works-logue-api@works-logue-prod.iam.gserviceaccount.com'
-      - '--set-env-vars=VERTEX_AI_PROJECT_ID=works-logue-prod,VERTEX_AI_LOCATION=asia-northeast1,BLOOM_STRUCTURAL_THRESHOLD=0.8,BLOOM_LOG_COUNT=10,BLOOM_PARTICIPANT_COUNT=5,BLOOM_QUALITY_SCORE=0.7,VERTEX_AI_MAX_CONCURRENT=5'
+      - '--set-env-vars=VERTEX_AI_PROJECT_ID=works-logue,VERTEX_AI_LOCATION=us-central1,BLOOM_STRUCTURAL_THRESHOLD=0.8,BLOOM_LOG_COUNT=10,BLOOM_PARTICIPANT_COUNT=5,BLOOM_QUALITY_SCORE=0.7,VERTEX_AI_MAX_CONCURRENT=5'
       - '--set-secrets=SUPABASE_URL=supabase-url:latest,SUPABASE_SERVICE_ROLE_KEY=supabase-service-role-key:latest,SUPABASE_JWT_SECRET=supabase-jwt-secret:latest,SYSTEM_USER_ID=system-user-id:latest'
 
 images:
