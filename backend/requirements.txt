@@ -3,7 +3,7 @@ uvicorn[standard]==0.29.0
 pydantic==2.9.2
 pydantic-settings==2.4.0
 supabase==2.4.3
-google-cloud-aiplatform==1.51.0
+google-cloud-aiplatform>=1.71.0
 PyJWT==2.8.0
 tenacity==8.3.0
 python-json-logger==2.0.7
