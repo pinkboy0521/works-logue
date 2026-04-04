@@ -5,8 +5,12 @@
 ```
 app/layout.tsx
   └── AuthProvider（FC-01）
-        ├── Header
-        │     └── NotificationDropdown（FC-10）
+        ├── Header（FC-11）
+        │     ├── Logo → `/` へ遷移
+        │     ├── NavLinks（Seeds / Louges）
+        │     ├── NotificationDropdown（FC-10）— 認証済み時のみ
+        │     ├── UserMenu（認証済み時）— アバター + ドロップダウン（プロフィール / ログアウト）
+        │     └── LoginButton（未認証時）→ `/login` へ遷移
         └── [各ページ]
 
 app/page.tsx → SeedFeedPage（FC-02）
@@ -119,8 +123,9 @@ SeedDetailPage
   ├── GrowthIndicator（FC-09）—— Realtime 更新あり
   ├── ParentLougeBanner（parent_louge_id がある場合のみ）
   │     → 親 Louge へのリンクバナー
-  ├── LougeStatusBanner（status === 'blooming' または 'bloomed' の場合）
-  │     → 「Louge 生成中...」または「Louge が完成しました」
+  ├── LougeStatusBanner（seed.status === 'blooming' または seed.stage === 'bloomed' の場合）
+  │     → blooming: 「Louge 生成中...」（スピナー表示）
+  │     → bloomed:  「Louge が完成しました」＋「Lougeを見る →」ボタン（/louges/{louge_id} へ遷移）
   ├── LogThread（FC-05）
   └── LogInputForm（認証済みユーザーのみ表示）
 ```
@@ -128,15 +133,16 @@ SeedDetailPage
 **ユーザーインタラクション**:
 - ログ投稿フォームへの入力・送信
 - Realtime で GrowthIndicator が自動更新
+- LougeStatusBanner の「Lougeを見る」ボタン → `/louges/{louge_id}` へ遷移
 
 **API 連携**:
-- `GET /seeds/{id}`
+- `GET /seeds/{id}`（レスポンスに `louge_id` を含む、stage='bloomed' 時のみ設定）
 - `GET /seeds/{id}/logs`
 - `POST /seeds/{id}/logs`（LogInputForm から）
 
 **Realtime**:
 - `seeds` テーブル: stage / status 変化を購読 → GrowthIndicator 更新
-- `louges` テーブル: status が `published` に変化 → LougeStatusBanner 更新
+- `louges` テーブル: status が `published` に変化 → LougeStatusBanner 更新（`louge_id` を取得して「Lougeを見る」ボタンを活性化）
 
 ---
 
@@ -458,6 +464,116 @@ interface NotificationItemProps {
 
 **Realtime**:
 - `notifications` テーブルの INSERT を購読（FBR-06 参照）
+
+---
+
+## FC-11: Header
+
+**場所**: `features/common/components/Header.tsx`
+**配置**: `app/layout.tsx` 内（全ページ共通）
+
+**子コンポーネント**:
+```
+Header
+  ├── Logo（テキスト or SVG）→ `/` へ遷移
+  ├── NavLinks
+  │     ├── 「Seeds」→ `/`
+  │     └── 「Louges」→ `/louges`
+  ├── NotificationDropdown（FC-10）— 認証済み時のみ表示
+  ├── UserMenu（認証済み時）
+  │     ├── UserAvatar（アバター画像）
+  │     └── DropdownMenu
+  │           ├── 「プロフィール」→ `/profile/{userId}`
+  │           └── 「ログアウト」→ signOut()
+  └── LoginButton（未認証時）→ `/login` へ遷移
+```
+
+**状態**:
+```typescript
+const { user, isLoading } = useAuth()  // AuthContext から取得
+const [menuOpen, setMenuOpen] = useState(false)
+```
+
+**ユーザーインタラクション**:
+- Logo クリック → `/`
+- UserAvatar クリック → UserMenu ドロップダウン開閉
+- 「ログアウト」クリック → `signOut()` → `/` へリダイレクト
+- 「ログイン」クリック → `/login`
+
+**API 連携**: なし（AuthContext の状態を参照）
+
+---
+
+## FC-12: LoginPage
+
+**場所**: `features/auth/components/LoginPage.tsx`
+**ページ**: `app/(auth)/login/page.tsx`
+
+**子コンポーネント**:
+```
+LoginPage
+  ├── Logo
+  ├── EmailInput
+  ├── PasswordInput
+  ├── LoginButton（「ログイン」）
+  ├── ErrorMessage（認証失敗時）
+  └── RegisterLink → `/register`
+```
+
+**状態**:
+```typescript
+const [email, setEmail] = useState('')
+const [password, setPassword] = useState('')
+const [error, setError] = useState<string | null>(null)
+const [isLoading, setIsLoading] = useState(false)
+```
+
+**ロジック**:
+- `supabase.auth.signInWithPassword({ email, password })`
+- 成功: `redirect` クエリパラメータがあればそこへ、なければ `/` へ遷移
+- 失敗: エラーメッセージを `error` にセット（ページ内表示）
+
+**API 連携**: Supabase Auth SDK（`signInWithPassword`）
+
+---
+
+## FC-13: RegisterPage
+
+**場所**: `features/auth/components/RegisterPage.tsx`
+**ページ**: `app/(auth)/register/page.tsx`
+
+**子コンポーネント**:
+```
+RegisterPage
+  ├── Logo
+  ├── DisplayNameInput
+  ├── EmailInput
+  ├── PasswordInput（8文字以上）
+  ├── RegisterButton（「アカウント作成」）
+  ├── ErrorMessage（登録失敗時）
+  └── LoginLink → `/login`
+```
+
+**状態**:
+```typescript
+const [displayName, setDisplayName] = useState('')
+const [email, setEmail] = useState('')
+const [password, setPassword] = useState('')
+const [error, setError] = useState<string | null>(null)
+const [isLoading, setIsLoading] = useState(false)
+```
+
+**ロジック**:
+- `supabase.auth.signUp({ email, password, options: { data: { display_name } } })`
+- 成功: `/` へ遷移（メール確認不要設定の場合）
+- 失敗: エラーメッセージを `error` にセット
+
+**バリデーション**:
+- `displayName`: 必須、1〜50 文字
+- `email`: 必須、メール形式
+- `password`: 必須、8 文字以上
+
+**API 連携**: Supabase Auth SDK（`signUp`）
 
 ---
 

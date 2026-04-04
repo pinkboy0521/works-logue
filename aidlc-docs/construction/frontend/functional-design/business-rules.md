@@ -250,6 +250,61 @@
 
 ---
 
+---
+
+## FBR-11: Header 認証状態表示ルール
+
+| ルール ID | FBR-11 |
+|---|---|
+| カテゴリ | Header（FC-11）|
+| 優先度 | 必須 |
+| 参照 | FBR-01 |
+
+**認証状態別の表示**:
+
+| 状態 | 表示内容 |
+|---|---|
+| 未認証 | Logo・NavLinks・「ログイン」ボタン |
+| 認証済み | Logo・NavLinks・NotificationDropdown・UserMenu |
+| ローディング中 | Logo・NavLinks のみ（認証UI は Skeleton 表示） |
+
+**ログアウト動作**:
+- `signOut()` 呼び出し後、React Query キャッシュを全クリア
+- `/` へリダイレクト
+- AuthProvider が `SIGNED_OUT` イベントを検知してグローバル状態をリセット
+
+**ナビゲーション**:
+- ログイン後のリダイレクト先は `redirect` クエリパラメータを優先
+- `redirect` が未指定または同一オリジン外の場合は `/` へ遷移
+
+---
+
+## FBR-12: LougeStatusBanner ナビゲーションルール
+
+| ルール ID | FBR-12 |
+|---|---|
+| カテゴリ | SeedDetailPage（FC-03）|
+| 優先度 | 必須 |
+| 参照 | BR-01, BR-04 |
+
+**表示条件と内容**:
+
+| 条件 | 表示内容 |
+|---|---|
+| `seed.status === 'blooming'` | 「Louge 生成中...」（スピナー付き）、リンクなし |
+| `seed.stage === 'bloomed'` | 「Louge が完成しました」＋「Lougeを見る →」ボタン |
+| その他 | 非表示 |
+
+**bloomed 時の Louge ID 取得**:
+- `GET /seeds/{id}` レスポンスの `louge_id` フィールドを使用
+- `louge_id` が null の場合はボタンを非活性（異常系フォールバック）
+
+**Realtime 連携**:
+- `louges` テーブルの `seed_id = {id}` かつ `status = 'published'` の INSERT を購読
+- イベント受信時: `louge_id` をローカル状態に保存し「Lougeを見る」ボタンを活性化
+
+---
+
 ## フロントエンド UI ルール一覧サマリー
 
 | ルール ID | 名称 | カテゴリ |
@@ -264,3 +319,5 @@
 | FBR-08 | エラーハンドリング | 全コンポーネント |
 | FBR-09 | レスポンシブ対応 | 全ページ |
 | FBR-10 | デザインシステム定義 | Code Generation 先行ステップ |
+| FBR-11 | Header 認証状態表示 | Header |
+| FBR-12 | LougeStatusBanner ナビゲーション | SeedDetailPage |

@@ -44,6 +44,8 @@
   - [x] NFR Design — 2026-03-29 — 完了（承認済み）
   - [x] Infrastructure Design — 2026-03-29 — 完了（承認済み）
   - [x] Code Generation — 2026-03-29 — 完了（全13ステップ・68ファイル生成済み）
+  - [x] Functional Design 追補 — 2026-04-03 — Header(FC-11)/LoginPage(FC-12)/RegisterPage(FC-13)/LougeStatusBanner補完/FBR-11,12追加（承認済み）
+  - [x] Code Generation 追補 — 2026-04-04 — 完了（Header/LougeStatusBanner/louge_id追加）
 - [x] Build and Test — 2026-03-29 — 完了（6ファイル生成済み）
 
 ### OPERATIONS PHASE

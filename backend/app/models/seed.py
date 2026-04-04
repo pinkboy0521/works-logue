@@ -78,6 +78,7 @@ class SeedResponse(BaseModel):
     quality_score: Optional[float] = None
     pattern_analysis: Optional[Dict[str, Any]] = None
     parent_louge_id: Optional[UUID] = None
+    louge_id: Optional[UUID] = None
     created_at: datetime
     updated_at: datetime
     # Optional embedded fields (present when fetched via get_seed_with_details)

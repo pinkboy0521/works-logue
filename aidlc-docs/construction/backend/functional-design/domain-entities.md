@@ -142,6 +142,8 @@ class Seed:
     parent_louge_id: Optional[UUID]  # Fork元Louge（FK → louges.id）
     created_at: datetime
     updated_at: datetime
+    # レスポンス専用フィールド（DB列ではなく JOIN で付与）
+    louge_id: Optional[UUID]         # 開花済みLouge ID（stage='bloomed' 時のみ設定）
 ```
 
 **制約**:
@@ -151,6 +153,7 @@ class Seed:
 - `status`: NOT NULL, DEFAULT 'active'
 - `structural_completeness`: NOT NULL, DEFAULT 0.0, BETWEEN 0.0 AND 1.0
 - `parent_louge_id`: NULL許容（Fork Seed の場合のみ設定）
+- `louge_id`: レスポンス専用（`louges` テーブルを `seed_id` で JOIN して付与、stage='bloomed' 以外は NULL）
 
 **pattern_analysis JSONB 構造**:
 ```json

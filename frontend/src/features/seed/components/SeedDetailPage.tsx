@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useAtomValue } from 'jotai'
-import { ArrowLeft, MessageSquare, Zap, ThumbsUp, Star } from 'lucide-react'
+import { ArrowLeft, MessageSquare, Zap, ThumbsUp, Star, Sparkles, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 import { GrowthIndicator, STAGE_LABELS } from '@/features/seed/components/GrowthIndicator'
 import { useSeedRealtime } from '@/features/seed/hooks/useSeedRealtime'
@@ -138,6 +138,40 @@ export function SeedDetailPage({ id }: SeedDetailPageProps) {
           <span className="text-xs text-muted-foreground font-mono">
             {formatRelativeTime(seed.created_at)}
           </span>
+        </div>
+      )}
+
+      {/* LougeStatusBanner */}
+      {(seed.status === 'blooming' || seed.stage === 'bloomed') && (
+        <div className={cn(
+          'rounded-lg border px-5 py-4 mb-6 flex items-center gap-3',
+          seed.stage === 'bloomed'
+            ? 'border-accent/40 bg-accent/5'
+            : 'border-border bg-surface'
+        )}>
+          {seed.stage === 'bloomed' ? (
+            <>
+              <Sparkles className="w-4 h-4 text-accent shrink-0" />
+              <span className="text-sm text-foreground flex-1">
+                Louge が完成しました
+              </span>
+              {seed.louge_id && (
+                <Link
+                  href={`/louges/${seed.louge_id}`}
+                  className="text-xs text-accent hover:text-accent/80 font-mono tracking-wide transition-colors whitespace-nowrap"
+                >
+                  Louge を見る →
+                </Link>
+              )}
+            </>
+          ) : (
+            <>
+              <Loader2 className="w-4 h-4 text-muted-foreground shrink-0 animate-spin" />
+              <span className="text-sm text-muted-foreground">
+                Louge 生成中...
+              </span>
+            </>
+          )}
         </div>
       )}
 

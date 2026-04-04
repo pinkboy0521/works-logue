@@ -4,5 +4,5 @@
   "outputDirectory": "frontend/.next",
   "installCommand": "cd frontend && npm install",
   "devCommand": "cd frontend && npm run dev",
-  "regions": ["nrt1"]
+  "regions": ["hnd1"]
 }

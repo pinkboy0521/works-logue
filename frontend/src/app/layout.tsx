@@ -3,6 +3,7 @@ import { Playfair_Display, IBM_Plex_Sans, JetBrains_Mono } from 'next/font/googl
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { Providers } from './providers'
+import { Header } from '@/features/common/components/Header'
 import './globals.css'
 
 const playfairDisplay = Playfair_Display({
@@ -42,8 +43,10 @@ export default function RootLayout({
     >
       <body className="font-body bg-background text-foreground antialiased">
         <Providers>
-          {/* TODO: Step 7 で Header コンポーネントを追加 */}
-          {children}
+          <Header />
+          <main className="pt-14">
+            {children}
+          </main>
         </Providers>
         <Analytics />
         <SpeedInsights />

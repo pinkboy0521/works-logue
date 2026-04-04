@@ -114,6 +114,7 @@ export type Seed = {
   structural_completeness: number; // 0.0-1.0
   quality_score: number | null;
   pattern_analysis: PatternAnalysis | null;
+  louge_id: string | null;
   parent_louge_id: string | null; // UUID
   created_at: string; // ISO 8601
   updated_at: string; // ISO 8601

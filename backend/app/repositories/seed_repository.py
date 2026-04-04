@@ -54,6 +54,17 @@ class SeedRepository:
         )
         seed["tags"] = [row["tags"] for row in (tags_res.data or []) if row.get("tags")]
 
+        # Fetch louge_id (published Louge generated from this Seed)
+        louge_res = (
+            self._db.table("louges")
+            .select("id")
+            .eq("seed_id", str(seed_id))
+            .eq("status", "published")
+            .limit(1)
+            .execute()
+        )
+        seed["louge_id"] = louge_res.data[0]["id"] if louge_res.data else None
+
         return seed
 
     def list_seeds(
